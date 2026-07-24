@@ -129,6 +129,10 @@ void TStagePredictor::SerializeToKqpSettings(NYql::NDqProto::TProgram::TSettings
     kqpProto.SetOutputDataPrediction(OutputDataPrediction);
     kqpProto.SetStageLevel(StageLevel);
     kqpProto.SetLevelDataPrediction(LevelDataPrediction.value_or(1));
+    kqpProto.ClearWasmUdfModules();
+    for (const auto& module : GetWasmUdfModules()) {
+        kqpProto.AddWasmUdfModules(module);
+    }
 }
 
 bool TStagePredictor::DeserializeFromKqpSettings(const NYql::NDqProto::TProgram::TSettings& kqpProto) {
@@ -153,6 +157,10 @@ bool TStagePredictor::DeserializeFromKqpSettings(const NYql::NDqProto::TProgram:
     OutputDataPrediction = kqpProto.GetOutputDataPrediction();
     StageLevel = kqpProto.GetStageLevel();
     LevelDataPrediction = kqpProto.GetLevelDataPrediction();
+    WasmUdfModules_.clear();
+    for (const auto& module : kqpProto.GetWasmUdfModules()) {
+        WasmUdfModules_.insert(module);
+    }
     return true;
 }
 
