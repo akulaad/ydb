@@ -73,6 +73,18 @@ void emscripten_notify_memory_growth(i64) // NOLINT
 }
 REGISTER_WEB_ASSEMBLY_INTRINSIC(emscripten_notify_memory_growth);
 
+i32 logAPIs() // NOLINT
+{
+    return 0;
+}
+REGISTER_WEB_ASSEMBLY_INTRINSIC(logAPIs);
+
+void emscripten_dbg_backtrace(i64) // NOLINT
+{
+    // Do nothing.
+}
+REGISTER_WEB_ASSEMBLY_INTRINSIC(emscripten_dbg_backtrace);
+
 i32 args_sizes_get(i64* argc, i64* argvBufSize)
 {
     auto* compartment = GetCurrentCompartment();

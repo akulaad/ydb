@@ -107,7 +107,7 @@ TMemoryLayoutData BuildMemoryLayoutData(Runtime::Compartment* compartment)
             IR::TableType{
                 /*elementType*/ IR::ReferenceType::funcref,
                 /*isShared*/ false,
-                /*indexType*/ IR::IndexType::i32,
+                /*indexType*/ IR::IndexType::i64,
                 /*size*/ IR::SizeConstraints{MinGlobalOffsetTableSize, std::numeric_limits<ui64>::max()},
             },
             nullptr,
@@ -145,6 +145,54 @@ void TMemoryLayoutData::Clear(TMemoryLayoutData* data)
     data->StackHigh = nullptr;
 }
 
+// Some UDF modules are built with memory64 but an i32 table import, while the
+// runtime SDK uses table64. Align import index types to the compartment layout
+// so WAVM's isA check succeeds when binding env.__indirect_function_table.
+// Active elem segments that address the table via __table_base32 (i32) must also
+// be rewritten to __table_base (i64), otherwise instantiateModule asserts in
+// getIndexValue when the table index type is i64.
+void CoerceImportIndexTypesToLayout(IR::Module& irModule, const TMemoryLayoutData& layout)
+{
+    const auto gotType = Runtime::getTableType(layout.GlobalOffsetTable);
+    for (auto& tableImport : irModule.tables.imports) {
+        tableImport.type.indexType = gotType.indexType;
+    }
+    const auto memoryType = Runtime::getMemoryType(layout.LinearMemory);
+    for (auto& memoryImport : irModule.memories.imports) {
+        memoryImport.type.indexType = memoryType.indexType;
+    }
+
+    if (gotType.indexType != IR::IndexType::i64) {
+        return;
+    }
+
+    Uptr tableBaseImport = std::numeric_limits<Uptr>::max();
+    Uptr tableBase32Import = std::numeric_limits<Uptr>::max();
+    for (Uptr index = 0; index < irModule.globals.imports.size(); ++index) {
+        const auto& import = irModule.globals.imports[index];
+        if (import.exportName == "__table_base") {
+            tableBaseImport = index;
+        } else if (import.exportName == "__table_base32") {
+            tableBase32Import = index;
+        }
+    }
+
+    for (auto& elemSegment : irModule.elemSegments) {
+        if (elemSegment.type != IR::ElemSegment::Type::active) {
+            continue;
+        }
+        if (elemSegment.baseOffset.type == IR::InitializerExpression::Type::i32_const) {
+            elemSegment.baseOffset = IR::InitializerExpression(static_cast<I64>(elemSegment.baseOffset.i32));
+        } else if (
+            elemSegment.baseOffset.type == IR::InitializerExpression::Type::global_get &&
+            tableBaseImport != std::numeric_limits<Uptr>::max() &&
+            elemSegment.baseOffset.ref == tableBase32Import)
+        {
+            elemSegment.baseOffset.ref = tableBaseImport;
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Runtime::ModuleRef LoadModuleFromBytecode(TRef bytecode)
@@ -174,6 +222,7 @@ IR::Module ParseWast(TStringBuf wast)
 {
     auto irModule = IR::Module();
     irModule.featureSpec.memory64 = true;
+    irModule.featureSpec.table64 = true;
     irModule.featureSpec.exceptionHandling = true;
 
     auto wastErrors = std::vector<WAST::Error>();
@@ -313,9 +362,61 @@ public:
             THROW_ERROR_EXCEPTION("Precompiled module object code is required");
         }
 
+        IR::Module irModule;
         switch (bytecode.Format) {
             case EBytecodeFormat::HumanReadable: {
-                THROW_ERROR_EXCEPTION("Human-readable precompiled modules are not supported");
+                // Object code was compiled from WAST; re-parse text for IR linking metadata.
+                irModule = ParseWast(TString(bytecode.Data.ToStringBuf()));
+                break;
+            }
+
+            case EBytecodeFormat::Binary: {
+                auto featureSpec = IR::FeatureSpec();
+                featureSpec.memory64 = true;
+                featureSpec.table64 = true;
+                featureSpec.exceptionHandling = true;
+
+                irModule = IR::Module(std::move(featureSpec));
+
+                auto loadError = WASM::LoadError();
+                bool succeeded = WASM::loadBinaryModule(
+                    std::bit_cast<U8*>(bytecode.Data.begin()),
+                    bytecode.Data.size(),
+                    irModule,
+                    &loadError);
+
+                if (!succeeded) {
+                    THROW_ERROR_EXCEPTION("Could not load WebAssembly module: %v", loadError.message);
+                }
+                break;
+            }
+        }
+
+        CoerceImportIndexTypesToLayout(irModule, MemoryLayoutData_);
+
+        auto objectCode = std::vector<U8>(bytecode.ObjectCode.size());
+        ::memcpy(objectCode.data(), bytecode.ObjectCode.data(), bytecode.ObjectCode.size());
+        auto wavmModule = std::make_shared<Runtime::Module>(std::move(irModule), std::move(objectCode));
+        const auto& runtimeIR = Runtime::getModuleIR(wavmModule);
+        auto linkResult = LinkModule(runtimeIR);
+        AddExportsToGlobalOffsetTable(runtimeIR);
+        InstantiateModule(wavmModule, linkResult, name);
+    }
+
+    void AddSdk(const TModuleBytecode& bytecode) override
+    {
+        YT_ASSERT(!RuntimeLibraryInstance_);
+        YT_ASSERT(Compartment_->instances.size() == 1);
+
+        if (bytecode.ObjectCode) {
+            AddPrecompiledModule(bytecode, "env");
+            RuntimeLibraryInstance_ = Instances_.back();
+            return;
+        }
+
+        switch (bytecode.Format) {
+            case EBytecodeFormat::HumanReadable: {
+                THROW_ERROR_EXCEPTION("Human-readable runtime library files without object code are not supported");
                 break;
             }
 
@@ -335,62 +436,17 @@ public:
                     &loadError);
 
                 if (!succeeded) {
-                    THROW_ERROR_EXCEPTION("Could not load WebAssembly module: %v", loadError.message);
+                    THROW_ERROR_EXCEPTION("Could not load WebAssembly runtime library: %v", loadError.message);
                 }
 
-                auto objectCode = std::vector<U8>(bytecode.ObjectCode.size());
-                ::memcpy(objectCode.data(), bytecode.ObjectCode.data(), bytecode.ObjectCode.size());
-                auto wavmModule = std::make_shared<Runtime::Module>(std::move(irModule), std::move(objectCode));
-                const auto& runtimeIR = Runtime::getModuleIR(wavmModule);
-                auto linkResult = LinkModule(runtimeIR);
+                CoerceImportIndexTypesToLayout(irModule, MemoryLayoutData_);
+
+                auto linkResult = LinkModule(irModule);
+                auto sdkModule = Runtime::compileModule(irModule);
+                const auto& runtimeIR = Runtime::getModuleIR(sdkModule);
                 AddExportsToGlobalOffsetTable(runtimeIR);
-                InstantiateModule(wavmModule, linkResult, name);
-                break;
-            }
-        }
-    }
-
-    void AddSdk(const TModuleBytecode& bytecode) override
-    {
-        YT_ASSERT(!RuntimeLibraryInstance_);
-        YT_ASSERT(Compartment_->instances.size() == 1);
-
-        switch (bytecode.Format) {
-            case EBytecodeFormat::HumanReadable: {
-                THROW_ERROR_EXCEPTION("Human-readable runtime library files are not supported");
-                break;
-            }
-
-            case EBytecodeFormat::Binary: {
-                if (bytecode.ObjectCode) {
-                    AddPrecompiledModule(bytecode, "env");
-                    RuntimeLibraryInstance_ = Instances_.back();
-                } else {
-                    auto featureSpec = IR::FeatureSpec();
-                    featureSpec.memory64 = true;
-                    featureSpec.table64 = true;
-                    featureSpec.exceptionHandling = true;
-
-                    auto irModule = IR::Module(std::move(featureSpec));
-
-                    auto loadError = WASM::LoadError();
-                    bool succeeded = WASM::loadBinaryModule(
-                        std::bit_cast<U8*>(bytecode.Data.begin()),
-                        bytecode.Data.size(),
-                        irModule,
-                        &loadError);
-
-                    if (!succeeded) {
-                        THROW_ERROR_EXCEPTION("Could not load WebAssembly runtime library: %v", loadError.message);
-                    }
-
-                    auto linkResult = LinkModule(irModule);
-                    auto sdkModule = Runtime::compileModule(irModule);
-                    const auto& runtimeIR = Runtime::getModuleIR(sdkModule);
-                    AddExportsToGlobalOffsetTable(runtimeIR);
-                    InstantiateModule(sdkModule, linkResult, "env");
-                    RuntimeLibraryInstance_ = Instances_.back();
-                }
+                InstantiateModule(sdkModule, linkResult, "env");
+                RuntimeLibraryInstance_ = Instances_.back();
 
                 break;
             }
@@ -654,39 +710,44 @@ private:
     std::optional<Runtime::Object*> ResolveMemoryLayoutGlobals(
         const std::string& /*moduleName*/,
         const std::string& objectName,
-        IR::ExternType /*type*/)
+        IR::ExternType type)
     {
+        Runtime::Object* candidate = nullptr;
         if (objectName == "__linear_memory" || objectName == "memory") {
-            return Runtime::asObject(Compartment_->MemoryLayoutData_.LinearMemory);
+            candidate = Runtime::asObject(Compartment_->MemoryLayoutData_.LinearMemory);
         } else if (objectName == "__indirect_function_table") {
-            return Runtime::asObject(Compartment_->MemoryLayoutData_.GlobalOffsetTable);
+            candidate = Runtime::asObject(Compartment_->MemoryLayoutData_.GlobalOffsetTable);
         } else if (objectName == "__stack_pointer") {
-            return Runtime::asObject(Compartment_->MemoryLayoutData_.StackPointer);
+            candidate = Runtime::asObject(Compartment_->MemoryLayoutData_.StackPointer);
         } else if (objectName == "__heap_base") {
-            return Runtime::asObject(Compartment_->MemoryLayoutData_.HeapBase);
+            candidate = Runtime::asObject(Compartment_->MemoryLayoutData_.HeapBase);
         } else if (objectName == "__memory_base") {
             YT_VERIFY(std::ssize(Compartment_->MemoryLayoutData_.MemoryBases) == std::ssize(Compartment_->Modules_) + 1);
             Uptr newMemoryBase = Compartment_->MemoryLayoutData_.MemoryBases.back();
             auto* result = Runtime::createGlobal(Compartment_->Compartment_, IR::GlobalType{IR::ValueType::i64, false}, "__memory_base");
             Runtime::initializeGlobal(result, newMemoryBase);
-            return Runtime::asObject(result);
+            candidate = Runtime::asObject(result);
         } else if (objectName == "__table_base") {
             YT_VERIFY(std::ssize(Compartment_->MemoryLayoutData_.TableBases) == std::ssize(Compartment_->Modules_) + 1);
             Uptr newTableBase = Compartment_->MemoryLayoutData_.TableBases.back();
             auto* result = Runtime::createGlobal(Compartment_->Compartment_, IR::GlobalType{IR::ValueType::i64, false}, "__table_base");
             Runtime::initializeGlobal(result, newTableBase);
-            return Runtime::asObject(result);
+            candidate = Runtime::asObject(result);
         } else if (objectName == "__table_base32") {
             YT_VERIFY(std::ssize(Compartment_->MemoryLayoutData_.TableBases) == std::ssize(Compartment_->Modules_) + 1);
             Uptr newTableBase = Compartment_->MemoryLayoutData_.TableBases.back();
             auto* result = Runtime::createGlobal(Compartment_->Compartment_, IR::GlobalType{IR::ValueType::i32, false}, "__table_base");
             THROW_ERROR_EXCEPTION_IF(newTableBase > std::numeric_limits<I32>::max(), "WebAssembly linkage error: new table base is bigger than max i32 value");
             Runtime::initializeGlobal(result, static_cast<I32>(newTableBase));
-            return Runtime::asObject(result);
+            candidate = Runtime::asObject(result);
         } else if (objectName == "__stack_low") {
-            return Runtime::asObject(Compartment_->MemoryLayoutData_.StackLow);
+            candidate = Runtime::asObject(Compartment_->MemoryLayoutData_.StackLow);
         } else if (objectName == "__stack_high") {
-            return Runtime::asObject(Compartment_->MemoryLayoutData_.StackHigh);
+            candidate = Runtime::asObject(Compartment_->MemoryLayoutData_.StackHigh);
+        }
+
+        if (candidate != nullptr && Runtime::isA(candidate, type)) {
+            return candidate;
         }
 
         return std::nullopt;
@@ -699,8 +760,20 @@ private:
     {
         if (moduleName == "env" || moduleName == "wasi_snapshot_preview1") {
             if (type.kind == IR::ExternKind::function) {
+                // When a user/runtime SDK is installed as "env", prefer its exports
+                // over host intrinsic stubs. Returning a stub with a different
+                // signature trips WAVM's isA assert in Linker.cpp.
+                if (Compartment_->RuntimeLibraryInstance_) {
+                    auto* fromRuntime = Runtime::getInstanceExport(
+                        Compartment_->RuntimeLibraryInstance_,
+                        objectName);
+                    if (fromRuntime != nullptr && Runtime::isA(fromRuntime, type)) {
+                        return fromRuntime;
+                    }
+                }
+
                 auto* function = Runtime::getInstanceExport(Compartment_->IntrinsicsInstance_, objectName);
-                if (function != nullptr) {
+                if (function != nullptr && Runtime::isA(function, type)) {
                     return function;
                 }
             }
@@ -744,6 +817,8 @@ private:
 
         for (const auto& instance : Compartment_->Instances_) {
             auto* object = Runtime::getInstanceExport(instance, objectName);
+            // |type| here is the GOT.func *global* import type, not the function
+            // signature — only require a function export by name.
             if (object != nullptr && object->kind == Runtime::ObjectKind::function) {
                 Uptr indexInGOT = -1;
                 auto growResult = Runtime::growTable(Compartment_->GetGlobalOffsetTable(), 1, &indexInGOT);
@@ -809,7 +884,9 @@ private:
     {
         for (const auto& instance : Compartment_->Instances_) {
             auto* object = Runtime::getInstanceExport(instance, objectName);
-            if (object != nullptr && static_cast<U8>(object->kind) == static_cast<U8>(type.kind)) {
+            // Match full extern type, not just ObjectKind — otherwise host stubs
+            // with the same name poison linking after ResolveIntrinsics skips them.
+            if (object != nullptr && Runtime::isA(object, type)) {
                 return object;
             }
         }
