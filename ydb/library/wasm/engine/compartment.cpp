@@ -68,6 +68,9 @@ static constexpr I64 TableBase = 0;
 static constexpr I32 TableBase32 = 0;
 
 static constexpr U64 MinGlobalOffsetTableSize = 2048;
+// Cap GOT growth: table64 with max=UINT64_MAX reserves ~1TB VA per compartment
+// (WAVM maxTable64Elems * sizeof(Element)), which OOMs Create()/Clone loops.
+static constexpr U64 MaxGlobalOffsetTableSize = 1ull << 20;
 
 struct TMemoryLayoutData
 {
@@ -109,7 +112,7 @@ TMemoryLayoutData BuildMemoryLayoutData(Runtime::Compartment* compartment)
                 /*elementType*/ IR::ReferenceType::funcref,
                 /*isShared*/ false,
                 /*indexType*/ IR::IndexType::i64,
-                /*size*/ IR::SizeConstraints{MinGlobalOffsetTableSize, std::numeric_limits<ui64>::max()},
+                /*size*/ IR::SizeConstraints{MinGlobalOffsetTableSize, MaxGlobalOffsetTableSize},
             },
             nullptr,
             "__global_offset_table"),
@@ -342,6 +345,7 @@ public:
     void AddModule(TRef bytecode, TStringBuf name = "") override
     {
         auto wavmModule = LoadModuleFromBytecode(bytecode);
+        CoerceImportIndexTypesToLayout(wavmModule->ir, MemoryLayoutData_);
         auto linkResult = LinkModule(wavmModule->ir);
         AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);
@@ -350,6 +354,7 @@ public:
     void AddModule(TStringBuf wast, TStringBuf name = "") override
     {
         auto irModule = ParseWast(wast);
+        CoerceImportIndexTypesToLayout(irModule, MemoryLayoutData_);
         auto wavmModule = Runtime::compileModule(irModule);
         auto linkResult = LinkModule(wavmModule->ir);
         AddExportsToGlobalOffsetTable(wavmModule->ir);
