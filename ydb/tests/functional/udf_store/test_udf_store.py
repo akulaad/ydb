@@ -628,6 +628,7 @@ def test_delete_wasm_udf_and_library():
                 result = _run_query(
                     driver_config,
 <<<<<<< HEAD
+<<<<<<< HEAD
                     'SELECT compile_status FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
                         database=database,
                         path=UDF_TABLE_MODULES_PATH,
@@ -636,6 +637,11 @@ def test_delete_wasm_udf_and_library():
                         database=database,
                         path=UDF_TABLE_LIBRARY_SOURCE_PATH,
 >>>>>>> ceaf113964f (fixes)
+=======
+                    'SELECT compile_status FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
+                        database=database,
+                        path=UDF_TABLE_MODULES_PATH,
+>>>>>>> 98bfa56d974 (add ddl function)
                         name=name,
                     ),
                 )
@@ -668,10 +674,14 @@ def test_delete_wasm_udf_and_library():
                     'SELECT compile_status FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
                         database=database,
 <<<<<<< HEAD
+<<<<<<< HEAD
                         path=UDF_TABLE_MODULES_PATH,
 =======
                         path=UDF_TABLE_META_PATH,
 >>>>>>> ceaf113964f (fixes)
+=======
+                        path=UDF_TABLE_MODULES_PATH,
+>>>>>>> 98bfa56d974 (add ddl function)
                         md5=udf_md5,
                     ),
                 )
@@ -715,10 +725,14 @@ def test_delete_wasm_udf_and_library():
                     'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
                         database=database,
 <<<<<<< HEAD
+<<<<<<< HEAD
                         path=UDF_TABLE_MODULES_PATH,
 =======
                         path=UDF_TABLE_META_PATH,
 >>>>>>> ceaf113964f (fixes)
+=======
+                        path=UDF_TABLE_MODULES_PATH,
+>>>>>>> 98bfa56d974 (add ddl function)
                         md5=udf_md5,
                     ),
                 )
@@ -755,6 +769,7 @@ def test_delete_wasm_udf_and_library():
                 result = _run_query(
                     driver_config,
 <<<<<<< HEAD
+<<<<<<< HEAD
                     'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
                         database=database,
                         path=UDF_TABLE_MODULES_PATH,
@@ -763,6 +778,11 @@ def test_delete_wasm_udf_and_library():
                         database=database,
                         path=UDF_TABLE_LIBRARY_SOURCE_PATH,
 >>>>>>> ceaf113964f (fixes)
+=======
+                    'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
+                        database=database,
+                        path=UDF_TABLE_MODULES_PATH,
+>>>>>>> 98bfa56d974 (add ddl function)
                         name=name,
                     ),
                 )
@@ -775,10 +795,14 @@ def test_delete_wasm_udf_and_library():
             lambda: _library_gone("helpers") and _library_gone("sdk"),
             timeout_seconds=30,
 <<<<<<< HEAD
+<<<<<<< HEAD
             description="library module rows deleted",
 =======
             description="library_source rows deleted",
 >>>>>>> ceaf113964f (fixes)
+=======
+            description="library module rows deleted",
+>>>>>>> 98bfa56d974 (add ddl function)
         )
         logger.info("Test passed: deleted UDF md5=%s and libraries sdk/helpers", udf_md5)
 

@@ -59,10 +59,14 @@ WHERE ModuleType = "WASM";
 Upload helper: `ydb/tests/functional/udf_store/upload_udf`  
 (`--action upload|delete`, `--kind udf|library`; для library нужен `--library-name`;
 <<<<<<< HEAD
+<<<<<<< HEAD
 delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
 =======
 delete udf — `--md5` или `--udf-file`; delete чистит meta/source(+chunks) и best-effort AOT artifacts).
 >>>>>>> ceaf113964f (fixes)
+=======
+delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
+>>>>>>> 98bfa56d974 (add ddl function)
 
 ---
 

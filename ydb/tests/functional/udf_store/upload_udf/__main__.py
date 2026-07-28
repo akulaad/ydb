@@ -5,6 +5,7 @@ Standalone helper: upload or delete a UDF / WASM library in YDB UDF store tables
 
 Upload:
 <<<<<<< HEAD
+<<<<<<< HEAD
   NATIVE_UNSAFE: KV volume + modules row (chunk_count=0)
   WASM udf / library: modules row + module_chunks
 
@@ -22,6 +23,15 @@ Delete:
   library: library_source(+chunks) + best-effort AOT artifacts (kind=library)
   NATIVE_UNSAFE: meta (KV orphan left; service removes on-disk copy on snapshot)
 >>>>>>> ceaf113964f (fixes)
+=======
+  NATIVE_UNSAFE: KV volume + modules row (chunk_count=0)
+  WASM udf / library: modules row + module_chunks
+
+Delete:
+  WASM udf: modules + module_chunks + best-effort AOT artifacts (kind=module)
+  library: modules + module_chunks + best-effort AOT artifacts (kind=library)
+  NATIVE_UNSAFE: modules (KV orphan left; service removes on-disk copy on snapshot)
+>>>>>>> 98bfa56d974 (add ddl function)
 """
 
 import argparse
@@ -205,6 +215,9 @@ def _upsert_module_row(
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
 def _upsert_wasm_or_library(
     pool,
     database: str,
@@ -246,8 +259,11 @@ def _upsert_wasm_or_library(
     return uid
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> ceaf113964f (fixes)
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
 def _delete_by_key(pool, database: str, table: str, column: str, value: str) -> None:
     full_table = "{}/{}".format(database, table)
     query = (
@@ -299,12 +315,16 @@ def _delete_artifacts(driver, pool, database: str, artifact_id: str, kind: str) 
 
 def _delete_udf(driver, pool, database: str, md5: str, udf_type: str) -> None:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
     uid = _find_uid(pool, database, md5=md5)
     if uid:
         _delete_chunks(pool, database, uid)
         _delete_by_key(pool, database, UDF_TABLE_MODULES_PATH, "uid", uid)
     else:
         _delete_by_key(pool, database, UDF_TABLE_MODULES_PATH, "md5", md5)
+<<<<<<< HEAD
     if udf_type == "WASM":
 =======
     _delete_by_key(pool, database, UDF_TABLE_META_PATH, "md5", md5)
@@ -312,22 +332,31 @@ def _delete_udf(driver, pool, database: str, md5: str, udf_type: str) -> None:
         _delete_by_key(pool, database, UDF_TABLE_WASM_SOURCE_PATH, "md5", md5)
         _delete_by_key(pool, database, UDF_TABLE_WASM_SOURCE_CHUNKS_PATH, "owner_key", md5)
 >>>>>>> ceaf113964f (fixes)
+=======
+    if udf_type == "WASM":
+>>>>>>> 98bfa56d974 (add ddl function)
         _delete_artifacts(driver, pool, database, md5, "module")
     print("[upload_udf] deleted udf: md5={} type={}".format(md5, udf_type), file=sys.stderr)
 
 
 def _delete_library(driver, pool, database: str, name: str) -> None:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
     uid = _find_uid(pool, database, name=name, module_type="LIBRARY")
     if uid:
         _delete_chunks(pool, database, uid)
         _delete_by_key(pool, database, UDF_TABLE_MODULES_PATH, "uid", uid)
     else:
         _delete_by_key(pool, database, UDF_TABLE_MODULES_PATH, "name", name)
+<<<<<<< HEAD
 =======
     _delete_by_key(pool, database, UDF_TABLE_LIBRARY_SOURCE_PATH, "name", name)
     _delete_by_key(pool, database, UDF_TABLE_LIBRARY_SOURCE_CHUNKS_PATH, "owner_key", name)
 >>>>>>> ceaf113964f (fixes)
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
     _delete_artifacts(driver, pool, database, name, "library")
     print("[upload_udf] deleted library: name={}".format(name), file=sys.stderr)
 
@@ -360,6 +389,9 @@ def _do_upload(args) -> str:
         with ydb.QuerySessionPool(driver, size=1) as pool:
             if args.kind == "library":
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
                 _upsert_wasm_or_library(
                     pool,
                     args.database,
@@ -369,6 +401,7 @@ def _do_upload(args) -> str:
                     version=args.version,
                     body=body,
                 )
+<<<<<<< HEAD
                 print("[upload_udf] library uploaded: name={} md5={}".format(
                     args.library_name, md5), file=sys.stderr)
             elif args.type == "WASM":
@@ -402,20 +435,45 @@ def _do_upload(args) -> str:
                 print("[upload_udf] native binary uploaded to KV, module row inserted", file=sys.stderr)
 =======
                 _upsert_library_source(pool, args.database, args.library_name, md5, args.version, body)
+=======
+>>>>>>> 98bfa56d974 (add ddl function)
                 print("[upload_udf] library uploaded: name={} md5={}".format(
                     args.library_name, md5), file=sys.stderr)
             elif args.type == "WASM":
-                _upsert_wasm_source(pool, args.database, md5, args.version, body)
-                _upsert_udf_row(
-                    pool, args.database, md5, udf_name, size, "WASM",
-                    manifest=manifest_text, version=args.version, compile_status="pending",
+                _upsert_wasm_or_library(
+                    pool,
+                    args.database,
+                    module_type="WASM",
+                    md5=md5,
+                    name=udf_name,
+                    version=args.version,
+                    body=body,
+                    manifest=manifest_text,
                 )
-                print("[upload_udf] WASM source + metadata inserted: md5={}".format(md5), file=sys.stderr)
+                print("[upload_udf] WASM module uploaded: md5={}".format(md5), file=sys.stderr)
             else:
+                uid = _find_uid(pool, args.database, md5=md5)
+                if not uid:
+                    uid = str(uuid.uuid4())
                 _upload_to_kv(args.endpoint, args.database, args.udf_file, md5)
+<<<<<<< HEAD
                 _upsert_udf_row(pool, args.database, md5, udf_name, size, "NATIVE_UNSAFE")
                 print("[upload_udf] native binary uploaded to KV, metadata inserted", file=sys.stderr)
 >>>>>>> ceaf113964f (fixes)
+=======
+                _upsert_module_row(
+                    pool,
+                    args.database,
+                    uid=uid,
+                    md5=md5,
+                    name=udf_name,
+                    size=size,
+                    module_type="NATIVE_UNSAFE",
+                    chunk_count=0,
+                    version=args.version,
+                )
+                print("[upload_udf] native binary uploaded to KV, module row inserted", file=sys.stderr)
+>>>>>>> 98bfa56d974 (add ddl function)
     return md5
 
 
