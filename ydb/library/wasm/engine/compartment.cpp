@@ -358,7 +358,10 @@ public:
     void AddModule(TRef bytecode, TStringBuf name = "") override
     {
         auto wavmModule = LoadModuleFromBytecode(bytecode);
+<<<<<<< HEAD
         CoerceImportIndexTypesToLayout(wavmModule->ir, MemoryLayoutData_);
+=======
+>>>>>>> ceaf113964f (fixes)
         auto linkResult = LinkModule(wavmModule->ir);
         AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);

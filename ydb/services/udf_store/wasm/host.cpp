@@ -65,6 +65,7 @@ TString FormatWasmCallStack(WAVM::Uptr omitTopFrames = 1) {
 
 } // namespace
 
+<<<<<<< HEAD
 extern "C" char* AllocateBytes(TExpressionContext* /*context*/, size_t byteCount) {
     // Never trust the guest-provided context pointer. Host sets the current
     // invocation context via TLS for the duration of Run()/EnsureObject().
@@ -72,10 +73,15 @@ extern "C" char* AllocateBytes(TExpressionContext* /*context*/, size_t byteCount
     if (!invocationContext) {
         ythrow yexception() << "AllocateBytes called without an active WASM UDF invocation context";
     }
+=======
+extern "C" char* AllocateBytes(TExpressionContext* context, size_t byteCount) {
+    auto* invocationContext = reinterpret_cast<NKikimr::NUdfStore::NWasm::TWasmUdfInvocationContext*>(context);
+>>>>>>> ceaf113964f (fixes)
     return invocationContext->WebAssemblyPool.AllocateUnaligned(byteCount);
 }
 
 extern "C" void ThrowException(const char* error) {
+<<<<<<< HEAD
     TString message = "(null)";
     if (error) {
         if (auto* compartment = NYdb::NWasm::GetCurrentCompartment()) {
@@ -93,6 +99,12 @@ extern "C" void ThrowException(const char* error) {
                 ++len;
             }
             message = TString(hostPtr, len);
+=======
+    const char* message = "(null)";
+    if (error) {
+        if (auto* compartment = NYdb::NWasm::GetCurrentCompartment()) {
+            message = NYdb::NWasm::PtrFromVM(compartment, error);
+>>>>>>> ceaf113964f (fixes)
         }
     }
 

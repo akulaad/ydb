@@ -58,7 +58,11 @@ WHERE ModuleType = "WASM";
 
 Upload helper: `ydb/tests/functional/udf_store/upload_udf`  
 (`--action upload|delete`, `--kind udf|library`; для library нужен `--library-name`;
+<<<<<<< HEAD
 delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
+=======
+delete udf — `--md5` или `--udf-file`; delete чистит meta/source(+chunks) и best-effort AOT artifacts).
+>>>>>>> ceaf113964f (fixes)
 
 ---
 
@@ -247,7 +251,13 @@ Calling convention `unversioned_value`: указатели на `TUnversionedVal
 
 Ошибки из wasm: `ThrowException` → C++ exception → `WasmError` → `UdfTerminate("name(); ex: …")` (+ call stack).
 
+<<<<<<< HEAD
 Unload WASM: при delete/replace вызывается `NKqp::IDynamicFunctionRegistry::RemoveModule(moduleName)` (через cast от `IMutableFunctionRegistry`); иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
+=======
+Unload WASM: при delete/replace вызывается `FunctionRegistry::RemoveModule(moduleName)`; иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
+
+Unload WASM: `FunctionRegistry::RemoveModule(moduleName)` при delete/replace; иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
+>>>>>>> ceaf113964f (fixes)
 ---
 
 ## 10. Линковка модулей (WAVM)
