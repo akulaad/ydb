@@ -359,9 +359,13 @@ public:
     {
         auto wavmModule = LoadModuleFromBytecode(bytecode);
 <<<<<<< HEAD
+<<<<<<< HEAD
         CoerceImportIndexTypesToLayout(wavmModule->ir, MemoryLayoutData_);
 =======
 >>>>>>> ceaf113964f (fixes)
+=======
+        CoerceImportIndexTypesToLayout(wavmModule->ir, MemoryLayoutData_);
+>>>>>>> 74fb1f7d5ab (fix)
         auto linkResult = LinkModule(wavmModule->ir);
         AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);

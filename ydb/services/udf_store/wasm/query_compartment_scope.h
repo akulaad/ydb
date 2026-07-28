@@ -11,6 +11,7 @@
 
 namespace NKikimr::NUdfStore::NWasm {
 
+<<<<<<< HEAD
 //! TaskParams key for per-stage WASM module list (KQP → CA).
 //! Value: newline-separated module names from TKqpPhyStage.WasmUdfModules.
 inline constexpr TStringBuf WasmUdfModulesTaskParam = "_WasmUdfModules";
@@ -20,6 +21,28 @@ inline TString SerializeWasmUdfModulesTaskParam(const TVector<TString>& modules)
 }
 
 inline TVector<TString> ParseWasmUdfModulesTaskParam(TStringBuf data) {
+=======
+//! Keep only module names registered in the WASM catalog.
+//! Stage predictor currently records every TCoUdf module (String, Knn, ...);
+//! native UDFs must not trigger Acquire / ResolveModules.
+inline TVector<TString> FilterLoadedWasmUdfModules(
+    const TVector<TString>& modules,
+    const TWasmModuleCatalog& catalog = GetWasmModuleCatalog())
+{
+    TVector<TString> result;
+    result.reserve(modules.size());
+    for (const auto& module : modules) {
+        if (catalog.FindByModuleName(module)) {
+            result.push_back(module);
+        }
+    }
+    return result;
+}
+
+inline TVector<TString> CollectWasmUdfModules(
+    const NYql::NDqProto::TProgram::TSettings& settings)
+{
+>>>>>>> 74fb1f7d5ab (fix)
     TVector<TString> modules;
     StringSplitter(data).Split('\n').SkipEmpty().Collect(&modules);
     return modules;
@@ -32,7 +55,7 @@ inline TVector<TString> WasmUdfModulesFromRepeated(const TRepeatedString& repeat
     for (const auto& module : repeated) {
         modules.push_back(module);
     }
-    return modules;
+    return FilterLoadedWasmUdfModules(modules);
 }
 
 //! Keep only module names registered in the WASM catalog.
