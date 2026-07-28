@@ -35,7 +35,7 @@ public:
     bool HasCompartment() const;
 
 private:
-    IWebAssemblyCompartment* const Compartment_ = nullptr;
+    IWebAssemblyCompartment* Compartment_ = nullptr;
     size_t Size_ = 0;
     std::vector<uintptr_t> Allocations_;
 };

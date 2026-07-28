@@ -40,7 +40,10 @@ struct IWebAssemblyCompartment
     //! Converts compartment offset to host pointer and checks boundaries.
     virtual void* GetHostPointer(uintptr_t offset, size_t length) = 0;
     //! Converts host pointer to compartment offset.
+    //! Throws if the pointer is outside linear memory.
     virtual uintptr_t GetCompartmentOffset(void* hostAddress) = 0;
+    //! Returns the current linear memory size in bytes.
+    virtual size_t GetLinearMemorySize() const = 0;
 
     //! Clones compartment.
     //! NB: Cloning is slow and should not be called too often.

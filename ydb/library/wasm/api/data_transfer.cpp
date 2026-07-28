@@ -52,7 +52,7 @@ TCopyGuard CopyIntoCompartment(const std::vector<i64>& data, IWebAssemblyCompart
 {
     i64 byteLength = std::ssize(data) * sizeof(i64);
     uintptr_t offset = compartment->AllocateBytes(byteLength);
-    auto* destination = PtrFromVM(compartment, std::bit_cast<i64*>(offset), byteLength);
+    auto* destination = PtrFromVM(compartment, std::bit_cast<i64*>(offset), std::ssize(data));
     ::memcpy(destination, data.data(), byteLength);
     return {compartment, offset};
 }

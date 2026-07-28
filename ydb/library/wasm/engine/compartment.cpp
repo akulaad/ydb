@@ -20,6 +20,7 @@
 #include <contrib/restricted/wavm_llvm16/Lib/Runtime/RuntimePrivate.h>
 
 #include <util/datetime/base.h>
+#include <util/system/thread.h>
 #include <util/generic/hash_set.h>
 #include <util/generic/scope.h>
 #include <util/system/mutex.h>
@@ -548,6 +549,10 @@ public:
             Deadline_ = Runtime::getInstant();
             Deadline_->tv_sec += static_cast<time_t>(Timeout_->Seconds());
             Deadline_->tv_nsec += static_cast<long>(Timeout_->NanoSecondsOfSecond());
+            if (Deadline_->tv_nsec >= 1000000000L) {
+                Deadline_->tv_sec += Deadline_->tv_nsec / 1000000000L;
+                Deadline_->tv_nsec %= 1000000000L;
+            }
         }
     }
 
@@ -566,8 +571,16 @@ public:
     {
         ui64 hostAddressAsUint = std::bit_cast<ui64>(hostAddress);
         ui64 baseAddress = std::bit_cast<ui64>(Runtime::getMemoryBaseAddress(MemoryLayoutData_.LinearMemory));
-        uintptr_t offset = hostAddressAsUint - baseAddress;
-        return offset;
+        ui64 memoryNumBytes = Runtime::getMemoryNumPages(MemoryLayoutData_.LinearMemory) * IR::numBytesPerPage;
+        THROW_ERROR_EXCEPTION_IF(
+            hostAddressAsUint < baseAddress || hostAddressAsUint - baseAddress >= memoryNumBytes,
+            "WebAssembly host pointer is outside linear memory");
+        return static_cast<uintptr_t>(hostAddressAsUint - baseAddress);
+    }
+
+    size_t GetLinearMemorySize() const override
+    {
+        return Runtime::getMemoryNumPages(MemoryLayoutData_.LinearMemory) * IR::numBytesPerPage;
     }
 
     std::unique_ptr<IWebAssemblyCompartment> Clone() const override
@@ -1243,9 +1256,19 @@ Runtime::ModuleRef LoadBuiltinUdfs()
 
 namespace {
 
-bool CheckFreeStackSpace(size_t /*space*/)
+bool CheckFreeStackSpace(size_t space)
 {
-    return true;
+    // Host stack grows downward. StackBegin is the low address of the mapping.
+    const TCurrentThreadLimits limits;
+    if (!limits.StackBegin || limits.StackLength == 0) {
+        return true;
+    }
+    const auto* stackBegin = static_cast<const char*>(limits.StackBegin);
+    const auto* frame = static_cast<const char*>(__builtin_frame_address(0));
+    if (frame < stackBegin || frame >= stackBegin + limits.StackLength) {
+        return true;
+    }
+    return static_cast<size_t>(frame - stackBegin) >= space;
 }
 
 void CheckStackDepth()

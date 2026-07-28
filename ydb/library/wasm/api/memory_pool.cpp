@@ -23,22 +23,32 @@ Y_WEAK TWebAssemblyMemoryPool::~TWebAssemblyMemoryPool()
 }
 
 TWebAssemblyMemoryPool::TWebAssemblyMemoryPool(TWebAssemblyMemoryPool&& other) noexcept
+    : Compartment_(other.Compartment_)
 {
     std::swap(Size_, other.Size_);
     Allocations_.swap(other.Allocations_);
+    other.Compartment_ = nullptr;
 }
 
 TWebAssemblyMemoryPool& TWebAssemblyMemoryPool::operator=(TWebAssemblyMemoryPool&& other) noexcept
 {
-    std::swap(Size_, other.Size_);
-    Allocations_.swap(other.Allocations_);
+    if (this != &other) {
+        Clear();
+        Compartment_ = other.Compartment_;
+        Size_ = other.Size_;
+        Allocations_ = std::move(other.Allocations_);
+        other.Compartment_ = nullptr;
+        other.Size_ = 0;
+    }
     return *this;
 }
 
 void TWebAssemblyMemoryPool::Clear()
 {
-    for (const auto& address : Allocations_) {
-        Compartment_->FreeBytes(address);
+    if (Compartment_) {
+        for (const auto& address : Allocations_) {
+            Compartment_->FreeBytes(address);
+        }
     }
     Allocations_.clear();
     Size_ = 0;
