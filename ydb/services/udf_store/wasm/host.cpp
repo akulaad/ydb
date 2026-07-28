@@ -66,6 +66,9 @@ TString FormatWasmCallStack(WAVM::Uptr omitTopFrames = 1) {
 } // namespace
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3fa48d40b97 (fix issues)
 extern "C" char* AllocateBytes(TExpressionContext* /*context*/, size_t byteCount) {
     // Never trust the guest-provided context pointer. Host sets the current
     // invocation context via TLS for the duration of Run()/EnsureObject().
@@ -73,14 +76,18 @@ extern "C" char* AllocateBytes(TExpressionContext* /*context*/, size_t byteCount
     if (!invocationContext) {
         ythrow yexception() << "AllocateBytes called without an active WASM UDF invocation context";
     }
+<<<<<<< HEAD
 =======
 extern "C" char* AllocateBytes(TExpressionContext* context, size_t byteCount) {
     auto* invocationContext = reinterpret_cast<NKikimr::NUdfStore::NWasm::TWasmUdfInvocationContext*>(context);
 >>>>>>> ceaf113964f (fixes)
+=======
+>>>>>>> 3fa48d40b97 (fix issues)
     return invocationContext->WebAssemblyPool.AllocateUnaligned(byteCount);
 }
 
 extern "C" void ThrowException(const char* error) {
+<<<<<<< HEAD
 <<<<<<< HEAD
     TString message = "(null)";
     if (error) {
@@ -105,6 +112,25 @@ extern "C" void ThrowException(const char* error) {
         if (auto* compartment = NYdb::NWasm::GetCurrentCompartment()) {
             message = NYdb::NWasm::PtrFromVM(compartment, error);
 >>>>>>> ceaf113964f (fixes)
+=======
+    TString message = "(null)";
+    if (error) {
+        if (auto* compartment = NYdb::NWasm::GetCurrentCompartment()) {
+            const auto offset = std::bit_cast<uintptr_t>(error);
+            const size_t memSize = compartment->GetLinearMemorySize();
+            if (offset >= memSize) {
+                ythrow yexception() << "ThrowException: error pointer is outside linear memory";
+            }
+            // Cap scan so we never ask WAVM to validate the entire remaining linear memory.
+            constexpr size_t kMaxErrorMessageBytes = 64 * 1024;
+            const size_t maxLen = Min(memSize - offset, kMaxErrorMessageBytes);
+            const char* hostPtr = NYdb::NWasm::PtrFromVM(compartment, error, maxLen);
+            size_t len = 0;
+            while (len < maxLen && hostPtr[len] != '\0') {
+                ++len;
+            }
+            message = TString(hostPtr, len);
+>>>>>>> 3fa48d40b97 (fix issues)
         }
     }
 

@@ -150,6 +150,18 @@ void TWasmConfiguredCallable::EnsureObject(TStringRef functionNameForErrors) con
     TCurrentCompartmentGuard compartmentGuard(compartment);
     TWasmUdfInvocationContext context(compartment);
     TCurrentInvocationContextGuard invocationGuard(&context);
+<<<<<<< HEAD
+=======
+    Y_DEFER {
+        context.WebAssemblyPool.Clear();
+    };
+
+    if (CompartmentGeneration_ != queryHandle->Generation) {
+        PinnedBlobOffset_ = 0;
+        PinnedBlobLength_ = 0;
+        Handle_ = 0;
+    }
+>>>>>>> 3fa48d40b97 (fix issues)
 
     if (PinnedBlobOffset_ == 0 && !ConfigBlob_.empty()) {
         PinnedBlobOffset_ = compartment->AllocateBytes(ConfigBlob_.size());
@@ -217,6 +229,12 @@ TUnboxedValue TWasmConfiguredCallable::Run(
         TCurrentCompartmentGuard compartmentGuard(compartment);
         TWasmUdfInvocationContext context(compartment);
         TCurrentInvocationContextGuard invocationGuard(&context);
+<<<<<<< HEAD
+=======
+        Y_DEFER {
+            context.WebAssemblyPool.Clear();
+        };
+>>>>>>> 3fa48d40b97 (fix issues)
 
         TUnversionedValue handleValue = MakeEmptyValue();
         handleValue.Type = EAbiValueType::Uint64;
