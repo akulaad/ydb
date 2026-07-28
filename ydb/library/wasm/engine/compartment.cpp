@@ -341,9 +341,8 @@ public:
     void AddModule(TRef bytecode, TStringBuf name = "") override
     {
         auto wavmModule = LoadModuleFromBytecode(bytecode);
-        const auto& irModule = Runtime::getModuleIR(wavmModule);
-        auto linkResult = LinkModule(irModule);
-        AddExportsToGlobalOffsetTable(irModule);
+        auto linkResult = LinkModule(wavmModule->ir);
+        AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);
     }
 
@@ -351,8 +350,8 @@ public:
     {
         auto irModule = ParseWast(wast);
         auto wavmModule = Runtime::compileModule(irModule);
-        auto linkResult = LinkModule(irModule);
-        AddExportsToGlobalOffsetTable(irModule);
+        auto linkResult = LinkModule(wavmModule->ir);
+        AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);
     }
 
@@ -397,9 +396,8 @@ public:
         auto objectCode = std::vector<U8>(bytecode.ObjectCode.size());
         ::memcpy(objectCode.data(), bytecode.ObjectCode.data(), bytecode.ObjectCode.size());
         auto wavmModule = std::make_shared<Runtime::Module>(std::move(irModule), std::move(objectCode));
-        const auto& runtimeIR = Runtime::getModuleIR(wavmModule);
-        auto linkResult = LinkModule(runtimeIR);
-        AddExportsToGlobalOffsetTable(runtimeIR);
+        auto linkResult = LinkModule(wavmModule->ir);
+        AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);
     }
 
@@ -441,10 +439,9 @@ public:
 
                 CoerceImportIndexTypesToLayout(irModule, MemoryLayoutData_);
 
-                auto linkResult = LinkModule(irModule);
                 auto sdkModule = Runtime::compileModule(irModule);
-                const auto& runtimeIR = Runtime::getModuleIR(sdkModule);
-                AddExportsToGlobalOffsetTable(runtimeIR);
+                auto linkResult = LinkModule(sdkModule->ir);
+                AddExportsToGlobalOffsetTable(sdkModule->ir);
                 InstantiateModule(sdkModule, linkResult, "env");
                 RuntimeLibraryInstance_ = Instances_.back();
 
@@ -626,7 +623,7 @@ private:
     std::optional<TDuration> Timeout_;
     std::optional<struct timespec> Deadline_;
 
-    void AddExportsToGlobalOffsetTable(const IR::Module& irModule);
+    void AddExportsToGlobalOffsetTable(IR::Module& irModule);
     void InstantiateModule(const Runtime::ModuleRef& wavmModule, const Runtime::LinkResult& linkResult, TStringBuf debugName);
     void ApplyDataRelocationsAndCallConstructors(Runtime::Instance* instance);
 
@@ -972,6 +969,33 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+//! WAVM debug names come from the WASM "name" custom section. Release/stripped
+//! modules often omit it and fall back to "<function #N>". Export names are
+//! still present — use them so UDF throw stacks stay readable without -g.
+void EnsureFunctionDebugNamesFromExports(IR::Module& irModule)
+{
+    IR::DisassemblyNames names;
+    IR::getDisassemblyNames(irModule, names);
+
+    bool changed = false;
+    for (const auto& item : irModule.exports) {
+        if (item.kind != IR::ExternKind::function) {
+            continue;
+        }
+        if (item.index >= names.functions.size()) {
+            continue;
+        }
+        auto& name = names.functions[item.index].name;
+        if (name.empty()) {
+            name = item.name;
+            changed = true;
+        }
+    }
+    if (changed) {
+        IR::setDisassemblyNames(irModule, names);
+    }
+}
+
 Runtime::LinkResult TWebAssemblyCompartment::LinkModule(const IR::Module& irModule)
 {
     auto linker = TLinker(this, &irModule);
@@ -990,8 +1014,10 @@ Runtime::LinkResult TWebAssemblyCompartment::LinkModule(const IR::Module& irModu
     return linkResult;
 }
 
-void TWebAssemblyCompartment::AddExportsToGlobalOffsetTable(const IR::Module& irModule)
+void TWebAssemblyCompartment::AddExportsToGlobalOffsetTable(IR::Module& irModule)
 {
+    EnsureFunctionDebugNamesFromExports(irModule);
+
     IR::DisassemblyNames disassemblyNames;
     getDisassemblyNames(irModule, disassemblyNames);
 
@@ -1036,6 +1062,8 @@ void TWebAssemblyCompartment::InstantiateModule(
     TStringBuf debugName)
 {
     YT_VERIFY(linkResult.success);
+
+    EnsureFunctionDebugNamesFromExports(wavmModule->ir);
 
     {
         const Uptr tableBase = MemoryLayoutData_.TableBases.back();
@@ -1275,18 +1303,16 @@ std::unique_ptr<TWebAssemblyCompartment> CreateImage(EKnownImage image)
     }
 
     if (runtimeModule) {
-        const auto& runtimeIR = Runtime::getModuleIR(runtimeModule);
-        auto linkResult = compartment->LinkModule(runtimeIR);
-        compartment->AddExportsToGlobalOffsetTable(runtimeIR);
+        auto linkResult = compartment->LinkModule(runtimeModule->ir);
+        compartment->AddExportsToGlobalOffsetTable(runtimeModule->ir);
         compartment->InstantiateModule(runtimeModule, linkResult, "env");
         compartment->RuntimeLibraryInstance_ = compartment->Instances_.back();
     }
 
     if (image == EKnownImage::QueryLanguage) {
         auto wasmModule = LoadBuiltinUdfs();
-        const auto& irModule = Runtime::getModuleIR(wasmModule);
-        auto linkResult = compartment->LinkModule(irModule);
-        compartment->AddExportsToGlobalOffsetTable(irModule);
+        auto linkResult = compartment->LinkModule(wasmModule->ir);
+        compartment->AddExportsToGlobalOffsetTable(wasmModule->ir);
         compartment->InstantiateModule(wasmModule, linkResult, "env");
     }
 
