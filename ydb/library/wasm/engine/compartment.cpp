@@ -27,10 +27,13 @@
 #include <util/system/mutex.h>
 #include <util/system/type_name.h>
 
+<<<<<<< HEAD
 #if defined(_asan_enabled_) || defined(_lsan_enabled_)
 #include <sanitizer/lsan_interface.h>
 #endif
 
+=======
+>>>>>>> 17868346bdc (ai review fixes)
 #include <memory>
 #include <exception>
 #include <list>
@@ -1467,11 +1470,15 @@ public:
 
     TCachedSdkImagePtr GetOrCreate(const TModuleBytecode& bytecode)
     {
+<<<<<<< HEAD
         const auto key = TModuleBytecodeKey::From(bytecode);
+=======
+>>>>>>> 17868346bdc (ai review fixes)
         std::shared_ptr<TInFlight> inFlight;
         bool isCreator = false;
 
         with_lock (Lock_) {
+<<<<<<< HEAD
             if (auto it = Cache_.find(key)) {
                 Y_ABORT_UNLESS(
                     it->second.Bytecode == bytecode,
@@ -1488,6 +1495,17 @@ public:
                 inFlight = std::make_shared<TInFlight>();
                 inFlight->Bytecode = bytecode;
                 InFlight_[key] = inFlight;
+=======
+            if (auto it = Cache_.find(bytecode)) {
+                Touch(it);
+                return it->second.Image;
+            }
+            if (auto it = InFlight_.find(bytecode)) {
+                inFlight = it->second;
+            } else {
+                inFlight = std::make_shared<TInFlight>();
+                InFlight_[bytecode] = inFlight;
+>>>>>>> 17868346bdc (ai review fixes)
                 isCreator = true;
             }
         }
@@ -1510,6 +1528,7 @@ public:
                 if (Cache_.size() >= DefaultCapacity) {
                     EvictLru();
                 }
+<<<<<<< HEAD
                 Lru_.push_front(key);
                 Cache_[key] = TCacheEntry{
                     .Image = cachedImage,
@@ -1517,13 +1536,25 @@ public:
                     .LruIt = Lru_.begin(),
                 };
                 InFlight_.erase(key);
+=======
+                Lru_.push_front(bytecode);
+                Cache_[bytecode] = TCacheEntry{
+                    .Image = cachedImage,
+                    .LruIt = Lru_.begin(),
+                };
+                InFlight_.erase(bytecode);
+>>>>>>> 17868346bdc (ai review fixes)
                 inFlight->Image = cachedImage;
             }
             inFlight->Done.Signal();
             return cachedImage;
         } catch (...) {
             with_lock (Lock_) {
+<<<<<<< HEAD
                 InFlight_.erase(key);
+=======
+                InFlight_.erase(bytecode);
+>>>>>>> 17868346bdc (ai review fixes)
                 inFlight->Error = std::current_exception();
             }
             inFlight->Done.Signal();
@@ -1534,7 +1565,10 @@ public:
 private:
     struct TInFlight
     {
+<<<<<<< HEAD
         TModuleBytecode Bytecode;
+=======
+>>>>>>> 17868346bdc (ai review fixes)
         TManualEvent Done;
         TCachedSdkImagePtr Image;
         std::exception_ptr Error;
@@ -1543,11 +1577,18 @@ private:
     struct TCacheEntry
     {
         TCachedSdkImagePtr Image;
+<<<<<<< HEAD
         TModuleBytecode Bytecode;
         std::list<TModuleBytecodeKey>::iterator LruIt;
     };
 
     void Touch(typename THashMap<TModuleBytecodeKey, TCacheEntry>::iterator it)
+=======
+        std::list<TModuleBytecode>::iterator LruIt;
+    };
+
+    void Touch(typename THashMap<TModuleBytecode, TCacheEntry>::iterator it)
+>>>>>>> 17868346bdc (ai review fixes)
     {
         Lru_.splice(Lru_.begin(), Lru_, it->second.LruIt);
     }
@@ -1561,9 +1602,15 @@ private:
 
     TMutex Lock_;
     // Front = most recently used, back = least recently used.
+<<<<<<< HEAD
     std::list<TModuleBytecodeKey> Lru_;
     THashMap<TModuleBytecodeKey, TCacheEntry> Cache_;
     THashMap<TModuleBytecodeKey, std::shared_ptr<TInFlight>> InFlight_;
+=======
+    std::list<TModuleBytecode> Lru_;
+    THashMap<TModuleBytecode, TCacheEntry> Cache_;
+    THashMap<TModuleBytecode, std::shared_ptr<TInFlight>> InFlight_;
+>>>>>>> 17868346bdc (ai review fixes)
 };
 
 ////////////////////////////////////////////////////////////////////////////////
