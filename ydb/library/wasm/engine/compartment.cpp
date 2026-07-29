@@ -462,6 +462,79 @@ public:
         }
     }
 
+    void AddNativeHostModule(
+        TStringBuf moduleName,
+        const TVector<TNativeHostFunctionBinding>& exports) override
+    {
+        THROW_ERROR_EXCEPTION_IF(moduleName.empty(), "Native host module name must be non-empty");
+        THROW_ERROR_EXCEPTION_IF(exports.empty(),
+            "Native host module '%v' has no exports", moduleName);
+
+        auto toIR = [](EWebAssemblyValueType type) -> IR::ValueType {
+            switch (type) {
+                case EWebAssemblyValueType::Int32:
+                    return IR::ValueType::i32;
+                case EWebAssemblyValueType::Int64:
+                case EWebAssemblyValueType::UintPtr:
+                    return IR::ValueType::i64;
+                case EWebAssemblyValueType::Float32:
+                    return IR::ValueType::f32;
+                case EWebAssemblyValueType::Float64:
+                    return IR::ValueType::f64;
+                case EWebAssemblyValueType::Void:
+                    THROW_ERROR_EXCEPTION("void is not a valid native host value type");
+            }
+            YT_ABORT();
+        };
+
+        Intrinsics::Module intrinsicModule;
+        TVector<TString> nameStorage;
+        TVector<std::unique_ptr<Intrinsics::Function>> functions;
+        nameStorage.reserve(exports.size());
+        functions.reserve(exports.size());
+
+        for (const auto& binding : exports) {
+            THROW_ERROR_EXCEPTION_IF(binding.Name.empty(),
+                "Native host export name must be non-empty in module '%v'", moduleName);
+            THROW_ERROR_EXCEPTION_IF(!binding.NativeFunction,
+                "Native host export '%v' in module '%v' has null function pointer",
+                binding.Name, moduleName);
+            THROW_ERROR_EXCEPTION_IF(binding.Results.size() > 1,
+                "Native host export '%v' has more than one result", binding.Name);
+
+            std::vector<IR::ValueType> params;
+            params.reserve(binding.Params.size());
+            for (auto param : binding.Params) {
+                params.push_back(toIR(param));
+            }
+            std::vector<IR::ValueType> results;
+            results.reserve(binding.Results.size());
+            for (auto result : binding.Results) {
+                results.push_back(toIR(result));
+            }
+
+            const auto functionType = IR::FunctionType(
+                IR::TypeTuple(results),
+                IR::TypeTuple(params),
+                IR::CallingConvention::intrinsic);
+
+            nameStorage.push_back(binding.Name);
+            functions.push_back(std::make_unique<Intrinsics::Function>(
+                &intrinsicModule,
+                nameStorage.back().c_str(),
+                binding.NativeFunction,
+                functionType));
+        }
+
+        auto* instance = Intrinsics::instantiateModule(
+            Compartment_,
+            {&intrinsicModule},
+            std::string(moduleName));
+        THROW_ERROR_EXCEPTION_IF(instance == nullptr,
+            "Failed to instantiate native host module '%v'", moduleName);
+        Instances_.push_back(instance);
+    }
+
     // Strip erases the linking metadata. This can speed up the clone operation.
     // After stripping, the compartment can execute loaded functions, but further linking is no longer possible.
     void Strip() override
@@ -925,10 +998,24 @@ private:
     }
 
     std::optional<Runtime::Object*> ResolveAlreadyLoadedObject(
-        const std::string& /*moduleName*/,
+        const std::string& moduleName,
         const std::string& objectName,
         IR::ExternType type)
     {
+        // Prefer an instance whose debugName matches the import module name
+        // (native host modules / named libraries). Fall back to any instance.
+        if (!moduleName.empty()) {
+            for (const auto& instance : Compartment_->Instances_) {
+                if (instance->debugName != moduleName) {
+                    continue;
+                }
+                auto* object = Runtime::getInstanceExport(instance, objectName);
+                if (object != nullptr && Runtime::isA(object, type)) {
+                    return object;
+                }
+            }
+        }
+
         for (const auto& instance : Compartment_->Instances_) {
             auto* object = Runtime::getInstanceExport(instance, objectName);
             // Match full extern type, not just ObjectKind — otherwise host stubs

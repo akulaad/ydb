@@ -746,6 +746,432 @@ def test_delete_wasm_udf_and_library():
         cluster.stop()
 
 
+def test_using_wasm_udf_with_native_host():
+    """
+    Cluster functional test for WASM → native host imports.
+
+    Flow:
+      1. Upload NATIVE_UNSAFE .so with host_exports (native_math / host_add).
+      2. Upload WASM UDF that imports native_math.host_add.
+      3. Wait for compile_status=ready, query WithNativeHost::udf_add(10, 20) == 30.
+      4. Delete WASM only — native stays loaded; re-upload WASM and query again.
+      5. Delete native — dependent WASM is unloaded; query fails; .so removed from disk.
+    """
+    udf_output_dir = yatest.common.output_path("ydb_udfs_native_host")
+    database = "/Root/test"
+    cluster = _make_cluster(
+        enable_udf_store=True,
+        enable_native_udf=True,
+        native_udf_dir=udf_output_dir,
+        enable_wasm_udf=True,
+    )
+    db_nodes = _create_database(cluster, database)
+    try:
+        node = cluster.nodes[1]
+        driver_config = ydb.DriverConfig(
+            endpoint="%s:%s" % (node.host, node.port),
+            database=database,
+        )
+        endpoint = "grpc://%s:%s" % (node.host, node.port)
+
+        assert _wait_for_condition(
+            lambda: _table_exists(driver_config, database),
+            timeout_seconds=60,
+            description="UDF metadata table creation at startup",
+        )
+        assert _wait_for_condition(
+            lambda: _kv_volume_exists(endpoint, database),
+            timeout_seconds=60,
+            description="KV volume creation at startup",
+        )
+
+        if os.path.exists(udf_output_dir):
+            shutil.rmtree(udf_output_dir)
+
+        data_dir = "ydb/tests/functional/udf_store/data/wasm"
+        native_so = yatest.common.binary_path(os.environ["YDB_NATIVE_MATH_HOST_PATH"])
+        native_manifest = yatest.common.source_path("%s/native_math_manifest.json" % data_dir)
+        wasm_path = yatest.common.source_path("%s/with_native_host.wat" % data_dir)
+        wasm_manifest = yatest.common.source_path("%s/with_native_host_manifest.json" % data_dir)
+
+        UDF_QUERY = "SELECT WithNativeHost::udf_add(10, 20);"
+
+        def _module_row_exists(md5):
+            try:
+                result = _run_query(
+                    driver_config,
+                    'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
+                        database=database,
+                        path=UDF_TABLE_MODULES_PATH,
+                        md5=md5,
+                    ),
+                )
+                return result and result[0].rows and list(result[0].rows[0].values())[0] > 0
+            except Exception as e:
+                logger.debug("module row check failed for %s: %s", md5, e)
+                return False
+
+        def _wasm_compile_ready(md5):
+            try:
+                result = _run_query(
+                    driver_config,
+                    'SELECT compile_status FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
+                        database=database,
+                        path=UDF_TABLE_MODULES_PATH,
+                        md5=md5,
+                    ),
+                )
+                if not result or not result[0].rows:
+                    return False
+                return list(result[0].rows[0].values())[0] == "ready"
+            except Exception as e:
+                logger.debug("WASM compile status not ready yet for %s: %s", md5, e)
+                return False
+
+        def _query_udf_add():
+            result = _run_query(driver_config, UDF_QUERY)
+            assert result and result[0].rows, "empty result for %s" % UDF_QUERY
+            value = list(result[0].rows[0].values())[0]
+            assert value == 30, "Expected WithNativeHost::udf_add(10, 20) == 30, got %r" % value
+            return value
+
+        # --- Step 1: upload native host module ---
+        native_md5 = _run_upload_udf(
+            endpoint,
+            database,
+            native_so,
+            udf_type="NATIVE_UNSAFE",
+            manifest_path=native_manifest,
+        )
+        logger.info("uploaded native host md5=%s", native_md5)
+        expected_native_path = os.path.join(udf_output_dir, native_md5)
+        assert _wait_for_condition(
+            lambda: os.path.isfile(expected_native_path),
+            timeout_seconds=120,
+            description="native host .so on disk at %s" % expected_native_path,
+        ), (
+            "Native host .so was not written to UnsafeNativeUdfDir. "
+            "Expected TUdfStoreService to fetch from KV and load host_exports."
+        )
+
+        # --- Step 2: upload WASM that imports native_math.host_add ---
+        wasm_md5 = _run_upload_udf(
+            endpoint, database, wasm_path, udf_type="WASM", manifest_path=wasm_manifest
+        )
+        logger.info("uploaded WASM WithNativeHost md5=%s", wasm_md5)
+
+        assert _wait_for_condition(
+            lambda: _wasm_compile_ready(wasm_md5),
+            timeout_seconds=180,
+            description="WithNativeHost compile_status=ready for md5=%s" % wasm_md5,
+        ), "WASM UDF with native host import was not compiled within timeout"
+
+        # --- Step 3: query through WASM → native host ---
+        udf_ready = [False]
+
+        def try_query():
+            try:
+                _query_udf_add()
+                udf_ready[0] = True
+                return True
+            except Exception as e:
+                logger.debug("WithNativeHost query not ready yet: %s", e)
+                return False
+
+        assert _wait_for_condition(
+            try_query,
+            timeout_seconds=120,
+            description="WithNativeHost::udf_add(10, 20) == 30",
+        ), "WASM→native host query did not succeed within timeout"
+        assert udf_ready[0]
+        logger.info("query ok: WithNativeHost::udf_add(10, 20) == 30")
+
+        # --- Step 4: delete WASM only; native stays; re-upload WASM ---
+        _run_delete_udf(endpoint, database, wasm_md5, udf_type="WASM")
+        assert _wait_for_condition(
+            lambda: not _module_row_exists(wasm_md5),
+            timeout_seconds=60,
+            description="WASM module row deleted",
+        )
+        assert os.path.isfile(expected_native_path), (
+            "Native .so must remain on disk after WASM-only delete"
+        )
+        assert _module_row_exists(native_md5), (
+            "Native module row must remain after WASM-only delete"
+        )
+
+        def query_fails_after_wasm_delete():
+            try:
+                _run_query(driver_config, UDF_QUERY)
+                return False
+            except Exception:
+                return True
+
+        assert _wait_for_condition(
+            query_fails_after_wasm_delete,
+            timeout_seconds=60,
+            description="query fails after WASM delete (native still present)",
+        )
+
+        wasm_md5_2 = _run_upload_udf(
+            endpoint, database, wasm_path, udf_type="WASM", manifest_path=wasm_manifest
+        )
+        assert _wait_for_condition(
+            lambda: _wasm_compile_ready(wasm_md5_2),
+            timeout_seconds=180,
+            description="re-uploaded WithNativeHost compile_status=ready",
+        )
+
+        reupload_ok = [False]
+
+        def try_query_after_reupload():
+            try:
+                _query_udf_add()
+                reupload_ok[0] = True
+                return True
+            except Exception as e:
+                logger.debug("re-upload query not ready yet: %s", e)
+                return False
+
+        assert _wait_for_condition(
+            try_query_after_reupload,
+            timeout_seconds=120,
+            description="query works after WASM re-upload with native still loaded",
+        )
+        assert reupload_ok[0]
+        logger.info("re-upload WASM ok with native still loaded, md5=%s", wasm_md5_2)
+
+        # --- Step 5: delete native → unload dependents; query fails; file gone ---
+        _run_delete_udf(endpoint, database, native_md5, udf_type="NATIVE_UNSAFE")
+
+        def native_gone():
+            if _module_row_exists(native_md5):
+                return False
+            if os.path.isfile(expected_native_path):
+                return False
+            return True
+
+        assert _wait_for_condition(
+            native_gone,
+            timeout_seconds=120,
+            description="native module row and on-disk .so removed",
+        )
+
+        def query_fails_after_native_delete():
+            try:
+                _run_query(driver_config, UDF_QUERY)
+                return False
+            except Exception:
+                return True
+
+        assert _wait_for_condition(
+            query_fails_after_native_delete,
+            timeout_seconds=120,
+            description="query fails after native host unload",
+        )
+        logger.info(
+            "Test passed: native_md5=%s wasm_md5=%s/%s host import + re-upload + unload",
+            native_md5,
+            wasm_md5,
+            wasm_md5_2,
+        )
+
+    finally:
+        cluster.remove_database(database)
+        cluster.unregister_and_stop_slots(db_nodes)
+        cluster.stop()
+
+
+# ---------------------------------------------------------------------------
+# gRPC UdfStoreService Upload / Describe / Delete API
+# ---------------------------------------------------------------------------
+
+def _udf_store_stub(host, port):
+    import grpc
+    from ydb.public.api.grpc import ydb_udf_store_v1_pb2_grpc as udf_store_grpc
+
+    channel = grpc.insecure_channel(
+        "%s:%s" % (host, port),
+        options=[
+            ("grpc.max_receive_message_length", 64 * 10 ** 6),
+            ("grpc.max_send_message_length", 64 * 10 ** 6),
+        ],
+    )
+    return udf_store_grpc.UdfStoreServiceStub(channel), channel
+
+
+def _unpack_op_result(operation, result_cls):
+    from ydb.public.api.protos.ydb_status_codes_pb2 import StatusIds
+
+    assert operation.status == StatusIds.SUCCESS, (
+        "unexpected status=%s issues=%s" % (operation.status, operation.issues)
+    )
+    result = result_cls()
+    assert operation.result.Unpack(result)
+    return result
+
+
+def test_grpc_upload_describe_delete_wasm():
+    """Upload WASM via gRPC, describe, wait compile ready, delete."""
+    from ydb.public.api.protos import ydb_udf_store_pb2 as udf_store_pb2
+    from ydb.public.api.protos.ydb_status_codes_pb2 import StatusIds
+
+    database = "/Root/test"
+    cluster = _make_cluster(enable_udf_store=True, enable_wasm_udf=True)
+    db_nodes = _create_database(cluster, database)
+    try:
+        node = cluster.nodes[1]
+        driver_config = ydb.DriverConfig(
+            endpoint="%s:%s" % (node.host, node.port),
+            database=database,
+        )
+        assert _wait_for_condition(
+            lambda: _table_exists(driver_config, database),
+            timeout_seconds=60,
+            description="UDF metadata table creation at startup",
+        )
+
+        wasm_path = yatest.common.source_path(
+            "ydb/tests/functional/udf_store/data/wasm/local_udf.wat"
+        )
+        manifest_path = yatest.common.source_path(
+            "ydb/tests/functional/udf_store/data/wasm/local_udf_manifest.json"
+        )
+        with open(wasm_path, "rb") as f:
+            content = f.read()
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = f.read().strip()
+
+        stub, channel = _udf_store_stub(node.host, node.port)
+        try:
+            metadata = [("x-ydb-database", database)]
+
+            upload_req = udf_store_pb2.UploadModuleRequest()
+            upload_req.type = udf_store_pb2.WASM
+            upload_req.name = "LocalUdf"
+            upload_req.manifest = manifest
+            upload_req.content = content
+            upload_req.version = 1
+            upload_resp = stub.UploadModule(upload_req, metadata=metadata)
+            upload_result = _unpack_op_result(upload_resp.operation, udf_store_pb2.UploadModuleResult)
+            assert upload_result.md5
+            assert upload_result.uid
+            assert upload_result.compile_status == "pending"
+            udf_md5 = upload_result.md5
+
+            describe_req = udf_store_pb2.DescribeModuleRequest()
+            describe_req.md5 = udf_md5
+            describe_resp = stub.DescribeModule(describe_req, metadata=metadata)
+            describe_result = _unpack_op_result(describe_resp.operation, udf_store_pb2.DescribeModuleResult)
+            assert describe_result.module.md5 == udf_md5
+            assert describe_result.module.module_type == udf_store_pb2.WASM
+
+            # Bad manifest → BAD_REQUEST
+            bad_req = udf_store_pb2.UploadModuleRequest()
+            bad_req.type = udf_store_pb2.WASM
+            bad_req.manifest = "{not-json"
+            bad_req.content = content
+            bad_resp = stub.UploadModule(bad_req, metadata=metadata)
+            assert bad_resp.operation.status == StatusIds.BAD_REQUEST
+
+            # Wrong expected_md5 → BAD_REQUEST
+            mismatch_req = udf_store_pb2.UploadModuleRequest()
+            mismatch_req.type = udf_store_pb2.WASM
+            mismatch_req.manifest = manifest
+            mismatch_req.content = content
+            mismatch_req.expected_md5 = "0" * 32
+            mismatch_resp = stub.UploadModule(mismatch_req, metadata=metadata)
+            assert mismatch_resp.operation.status == StatusIds.BAD_REQUEST
+
+            delete_req = udf_store_pb2.DeleteModuleRequest()
+            delete_req.md5 = udf_md5
+            delete_req.type = udf_store_pb2.WASM
+            delete_resp = stub.DeleteModule(delete_req, metadata=metadata)
+            assert delete_resp.operation.status == StatusIds.SUCCESS
+        finally:
+            channel.close()
+    finally:
+        cluster.remove_database(database)
+        cluster.unregister_and_stop_slots(db_nodes)
+        cluster.stop()
+
+
+def test_grpc_upload_native_and_disabled_flag():
+    """NATIVE_UNSAFE via gRPC; WASM rejected when EnableWasmUdf is off."""
+    from ydb.public.api.protos import ydb_udf_store_pb2 as udf_store_pb2
+    from ydb.public.api.protos.ydb_status_codes_pb2 import StatusIds
+
+    database = "/Root/test"
+    os.makedirs(UDF_OUTPUT_DIR, exist_ok=True)
+    cluster = _make_cluster(
+        enable_udf_store=True,
+        enable_native_udf=True,
+        native_udf_dir=UDF_OUTPUT_DIR,
+        enable_wasm_udf=False,
+    )
+    db_nodes = _create_database(cluster, database)
+    try:
+        node = cluster.nodes[1]
+        driver_config = ydb.DriverConfig(
+            endpoint="%s:%s" % (node.host, node.port),
+            database=database,
+        )
+        endpoint = "grpc://%s:%s" % (node.host, node.port)
+        assert _wait_for_condition(
+            lambda: _table_exists(driver_config, database),
+            timeout_seconds=60,
+            description="UDF metadata table creation at startup",
+        )
+        assert _wait_for_condition(
+            lambda: _kv_volume_exists(endpoint, database),
+            timeout_seconds=60,
+            description="KV volume creation at startup",
+        )
+
+        native_path = yatest.common.binary_path(os.environ["YDB_NATIVE_MATH_HOST_PATH"])
+        with open(native_path, "rb") as f:
+            content = f.read()
+        manifest_path = yatest.common.source_path(
+            "ydb/tests/functional/udf_store/data/wasm/native_math_manifest.json"
+        )
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = f.read().strip()
+
+        stub, channel = _udf_store_stub(node.host, node.port)
+        try:
+            metadata = [("x-ydb-database", database)]
+
+            native_req = udf_store_pb2.UploadModuleRequest()
+            native_req.type = udf_store_pb2.NATIVE_UNSAFE
+            native_req.name = "native_math"
+            native_req.manifest = manifest
+            native_req.content = content
+            native_resp = stub.UploadModule(native_req, metadata=metadata)
+            native_result = _unpack_op_result(native_resp.operation, udf_store_pb2.UploadModuleResult)
+            assert native_result.md5
+            assert native_result.compile_status == ""
+
+            list_req = udf_store_pb2.ListModulesRequest()
+            list_req.type = udf_store_pb2.NATIVE_UNSAFE
+            list_resp = stub.ListModules(list_req, metadata=metadata)
+            list_result = _unpack_op_result(list_resp.operation, udf_store_pb2.ListModulesResult)
+            assert any(m.md5 == native_result.md5 for m in list_result.modules)
+
+            # WASM disabled → UNSUPPORTED
+            wasm_req = udf_store_pb2.UploadModuleRequest()
+            wasm_req.type = udf_store_pb2.WASM
+            wasm_req.manifest = '{"module_name":"X","functions":[]}'
+            wasm_req.content = b"(module)"
+            wasm_resp = stub.UploadModule(wasm_req, metadata=metadata)
+            assert wasm_resp.operation.status == StatusIds.UNSUPPORTED
+        finally:
+            channel.close()
+    finally:
+        cluster.remove_database(database)
+        cluster.unregister_and_stop_slots(db_nodes)
+        cluster.stop()
+
+
 # ---------------------------------------------------------------------------
 # Feature-flag test: parametrised over udf_store_config enabled / disabled
 # ---------------------------------------------------------------------------

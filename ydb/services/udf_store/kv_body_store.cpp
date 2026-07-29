@@ -2,6 +2,7 @@
 
 #include <ydb/library/services/services.pb.h>
 #include <ydb/library/actors/core/log.h>
+#include <ydb/services/udf_store/wasm/native_host_catalog.h>
 
 #include <util/folder/dirut.h>
 #include <util/folder/path.h>
@@ -210,10 +211,13 @@ void TKvBodyReadActor::FinalizeAndSave() {
         return;
     }
 
-    if (!LoadUdfIntoRegistry(finalPath)) {
+    auto response = MakeHolder<TEvReadBodyResponse>(true, Md5Key);
+    if (!LoadUdfIntoRegistry(finalPath, *response)) {
         NFs::Remove(finalPath);
         Send(ReplyTo, new TEvReadBodyResponse(false, Md5Key,
-            TStringBuilder() << "Failed to load UDF '" << Md5Key << "' into function registry"));
+            response->ErrorMessage
+                ? response->ErrorMessage
+                : TStringBuilder() << "Failed to load UDF '" << Md5Key << "'"));
         PassAway();
         return;
     }
@@ -222,37 +226,37 @@ void TKvBodyReadActor::FinalizeAndSave() {
         << "TKvBodyReadActor: saved UDF '" << Md5Key
         << "' (" << CurrentOffset << " bytes) to " << finalPath;
 
-    Send(ReplyTo, new TEvReadBodyResponse(true, Md5Key));
+    Send(ReplyTo, response.Release());
     PassAway();
 }
 
-bool TKvBodyReadActor::LoadUdfIntoRegistry(const TString& finalPath) const {
-    if (!FunctionRegistry) {
-        ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
-            << "TKvBodyReadActor: function registry is not available for UDF '" << Md5Key << "'";
-        return false;
-    }
-
-    NMiniKQL::TUdfModuleRemappings remappings;
-    THashSet<TString> modules;
-    try {
-        FunctionRegistry->LoadUdfs(finalPath, remappings, 0, {}, &modules);
-    } catch (const std::exception& e) {
+bool TKvBodyReadActor::LoadUdfIntoRegistry(
+    const TString& finalPath,
+    TEvReadBodyResponse& response) const
+{
+    auto loaded = NWasm::LoadNativeUdfFromPath(
+        finalPath,
+        Md5Key,
+        Manifest,
+        FunctionRegistry.Get());
+    if (!loaded.Ok) {
         ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
             << "TKvBodyReadActor: failed to load UDF '" << Md5Key
-            << "' into function registry: " << e.what();
+            << "': " << loaded.Error;
+        response.ErrorMessage = loaded.Error;
         return false;
     }
 
-    if (modules.empty()) {
-        ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
-            << "TKvBodyReadActor: no UDF modules were registered from '" << finalPath << "'";
-        return false;
-    }
+    response.HostModuleName = loaded.HostModuleName;
+    response.YqlModuleNames = loaded.YqlModuleNames;
 
     ALS_INFO(NKikimrServices::METADATA_PROVIDER)
         << "TKvBodyReadActor: loaded UDF '" << Md5Key
-        << "' into function registry from " << finalPath;
+        << "' from " << finalPath
+        << (loaded.HostModuleName
+            ? TStringBuilder() << " host_module=" << loaded.HostModuleName
+            : TStringBuilder())
+        << " yql_modules=" << loaded.YqlModuleNames.size();
     return true;
 }
 

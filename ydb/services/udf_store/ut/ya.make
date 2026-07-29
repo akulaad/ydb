@@ -3,6 +3,7 @@ UNITTEST()
 PEERDIR(
     library/cpp/json
     library/cpp/testing/unittest
+    library/cpp/digest/md5
     ydb/core/protos
     ydb/library/wasm/api
     ydb/library/wasm/engine
@@ -14,11 +15,13 @@ SRCS(
     manifest_ut.cpp
     blob_chunks_ut.cpp
     compartment_manager_ut.cpp
+    native_host_ut.cpp
     object_framework_ut.cpp
     objects_abi_ut.cpp
     shared_ctx_ut.cpp
     throw_exception_ut.cpp
     with_helpers_ut.cpp
+    upload_api_ut.cpp
     ../wasm/manifest.cpp
     ../blob_chunks.cpp
 )

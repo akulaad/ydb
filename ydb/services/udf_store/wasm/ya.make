@@ -8,6 +8,7 @@ SRCS(
     manifest.cpp
     compile.cpp
     module_catalog.cpp
+    native_host_catalog.cpp
     registry_helpers.cpp
     single_module_loader.cpp
     system_libraries.cpp

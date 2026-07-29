@@ -63,8 +63,31 @@ struct TWasmManifest {
     TString ModuleExtension;
     TString CallingConvention;
     TVector<TString> RequiredLibraries;
+    //! Native UDF modules (NATIVE_UNSAFE with host_exports) linked as named host instances.
+    TVector<TString> RequiredNativeModules;
     TVector<TWasmUdfDescriptor> Functions;
     TVector<TWasmObjectDescriptor> Objects;
+};
+
+//! WASM numeric types allowed in native host_exports (v1).
+enum class EWasmHostValueType {
+    I32,
+    I64,
+    F32,
+    F64,
+};
+
+struct TNativeHostExportDescriptor {
+    TString Name;     // WASM import/export name
+    TString Symbol;   // C symbol in .so (defaults to Name)
+    TVector<EWasmHostValueType> Params;
+    TVector<EWasmHostValueType> Results; // 0 or 1 in v1
+};
+
+//! Manifest for NATIVE_UNSAFE modules that expose host functions to WASM.
+struct TNativeHostManifest {
+    TString ModuleName;
+    TVector<TNativeHostExportDescriptor> HostExports;
 };
 
 } // namespace NKikimr::NUdfStore::NWasm

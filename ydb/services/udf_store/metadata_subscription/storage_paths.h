@@ -7,6 +7,7 @@ namespace NKikimr::NUdfStore {
 TString GetUdfStorePrefix();
 TString GetModulesTablePath();
 TString GetModuleChunksTablePath();
+TString GetBinariesVolumePath();
 TString GetArtifactTablePath(const TString& cpuSpec);
 TString GetArtifactChunksTablePath(const TString& cpuSpec);
 TString NormalizeCpuSpec(TStringBuf triple, TStringBuf cpu);

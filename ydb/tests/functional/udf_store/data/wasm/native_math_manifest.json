@@ -1,0 +1,11 @@
+{
+  "module_name": "native_math",
+  "host_exports": [
+    {
+      "name": "host_add",
+      "symbol": "native_add",
+      "params": ["i64", "i64"],
+      "results": ["i64"]
+    }
+  ]
+}

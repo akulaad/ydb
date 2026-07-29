@@ -1,0 +1,131 @@
+syntax = "proto3";
+option cc_enable_arenas = true;
+
+package Ydb.UdfStore;
+
+option java_package = "com.yandex.ydb.udf_store";
+option java_outer_classname = "UdfStoreProtos";
+option java_multiple_files = true;
+
+import "ydb/public/api/protos/annotations/validation.proto";
+import "ydb/public/api/protos/ydb_operation.proto";
+
+// Module kinds stored under `.metadata/udf_store/modules`.
+enum ModuleType {
+    MODULE_TYPE_UNSPECIFIED = 0;
+    WASM = 1;
+    LIBRARY = 2;
+    NATIVE_UNSAFE = 3;
+}
+
+//
+// UploadModule
+//
+
+message UploadModuleRequest {
+    Ydb.Operations.OperationParams operation_params = 1;
+
+    // Optional; normally taken from gRPC metadata (x-ydb-database).
+    string database = 2 [(length).le = 1024];
+
+    ModuleType type = 3;
+    // Required for LIBRARY. For WASM / NATIVE_UNSAFE may override basename.
+    string name = 4 [(length).le = 256];
+    // JSON manifest. Required for WASM UDF; optional for native with host_exports.
+    string manifest = 5 [(length).le = 1048576];
+    bytes content = 6 [(length).le = 67108864]; // 64 MiB
+    uint64 version = 7;
+    // If set, must match MD5 of content.
+    string expected_md5 = 8 [(length).le = 64];
+}
+
+message UploadModuleResponse {
+    // Holds UploadModuleResult on success.
+    Ydb.Operations.Operation operation = 1;
+}
+
+message UploadModuleResult {
+    string md5 = 1;
+    string uid = 2;
+    uint64 size = 3;
+    ModuleType module_type = 4;
+    // "pending" for WASM/LIBRARY; empty for NATIVE_UNSAFE.
+    string compile_status = 5;
+}
+
+//
+// DeleteModule
+//
+
+message DeleteModuleRequest {
+    Ydb.Operations.OperationParams operation_params = 1;
+    string database = 2 [(length).le = 1024];
+
+    // Lookup: md5 (WASM / NATIVE_UNSAFE) or name+type (LIBRARY).
+    string md5 = 3 [(length).le = 64];
+    string name = 4 [(length).le = 256];
+    ModuleType type = 5;
+}
+
+message DeleteModuleResponse {
+    Ydb.Operations.Operation operation = 1;
+}
+
+message DeleteModuleResult {
+}
+
+//
+// DescribeModule
+//
+
+message DescribeModuleRequest {
+    Ydb.Operations.OperationParams operation_params = 1;
+    string database = 2 [(length).le = 1024];
+
+    string md5 = 3 [(length).le = 64];
+    string name = 4 [(length).le = 256];
+    ModuleType type = 5;
+}
+
+message DescribeModuleResponse {
+    Ydb.Operations.Operation operation = 1;
+}
+
+message ModuleDescription {
+    string uid = 1;
+    string md5 = 2;
+    string name = 3;
+    ModuleType module_type = 4;
+    uint64 version = 5;
+    uint64 size = 6;
+    uint64 chunk_count = 7;
+    string compile_status = 8;
+    string compile_error = 9;
+    string manifest = 10;
+}
+
+message DescribeModuleResult {
+    ModuleDescription module = 1;
+}
+
+//
+// ListModules
+//
+
+message ListModulesRequest {
+    Ydb.Operations.OperationParams operation_params = 1;
+    string database = 2 [(length).le = 1024];
+
+    // MODULE_TYPE_UNSPECIFIED = all types.
+    ModuleType type = 3;
+    string name_prefix = 4 [(length).le = 256];
+    uint64 limit = 5; // 0 = server default
+}
+
+message ListModulesResponse {
+    Ydb.Operations.Operation operation = 1;
+}
+
+message ListModulesResult {
+    repeated ModuleDescription modules = 1;
+}

@@ -45,6 +45,12 @@ Unit-тесты линковки обходят кэш: `CreateEmptyImage` + `Ad
 Host pin’ит TypeConfig blob через `AllocateBytes` (не Run-pool), хранит ui64 + generation.  
 Stale handle после нового Acquire → recreate на следующем `Run`.
 
+### 8. Native host imports
+
+`host_exports` — WAVM intrinsic CC (`ContextRuntimeData*` первым). Не путать с YQL MiniKQL ABI.  
+Имя import-module = `module_name` native-манифеста, **не** `"env"` (конфликт с sdk / AllocateBytes).  
+Unload native: `RemoveModule` (YQL) + catalog drop + `UnloadWasmUdfsDependingOnNative`. Не unload’ить `.so`, пока есть живые query compartments — per-query Acquire берёт pointers из catalog; удаление между запросами OK.
+
 ---
 
 ## Открытые / осторожно трогать

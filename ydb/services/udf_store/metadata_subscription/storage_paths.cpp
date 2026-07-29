@@ -21,6 +21,10 @@ TString GetModuleChunksTablePath() {
     return GetUdfStorePrefix() + "/module_chunks";
 }
 
+TString GetBinariesVolumePath() {
+    return GetUdfStorePrefix() + "/binaries";
+}
+
 TString GetArtifactTablePath(const TString& cpuSpec) {
     return GetUdfStorePrefix() + "/artifacts/" + cpuSpec;
 }

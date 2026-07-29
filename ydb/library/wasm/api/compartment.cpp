@@ -11,6 +11,13 @@ Y_WEAK void IWebAssemblyCompartment::AddPrecompiledModule(const TModuleBytecode&
     YT_UNIMPLEMENTED();
 }
 
+Y_WEAK void IWebAssemblyCompartment::AddNativeHostModule(
+    TStringBuf /*moduleName*/,
+    const TVector<TNativeHostFunctionBinding>& /*exports*/)
+{
+    YT_UNIMPLEMENTED();
+}
+
 Y_WEAK std::unique_ptr<IWebAssemblyCompartment> CreateImageFromSdk(const TModuleBytecode& /*bytecode*/)
 {
     YT_UNIMPLEMENTED();

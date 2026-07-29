@@ -48,6 +48,7 @@ SRCS(
     ydb_query.proto
     ydb_query_stats.proto
     ydb_rate_limiter.proto
+    ydb_udf_store.proto
     ydb_scheme.proto
     ydb_secret.proto
     ydb_scripting.proto

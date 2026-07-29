@@ -3,8 +3,10 @@ RECURSE(
     ctx
     helpers
     md5
+    native_math
     prefix
     sdk
     throw
     with_helpers
+    with_native_host
 )

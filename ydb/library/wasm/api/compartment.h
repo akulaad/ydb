@@ -2,13 +2,24 @@
 
 #include "bytecode.h"
 #include "public.h"
+#include "type_builder.h"
 
 #include <util/datetime/base.h>
 #include <util/generic/noncopyable.h>
+#include <util/generic/string.h>
+#include <util/generic/vector.h>
 
 namespace NYdb::NWasm {
 
 ////////////////////////////////////////////////////////////////////////////////
+
+//! Binding of a native C function as a named WASM host export (intrinsic CC).
+struct TNativeHostFunctionBinding {
+    TString Name;
+    void* NativeFunction = nullptr;
+    TVector<EWebAssemblyValueType> Params;
+    TVector<EWebAssemblyValueType> Results; // 0 or 1
+};
 
 struct IWebAssemblyCompartment
     : public TNonCopyable
@@ -25,6 +36,11 @@ struct IWebAssemblyCompartment
 
     //! Adds sdk.
     virtual void AddSdk(const TModuleBytecode& bytecode) = 0;
+
+    //! Instantiates a named native-host module (WAVM Intrinsics) for import resolution.
+    virtual void AddNativeHostModule(
+        TStringBuf moduleName,
+        const TVector<TNativeHostFunctionBinding>& exports) = 0;
 
     //! Strips compartment internal data structures.
     //! Stripped compartments can not be used for linking, but are faster to clone.

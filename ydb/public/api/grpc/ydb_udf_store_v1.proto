@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package Ydb.UdfStore.V1;
+
+option java_package = "com.yandex.ydb.udf_store.v1";
+option java_outer_classname = "UdfStoreGrpc";
+option java_multiple_files = true;
+
+import "ydb/public/api/protos/ydb_udf_store.proto";
+
+// Public API for uploading and managing modules in YDB UDF Store.
+//
+// Compile of WASM / LIBRARY modules is asynchronous: after UploadModule
+// poll DescribeModule (or `.sys/udf_modules`) for compile_status.
+service UdfStoreService {
+    rpc UploadModule(UploadModuleRequest) returns (UploadModuleResponse);
+    rpc DeleteModule(DeleteModuleRequest) returns (DeleteModuleResponse);
+    rpc DescribeModule(DescribeModuleRequest) returns (DescribeModuleResponse);
+    rpc ListModules(ListModulesRequest) returns (ListModulesResponse);
+}

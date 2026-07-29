@@ -138,6 +138,7 @@
 #include <ydb/services/persqueue_v1/topic.h>
 #include <ydb/services/persqueue_v1/topic_deferred_publish.h>
 #include <ydb/services/rate_limiter/grpc_service.h>
+#include <ydb/services/udf_store/grpc_service.h>
 #include <ydb/services/replication/grpc_service.h>
 #include <ydb/services/test_shard/grpc_service.h>
 #include <ydb/services/ydb/ydb_clickhouse_internal.h>
@@ -853,6 +854,9 @@ TGRpcServers TKikimrRunner::CreateGRpcServers(const TKikimrRunConfig& runConfig)
         names["clickhouse_internal"] = &hasClickhouseInternal;
         TServiceCfg hasRateLimiter = services.empty();
         names["rate_limiter"] = &hasRateLimiter;
+        // Enabled only when UdfStoreConfig.Enabled (see override below).
+        TServiceCfg hasUdfStore = false;
+        names["udf_store"] = &hasUdfStore;
         TServiceCfg hasExport = services.empty();
         names["export"] = &hasExport;
         TServiceCfg hasImport = services.empty();
@@ -926,6 +930,12 @@ TGRpcServers TKikimrRunner::CreateGRpcServers(const TKikimrRunConfig& runConfig)
         // dependencies
         if (hasRateLimiter) {
             hasKesus = true;
+        }
+
+        if (appConfig.HasUdfStoreConfig() && appConfig.GetUdfStoreConfig().GetEnabled()
+            && disabled.find("udf_store") == disabled.end())
+        {
+            hasUdfStore = true;
         }
 
         if (hasYql) {
@@ -1132,6 +1142,10 @@ TGRpcServers TKikimrRunner::CreateGRpcServers(const TKikimrRunConfig& runConfig)
 
         if (hasRateLimiter) {
             server.AddService(new NQuoter::TRateLimiterGRpcService(ActorSystem.Get(), Counters, grpcRequestProxies[0]));
+        }
+
+        if (hasUdfStore) {
+            server.AddService(new NUdfStore::TUdfStoreGRpcService(ActorSystem.Get(), Counters, grpcRequestProxies[0]));
         }
 
         if (hasMonitoring) {

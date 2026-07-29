@@ -189,6 +189,7 @@ bool ParseModuleSourceResponse(const Ydb::Table::ExecuteDataQueryResponse& respo
         TUdfModule::CompileStatusFromString(compileStatus, row.CompileStatus);
     }
     ReadUtf8Column(resultSet, "compile_error", row.CompileError);
+    ReadUtf8Column(resultSet, "manifest", row.Manifest);
     return true;
 }
 
@@ -387,6 +388,263 @@ void SetUpdateCompileStatusParams(
     (*request.mutable_parameters())["$uid"] = MakeUtf8Param(uid);
     (*request.mutable_parameters())["$compile_status"] = MakeUtf8Param(status);
     (*request.mutable_parameters())["$compile_error"] = MakeUtf8Param(errorMessage);
+}
+
+Ydb::TypedValue MakeJsonParam(const TString& value) {
+    Ydb::TypedValue result;
+    result.mutable_type()->set_type_id(Ydb::Type::JSON);
+    result.mutable_value()->set_text_value(value);
+    return result;
+}
+
+TString BuildSelectModuleRowByMd5Query(const TString& tablePath) {
+    return TStringBuilder()
+        << "DECLARE $md5 AS Utf8; "
+        << "SELECT uid, md5, name, type, version, size, chunk_count, compile_status, compile_error, CAST(manifest AS Utf8) AS manifest FROM `"
+        << EscapeTablePath(tablePath)
+        << "` WHERE md5 = $md5 LIMIT 1;";
+}
+
+void SetSelectModuleRowByMd5Params(Ydb::Table::ExecuteDataQueryRequest& request, const TString& md5) {
+    (*request.mutable_parameters())["$md5"] = MakeUtf8Param(md5);
+}
+
+TString BuildSelectModuleRowByNameAndTypeQuery(const TString& tablePath) {
+    return TStringBuilder()
+        << "DECLARE $name AS Utf8; "
+        << "DECLARE $type AS Utf8; "
+        << "SELECT uid, md5, name, type, version, size, chunk_count, compile_status, compile_error, CAST(manifest AS Utf8) AS manifest FROM `"
+        << EscapeTablePath(tablePath)
+        << "` WHERE name = $name AND type = $type LIMIT 1;";
+}
+
+void SetSelectModuleRowByNameAndTypeParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& name,
+    const TString& type)
+{
+    (*request.mutable_parameters())["$name"] = MakeUtf8Param(name);
+    (*request.mutable_parameters())["$type"] = MakeUtf8Param(type);
+}
+
+TString BuildListModulesQuery(
+    const TString& tablePath,
+    bool filterType,
+    bool filterNamePrefix,
+    ui64 limit)
+{
+    TStringBuilder sb;
+    if (filterType) {
+        sb << "DECLARE $type AS Utf8; ";
+    }
+    if (filterNamePrefix) {
+        sb << "DECLARE $name_prefix AS Utf8; ";
+    }
+    sb << "SELECT uid, md5, name, type, version, size, chunk_count, compile_status, compile_error, CAST(manifest AS Utf8) AS manifest FROM `"
+       << EscapeTablePath(tablePath)
+       << "`";
+    TVector<TString> where;
+    if (filterType) {
+        where.push_back("type = $type");
+    }
+    if (filterNamePrefix) {
+        where.push_back("StartsWith(name, $name_prefix)");
+    }
+    if (!where.empty()) {
+        sb << " WHERE " << where[0];
+        for (size_t i = 1; i < where.size(); ++i) {
+            sb << " AND " << where[i];
+        }
+    }
+    sb << " ORDER BY name, type, md5";
+    if (limit > 0) {
+        sb << " LIMIT " << limit;
+    }
+    sb << ";";
+    return sb;
+}
+
+void SetListModulesParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& type,
+    const TString& namePrefix)
+{
+    if (type) {
+        (*request.mutable_parameters())["$type"] = MakeUtf8Param(type);
+    }
+    if (namePrefix) {
+        (*request.mutable_parameters())["$name_prefix"] = MakeUtf8Param(namePrefix);
+    }
+}
+
+bool ParseModuleRowsResponse(
+    const Ydb::Table::ExecuteDataQueryResponse& response,
+    TVector<TModuleSourceRow>& rows)
+{
+    Ydb::Table::ExecuteQueryResult result;
+    if (!ExtractQueryResult(response, result)) {
+        rows.clear();
+        return true; // empty success
+    }
+    const auto& resultSet = result.result_sets(0);
+    rows.clear();
+    rows.reserve(resultSet.rows_size());
+    for (i32 i = 0; i < resultSet.rows_size(); ++i) {
+        // Reuse single-row helpers by synthesizing a 1-row ResultSet view is awkward;
+        // parse columns directly.
+        TModuleSourceRow row;
+        const i32 uidCol = FindColumnIndex(resultSet, "uid");
+        const i32 md5Col = FindColumnIndex(resultSet, "md5");
+        const i32 nameCol = FindColumnIndex(resultSet, "name");
+        const i32 typeCol = FindColumnIndex(resultSet, "type");
+        const i32 versionCol = FindColumnIndex(resultSet, "version");
+        const i32 sizeCol = FindColumnIndex(resultSet, "size");
+        const i32 chunkCol = FindColumnIndex(resultSet, "chunk_count");
+        const i32 statusCol = FindColumnIndex(resultSet, "compile_status");
+        const i32 errorCol = FindColumnIndex(resultSet, "compile_error");
+        const i32 manifestCol = FindColumnIndex(resultSet, "manifest");
+        if (uidCol < 0) {
+            return false;
+        }
+        const auto& rowMsg = resultSet.rows(i);
+        auto readText = [&](i32 col, TString& out) {
+            if (col >= 0 && col < rowMsg.items_size() && rowMsg.items(col).has_text_value()) {
+                out = rowMsg.items(col).text_value();
+            }
+        };
+        auto readUint = [&](i32 col, ui64& out) {
+            if (col >= 0 && col < rowMsg.items_size() && rowMsg.items(col).has_uint64_value()) {
+                out = rowMsg.items(col).uint64_value();
+            }
+        };
+        readText(uidCol, row.Uid);
+        readText(md5Col, row.Md5);
+        readText(nameCol, row.Name);
+        readText(typeCol, row.Type);
+        readUint(versionCol, row.Version);
+        readUint(sizeCol, row.Size);
+        readUint(chunkCol, row.ChunkCount);
+        TString status;
+        readText(statusCol, status);
+        if (status) {
+            TUdfModule::CompileStatusFromString(status, row.CompileStatus);
+        }
+        readText(errorCol, row.CompileError);
+        readText(manifestCol, row.Manifest);
+        rows.push_back(std::move(row));
+    }
+    return true;
+}
+
+TString BuildUpsertModuleRowQuery(const TString& tablePath, bool withManifest, bool withCompileStatus) {
+    TStringBuilder decls;
+    decls << "DECLARE $uid AS Utf8; "
+          << "DECLARE $md5 AS Utf8; "
+          << "DECLARE $size AS Uint64; "
+          << "DECLARE $name AS Utf8; "
+          << "DECLARE $type AS Utf8; "
+          << "DECLARE $version AS Uint64; "
+          << "DECLARE $chunk_count AS Uint64; ";
+    TString columns = "uid, md5, size, name, type, version, chunk_count, created_at";
+    TString values = "$uid, $md5, $size, $name, $type, $version, $chunk_count, CurrentUtcTimestamp()";
+    if (withCompileStatus) {
+        decls << "DECLARE $compile_status AS Utf8; ";
+        columns += ", compile_status";
+        values += ", $compile_status";
+    }
+    if (withManifest) {
+        decls << "DECLARE $manifest AS Json; ";
+        columns += ", manifest";
+        values += ", $manifest";
+    }
+    return TStringBuilder()
+        << decls
+        << "UPSERT INTO `"
+        << EscapeTablePath(tablePath)
+        << "` (" << columns << ") VALUES (" << values << ");";
+}
+
+void SetUpsertModuleRowParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TUpsertModuleRow& row)
+{
+    (*request.mutable_parameters())["$uid"] = MakeUtf8Param(row.Uid);
+    (*request.mutable_parameters())["$md5"] = MakeUtf8Param(row.Md5);
+    (*request.mutable_parameters())["$size"] = MakeUint64Param(row.Size);
+    (*request.mutable_parameters())["$name"] = MakeUtf8Param(row.Name);
+    (*request.mutable_parameters())["$type"] = MakeUtf8Param(row.Type);
+    (*request.mutable_parameters())["$version"] = MakeUint64Param(row.Version);
+    (*request.mutable_parameters())["$chunk_count"] = MakeUint64Param(row.ChunkCount);
+    if (row.CompileStatus) {
+        (*request.mutable_parameters())["$compile_status"] = MakeUtf8Param(row.CompileStatus);
+    }
+    if (row.Manifest) {
+        (*request.mutable_parameters())["$manifest"] = MakeJsonParam(row.Manifest);
+    }
+}
+
+TString BuildUpsertModuleChunkQuery(const TString& tablePath) {
+    return TStringBuilder()
+        << "DECLARE $owner_key AS Utf8; "
+        << "DECLARE $chunk_idx AS Uint64; "
+        << "DECLARE $data AS String; "
+        << "UPSERT INTO `"
+        << EscapeTablePath(tablePath)
+        << "` (owner_key, chunk_idx, data) "
+        << "VALUES ($owner_key, $chunk_idx, $data);";
+}
+
+void SetUpsertModuleChunkParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& ownerKey,
+    ui64 chunkIdx,
+    const TString& data)
+{
+    (*request.mutable_parameters())["$owner_key"] = MakeUtf8Param(ownerKey);
+    (*request.mutable_parameters())["$chunk_idx"] = MakeUint64Param(chunkIdx);
+    (*request.mutable_parameters())["$data"] = MakeStringParam(data);
+}
+
+TString BuildDeleteModuleChunksQuery(const TString& tablePath) {
+    return TStringBuilder()
+        << "DECLARE $owner_key AS Utf8; "
+        << "DELETE FROM `"
+        << EscapeTablePath(tablePath)
+        << "` WHERE owner_key = $owner_key;";
+}
+
+void SetDeleteModuleChunksParams(Ydb::Table::ExecuteDataQueryRequest& request, const TString& ownerKey) {
+    (*request.mutable_parameters())["$owner_key"] = MakeUtf8Param(ownerKey);
+}
+
+TString BuildDeleteModuleByUidQuery(const TString& tablePath) {
+    return TStringBuilder()
+        << "DECLARE $uid AS Utf8; "
+        << "DELETE FROM `"
+        << EscapeTablePath(tablePath)
+        << "` WHERE uid = $uid;";
+}
+
+void SetDeleteModuleByUidParams(Ydb::Table::ExecuteDataQueryRequest& request, const TString& uid) {
+    (*request.mutable_parameters())["$uid"] = MakeUtf8Param(uid);
+}
+
+TString BuildDeleteArtifactRowQuery(const TString& tablePath) {
+    return TStringBuilder()
+        << "DECLARE $id AS Utf8; "
+        << "DECLARE $kind AS Utf8; "
+        << "DELETE FROM `"
+        << EscapeTablePath(tablePath)
+        << "` WHERE id = $id AND kind = $kind;";
+}
+
+void SetDeleteArtifactRowParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& id,
+    const TString& kind)
+{
+    (*request.mutable_parameters())["$id"] = MakeUtf8Param(id);
+    (*request.mutable_parameters())["$kind"] = MakeUtf8Param(kind);
 }
 
 } // namespace NKikimr::NUdfStore::NTableQuery

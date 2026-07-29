@@ -1,6 +1,7 @@
 #include "compartment_manager.h"
 
 #include "host.h"
+#include "native_host_catalog.h"
 #include "registry_helpers.h"
 #include "types.h"
 
@@ -21,6 +22,20 @@ thread_local TQueryCompartmentHandle* CurrentQueryCompartment = nullptr;
 ui64 NextCompartmentGeneration() {
     static std::atomic<ui64> counter{0};
     return ++counter;
+}
+
+NYdb::NWasm::EWebAssemblyValueType ToWebAssemblyValueType(EWasmHostValueType type) {
+    switch (type) {
+        case EWasmHostValueType::I32:
+            return NYdb::NWasm::EWebAssemblyValueType::Int32;
+        case EWasmHostValueType::I64:
+            return NYdb::NWasm::EWebAssemblyValueType::Int64;
+        case EWasmHostValueType::F32:
+            return NYdb::NWasm::EWebAssemblyValueType::Float32;
+        case EWasmHostValueType::F64:
+            return NYdb::NWasm::EWebAssemblyValueType::Float64;
+    }
+    ythrow yexception() << "Unsupported native host value type";
 }
 
 void BindExport(
@@ -44,6 +59,37 @@ void BindExport(
     handle.Exports.emplace(key, exportPtr);
 }
 
+void InstallNativeHostModules(
+    NYdb::NWasm::IWebAssemblyCompartment* compartment,
+    const TVector<TString>& nativeModuleNames)
+{
+    auto& catalog = GetNativeHostModuleCatalog();
+    for (const auto& name : nativeModuleNames) {
+        const auto module = catalog.FindByModuleName(name);
+        if (!module) {
+            ythrow yexception()
+                << "Required native host module '" << name
+                << "' is not loaded in the native host catalog";
+        }
+
+        TVector<NYdb::NWasm::TNativeHostFunctionBinding> bindings;
+        bindings.reserve(module->Exports.size());
+        for (const auto& exp : module->Exports) {
+            NYdb::NWasm::TNativeHostFunctionBinding binding;
+            binding.Name = exp.Name;
+            binding.NativeFunction = exp.NativeFn;
+            for (auto param : exp.Params) {
+                binding.Params.push_back(ToWebAssemblyValueType(param));
+            }
+            for (auto result : exp.Results) {
+                binding.Results.push_back(ToWebAssemblyValueType(result));
+            }
+            bindings.push_back(std::move(binding));
+        }
+        compartment->AddNativeHostModule(module->ModuleName, bindings);
+    }
+}
+
 } // namespace
 
 TString MakeExportKey(TStringBuf moduleName, TStringBuf functionName) {
@@ -63,6 +109,9 @@ TQueryCompartmentHandlePtr TWasmCompartmentManager::Acquire(
 
     THashSet<TString> loadedLibraries;
     TVector<TNamedModuleBytecode> libraries;
+    THashSet<TString> nativeModuleNamesSet;
+    TVector<TString> nativeModuleNames;
+
     for (const auto& artifact : artifacts) {
         // Index catalog libraries by name, then emit them in RequiredLibraries
         // order so sdk (env) is always linked before the UDF module below.
@@ -93,6 +142,11 @@ TQueryCompartmentHandlePtr TWasmCompartmentManager::Acquire(
                 libraries.push_back(*library);
             }
         }
+        for (const auto& nativeName : artifact->Manifest.RequiredNativeModules) {
+            if (nativeModuleNamesSet.insert(nativeName).second) {
+                nativeModuleNames.push_back(nativeName);
+            }
+        }
     }
 
     auto handle = std::make_unique<TQueryCompartmentHandle>();
@@ -100,6 +154,8 @@ TQueryCompartmentHandlePtr TWasmCompartmentManager::Acquire(
     // CreateRegistryCompartment clones SDK from CreateImageFromSdk cache ("env");
     // only then do we AddPrecompiledModule the UDF (e.g. Md5).
     handle->Compartment = CreateRegistryCompartment(libraries);
+
+    InstallNativeHostModules(handle->Compartment.get(), nativeModuleNames);
 
     for (const auto& artifact : artifacts) {
         AddPrecompiledModule(

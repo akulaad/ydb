@@ -32,6 +32,7 @@ private:
     TString Md5Key;
     TString OutputDir;
     ui64 ExpectedSize = 0;
+    TString Manifest;
 
     TIntrusivePtr<NMiniKQL::IMutableFunctionRegistry> FunctionRegistry;
 
@@ -52,7 +53,7 @@ private:
     void SendNextChunkRead();      // sends TEvRead for [CurrentOffset, +ReadChunkSize)
     void FinalizeAndSave();        // called when last chunk received
     void CleanupTmpFile();         // closes + removes the tmp file on error
-    bool LoadUdfIntoRegistry(const TString& finalPath) const;
+    bool LoadUdfIntoRegistry(const TString& finalPath, TEvReadBodyResponse& response) const;
     void ReplyError(const TString& message);
 
 public:
@@ -61,12 +62,14 @@ public:
                      const TString& volumePath,
                      const TString& outputDir,
                      TIntrusivePtr<NMiniKQL::IMutableFunctionRegistry> functionRegistry,
-                     ui64 expectedSize)
+                     ui64 expectedSize,
+                     TString manifest = {})
         : ReplyTo(replyTo)
         , VolumePath(volumePath)
         , Md5Key(md5Key)
         , OutputDir(outputDir)
         , ExpectedSize(expectedSize)
+        , Manifest(std::move(manifest))
         , FunctionRegistry(std::move(functionRegistry))
     {}
 

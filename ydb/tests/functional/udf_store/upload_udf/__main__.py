@@ -4,7 +4,7 @@
 Standalone helper: upload or delete a UDF / WASM library in YDB UDF store tables.
 
 Upload:
-  NATIVE_UNSAFE: KV volume + modules row (chunk_count=0)
+  NATIVE_UNSAFE: KV volume + modules row (chunk_count=0); optional --manifest with host_exports
   WASM udf / library: modules row + module_chunks
 
 Delete:
@@ -180,7 +180,7 @@ def _upsert_module_row(
         decls += "DECLARE $compile_status AS Utf8; "
         columns += ", compile_status"
         values += ", $compile_status"
-    if module_type == "WASM":
+    if manifest:
         params["$manifest"] = _json(manifest)
         decls += "DECLARE $manifest AS Json; "
         columns += ", manifest"
@@ -311,15 +311,15 @@ def _do_upload(args) -> str:
     udf_name = udf_basename.rsplit(".", 1)[0]
 
     manifest_text = ""
-    if args.type == "WASM" and args.kind == "udf":
-        if not args.manifest:
-            raise RuntimeError("--manifest is required for WASM uploads")
+    if args.manifest:
         with open(args.manifest, "r", encoding="utf-8") as manifest_file:
             manifest_text = manifest_file.read().strip()
         try:
             json.loads(manifest_text)
         except json.JSONDecodeError as exc:
             raise RuntimeError("manifest is not valid JSON: {}".format(exc)) from exc
+    elif args.type == "WASM" and args.kind == "udf":
+        raise RuntimeError("--manifest is required for WASM uploads")
 
     if args.kind == "library" and not args.library_name:
         raise RuntimeError("--library-name is required for library uploads")
@@ -371,6 +371,7 @@ def _do_upload(args) -> str:
                     module_type="NATIVE_UNSAFE",
                     chunk_count=0,
                     version=args.version,
+                    manifest=manifest_text,
                 )
                 print("[upload_udf] native binary uploaded to KV, module row inserted", file=sys.stderr)
     return md5

@@ -18,6 +18,7 @@ struct TModuleSourceRow {
     ui64 Size = 0;
     ui64 ChunkCount = 0;
     TString Body;
+    TString Manifest;
     ECompileStatus CompileStatus = ECompileStatus::Pending;
     TString CompileError;
 };
@@ -95,6 +96,68 @@ void SetUpdateCompileStatusParams(
     const TString& uid,
     const TString& status,
     const TString& errorMessage);
+
+// --- module upload / delete / describe / list ---
+
+struct TUpsertModuleRow {
+    TString Uid;
+    TString Md5;
+    TString Name;
+    TString Type;
+    ui64 Version = 1;
+    ui64 Size = 0;
+    ui64 ChunkCount = 0;
+    TString Manifest;
+    TString CompileStatus; // empty = omit column (native)
+};
+
+TString BuildSelectModuleRowByMd5Query(const TString& tablePath);
+void SetSelectModuleRowByMd5Params(Ydb::Table::ExecuteDataQueryRequest& request, const TString& md5);
+
+TString BuildSelectModuleRowByNameAndTypeQuery(const TString& tablePath);
+void SetSelectModuleRowByNameAndTypeParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& name,
+    const TString& type);
+
+TString BuildListModulesQuery(
+    const TString& tablePath,
+    bool filterType,
+    bool filterNamePrefix,
+    ui64 limit);
+
+void SetListModulesParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& type,
+    const TString& namePrefix);
+
+bool ParseModuleRowsResponse(
+    const Ydb::Table::ExecuteDataQueryResponse& response,
+    TVector<TModuleSourceRow>& rows);
+
+TString BuildUpsertModuleRowQuery(const TString& tablePath, bool withManifest, bool withCompileStatus);
+void SetUpsertModuleRowParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TUpsertModuleRow& row);
+
+TString BuildUpsertModuleChunkQuery(const TString& tablePath);
+void SetUpsertModuleChunkParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& ownerKey,
+    ui64 chunkIdx,
+    const TString& data);
+
+TString BuildDeleteModuleChunksQuery(const TString& tablePath);
+void SetDeleteModuleChunksParams(Ydb::Table::ExecuteDataQueryRequest& request, const TString& ownerKey);
+
+TString BuildDeleteModuleByUidQuery(const TString& tablePath);
+void SetDeleteModuleByUidParams(Ydb::Table::ExecuteDataQueryRequest& request, const TString& uid);
+
+TString BuildDeleteArtifactRowQuery(const TString& tablePath);
+void SetDeleteArtifactRowParams(
+    Ydb::Table::ExecuteDataQueryRequest& request,
+    const TString& id,
+    const TString& kind);
 
 bool ExtractQueryResult(
     const Ydb::Table::ExecuteDataQueryResponse& response,

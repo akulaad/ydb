@@ -2,8 +2,10 @@
 #include "metadata_subscription/fetcher.h"
 #include "metadata_subscription/storage_paths.h"
 #include "cpu_spec.h"
+#include "runtime_flags.h"
 #include "wasm/manifest.h"
 #include "wasm/module_catalog.h"
+#include "wasm/native_host_catalog.h"
 
 #include <ydb/services/metadata/service.h>
 #include <ydb/core/base/appdata.h>
@@ -96,7 +98,34 @@ bool TUdfStoreService::AreLibraryDependenciesReady(
     }
 }
 
-void TUdfStoreService::EnqueueNativeUdfIfNeeded(const TString& md5, ui64 expectedSize) {
+bool TUdfStoreService::AreNativeDependenciesReady(TStringBuf manifest) const {
+    try {
+        const auto parsed = NWasm::ParseManifest(manifest);
+        auto& catalog = NWasm::GetNativeHostModuleCatalog();
+        for (const auto& nativeName : parsed.RequiredNativeModules) {
+            if (!catalog.ContainsModuleName(nativeName)) {
+                return false;
+            }
+        }
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+bool TUdfStoreService::AreDependenciesReady(
+    TStringBuf manifest,
+    const TSnapshot* snapshot) const
+{
+    return AreLibraryDependenciesReady(manifest, snapshot)
+        && AreNativeDependenciesReady(manifest);
+}
+
+void TUdfStoreService::EnqueueNativeUdfIfNeeded(
+    const TString& md5,
+    ui64 expectedSize,
+    TStringBuf manifest)
+{
     if (expectedSize == 0) {
         ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
             << "TUdfStoreService: UDF '" << md5 << "' has zero size in metadata, skipping fetch";
@@ -109,6 +138,7 @@ void TUdfStoreService::EnqueueNativeUdfIfNeeded(const TString& md5, ui64 expecte
         .Md5 = md5,
         .ExpectedSize = expectedSize,
         .Type = EUdfType::NATIVE_UNSAFE,
+        .Manifest = TString(manifest),
     });
 }
 
@@ -118,7 +148,7 @@ void TUdfStoreService::EnqueueWasmCompileIfNeeded(const TUdfModule& udf, const T
     {
         return;
     }
-    if (!AreLibraryDependenciesReady(udf.GetManifest(), snapshot)) {
+    if (!AreDependenciesReady(udf.GetManifest(), snapshot)) {
         return;
     }
     if (IsMd5Pending(udf.GetMd5(), EUdfType::WASM)) {
@@ -222,6 +252,59 @@ void TUdfStoreService::UnloadWasmUdfsDependingOnLibrary(const TString& libraryNa
                 manifest.RequiredLibraries.end(),
                 [&](const TString& name) { return name == libraryName; });
             if (!dependsOnLibrary) {
+                continue;
+            }
+        } catch (...) {
+            continue;
+        }
+        LoadedUdfs.erase(md5);
+        UnloadWasmUdf(md5);
+        EnqueueWasmLoadIfNeeded(udf);
+    }
+}
+
+void TUdfStoreService::RetryPendingWasmCompilesForNative(const TString& hostModuleName) {
+    if (!CurrentSnapshot) {
+        return;
+    }
+    for (const auto& [md5, udf] : CurrentSnapshot->GetUdfs()) {
+        if (udf.GetType() != EUdfType::WASM
+            || udf.GetCompileStatus() == ECompileStatus::Ready
+            || udf.GetCompileStatus() == ECompileStatus::Failed)
+        {
+            continue;
+        }
+        try {
+            const auto manifest = NWasm::ParseManifest(udf.GetManifest());
+            const bool depends = std::any_of(
+                manifest.RequiredNativeModules.begin(),
+                manifest.RequiredNativeModules.end(),
+                [&](const TString& name) { return name == hostModuleName; });
+            if (!depends) {
+                continue;
+            }
+        } catch (...) {
+            continue;
+        }
+        EnqueueWasmCompileIfNeeded(udf);
+    }
+}
+
+void TUdfStoreService::UnloadWasmUdfsDependingOnNative(const TString& hostModuleName) {
+    if (!CurrentSnapshot) {
+        return;
+    }
+    for (const auto& [md5, udf] : CurrentSnapshot->GetUdfs()) {
+        if (udf.GetType() != EUdfType::WASM) {
+            continue;
+        }
+        try {
+            const auto manifest = NWasm::ParseManifest(udf.GetManifest());
+            const bool depends = std::any_of(
+                manifest.RequiredNativeModules.begin(),
+                manifest.RequiredNativeModules.end(),
+                [&](const TString& name) { return name == hostModuleName; });
+            if (!depends) {
                 continue;
             }
         } catch (...) {
@@ -369,7 +452,7 @@ void TUdfStoreService::Handle(NMetadata::NProvider::TEvRefreshSubscriberData::TP
                 if (!LoadedUdfs.contains(md5)) {
                     FetchRetryCounts.erase(md5);
                 }
-                EnqueueNativeUdfIfNeeded(md5, udf.GetSize());
+                EnqueueNativeUdfIfNeeded(md5, udf.GetSize(), udf.GetManifest());
                 break;
             case EUdfType::WASM:
                 if (!EnableWasmUdfFlag) {
@@ -410,11 +493,8 @@ void TUdfStoreService::Handle(NMetadata::NProvider::TEvRefreshSubscriberData::TP
                 FetchRetryCounts.erase(md5);
                 if (udf.GetType() == EUdfType::WASM) {
                     UnloadWasmUdf(md5);
-                } else if (!UnsafeNativeUdfDir.empty()) {
-                    const TFsPath path = TFsPath(UnsafeNativeUdfDir) / md5;
-                    if (NFs::Exists(path.GetPath())) {
-                        NFs::Remove(path.GetPath());
-                    }
+                } else if (udf.GetType() == EUdfType::NATIVE_UNSAFE) {
+                    UnloadNativeUdf(md5);
                 }
             }
         }
@@ -458,6 +538,39 @@ void TUdfStoreService::UnloadWasmUdf(const TString& md5) {
     NWasm::GetWasmModuleCatalog().Unregister(md5);
 }
 
+void TUdfStoreService::UnloadNativeUdf(const TString& md5) {
+    TString hostModuleName;
+    if (auto it = LoadedNativeHostModuleNames.find(md5); it != LoadedNativeHostModuleNames.end()) {
+        hostModuleName = it->second;
+        LoadedNativeHostModuleNames.erase(it);
+    } else if (auto module = NWasm::GetNativeHostModuleCatalog().FindByMd5(md5)) {
+        hostModuleName = module->ModuleName;
+    }
+
+    if (!hostModuleName.empty()) {
+        UnloadWasmUdfsDependingOnNative(hostModuleName);
+    }
+
+    if (auto it = LoadedNativeYqlModules.find(md5); it != LoadedNativeYqlModules.end()) {
+        if (FunctionRegistry) {
+            for (const auto& moduleName : it->second) {
+                FunctionRegistry->RemoveModule(moduleName);
+            }
+        }
+        LoadedNativeYqlModules.erase(it);
+    }
+
+    NWasm::GetNativeHostModuleCatalog().UnregisterByMd5(md5);
+    LoadedUdfs.erase(md5);
+
+    if (!UnsafeNativeUdfDir.empty()) {
+        const TFsPath path = TFsPath(UnsafeNativeUdfDir) / md5;
+        if (NFs::Exists(path.GetPath())) {
+            NFs::Remove(path.GetPath());
+        }
+    }
+}
+
 void TUdfStoreService::FetchNextNativeBody() {
     if (PendingNativeUdfs.empty()) {
         NativeFetchInProgress = false;
@@ -473,7 +586,8 @@ void TUdfStoreService::FetchNextNativeBody() {
         KvVolumePath,
         UnsafeNativeUdfDir,
         FunctionRegistry,
-        pending.ExpectedSize));
+        pending.ExpectedSize,
+        pending.Manifest));
 }
 
 void TUdfStoreService::FetchNextLibraryCompile() {
@@ -642,9 +756,19 @@ void TUdfStoreService::Handle(TEvReadBodyResponse::TPtr& ev) {
                 << "TUdfStoreService: WASM UDF '" << pending.Md5
                 << "' loaded from artifact table " << ArtifactTablePath;
         } else {
+            if (!ev->Get()->HostModuleName.empty()) {
+                LoadedNativeHostModuleNames[pending.Md5] = ev->Get()->HostModuleName;
+                RetryPendingWasmCompilesForNative(ev->Get()->HostModuleName);
+            }
+            if (!ev->Get()->YqlModuleNames.empty()) {
+                LoadedNativeYqlModules[pending.Md5] = ev->Get()->YqlModuleNames;
+            }
             ALS_INFO(NKikimrServices::METADATA_PROVIDER)
                 << "TUdfStoreService: native UDF '" << pending.Md5
-                << "' saved to " << UnsafeNativeUdfDir;
+                << "' saved to " << UnsafeNativeUdfDir
+                << (ev->Get()->HostModuleName
+                    ? TStringBuilder() << " host_module=" << ev->Get()->HostModuleName
+                    : TStringBuilder());
         }
     } else {
         ui32& retryCount = FetchRetryCounts[pending.Md5];
@@ -653,7 +777,7 @@ void TUdfStoreService::Handle(TEvReadBodyResponse::TPtr& ev) {
             if (pending.Type == EUdfType::WASM) {
                 PendingWasmLoad.push_back(std::move(pending));
             } else {
-                EnqueueNativeUdfIfNeeded(pending.Md5, pending.ExpectedSize);
+                EnqueueNativeUdfIfNeeded(pending.Md5, pending.ExpectedSize, pending.Manifest);
             }
             ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
                 << "TUdfStoreService: failed to load UDF '" << pending.Md5
@@ -678,6 +802,7 @@ NActors::TActorId MakeServiceId(ui32 nodeId) {
 }
 
 NActors::IActor* CreateService(const NKikimrConfig::TUdfStoreConfig& serviceConfig, TIntrusivePtr<NMiniKQL::IMutableFunctionRegistry> functionRegistry) {
+    TUdfStoreRuntimeFlags::Apply(serviceConfig);
     if (!serviceConfig.GetEnabled()) {
         return nullptr;
     }

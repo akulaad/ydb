@@ -8,6 +8,8 @@
 | [wasm-udf-runtime.md](./wasm-udf-runtime.md) | Архитектура: storage → AOT → catalog → per-query compartment → Run |
 | [adr-wasm-udf-objects.md](./adr-wasm-udf-objects.md) | ADR: objects / TypeConfig / static object_framework / ui64 |
 | [adr-shared-wasm-context.md](./adr-shared-wasm-context.md) | ADR: shared ctx handle + Snapshot for SELECT |
+| [adr-native-host-imports.md](./adr-native-host-imports.md) | ADR: native `.so` host_exports → WASM imports |
+| [adr-udf-store-upload-api.md](./adr-udf-store-upload-api.md) | ADR: публичный gRPC Upload/Delete/Describe/List |
 | [pitfalls-and-open-issues.md](./pitfalls-and-open-issues.md) | Известные ловушки, уже найденные баги, открытые вопросы |
 | [examples-and-tests.md](./examples-and-tests.md) | Примеры, функциональные/unit тесты, как гонять |
 
@@ -23,6 +25,7 @@ ydb/services/udf_store/
   wasm_artifact_load_actor.*      # чтение artifact + Register в FunctionRegistry/catalog
   wasm/
     module_catalog.*              # process-wide артефакты (bytecode + libraries)
+    native_host_catalog.*         # process-wide native host .so exports
     compartment_manager.*         # Acquire → per-query compartment + export map
     query_compartment_scope.h     # RAII scope для CA / literal executer
     registry_helpers.*            # CreateRegistryCompartment, InvokeUdfExport, …
@@ -31,7 +34,7 @@ ydb/services/udf_store/
     object_framework/             # static registry (PEERDIR into UDF modules)
     host.*                        # AllocateBytes / ThrowException host ABI
     compile.*                     # CompileModuleObjectCode (WAVM AOT)
-    manifest.*                    # JSON manifest parse (functions + objects)
+    manifest.*                    # JSON manifest parse (functions + objects + native)
   metadata_subscription/          # snapshot modules (udf + libraries)
 
 ydb/library/wasm/

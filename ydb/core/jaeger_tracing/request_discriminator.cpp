@@ -67,6 +67,11 @@ extern const THashMap<TStringBuf, ERequestType> NameToRequestType = {
     {"RateLimiter.DescribeResource", ERequestType::RATELIMITER_DESCRIBE_RESOURCE},
     {"RateLimiter.AcquireResource", ERequestType::RATELIMITER_ACQUIRE_RESOURCE},
 
+    {"UdfStore.UploadModule", ERequestType::UDF_STORE_UPLOAD_MODULE},
+    {"UdfStore.DeleteModule", ERequestType::UDF_STORE_DELETE_MODULE},
+    {"UdfStore.DescribeModule", ERequestType::UDF_STORE_DESCRIBE_MODULE},
+    {"UdfStore.ListModules", ERequestType::UDF_STORE_LIST_MODULES},
+
     {"Config.ReplaceConfig", ERequestType::CONFIG_REPLACECONFIG},
     {"Config.FetchConfig", ERequestType::CONFIG_FETCHCONFIG},
     {"Config.Bootstrap", ERequestType::CONFIG_BOOTSTRAP},

@@ -21,6 +21,7 @@ SRCS(
     ydb_operation_v1.proto
     ydb_query_v1.proto
     ydb_rate_limiter_v1.proto
+    ydb_udf_store_v1.proto
     ydb_scheme_v1.proto
     ydb_secret_v1.proto
     ydb_scripting_v1.proto

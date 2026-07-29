@@ -143,4 +143,55 @@ Y_UNIT_TEST(RejectEmptyManifest) {
     UNIT_ASSERT_EXCEPTION(ParseManifest(""), yexception);
 }
 
+Y_UNIT_TEST(ParseRequiredNativeModules) {
+    const TString manifest = R"({
+        "module_name": "WithNativeHost",
+        "functions": [
+            {
+                "name": "udf_add",
+                "argument_types": [],
+                "result_type": {"value": "int64", "tag": "concrete_type"}
+            }
+        ],
+        "required_native_modules": ["native_math"]
+    })";
+
+    const auto parsed = ParseManifest(manifest);
+    UNIT_ASSERT_VALUES_EQUAL(parsed.RequiredNativeModules.size(), 1u);
+    UNIT_ASSERT_VALUES_EQUAL(parsed.RequiredNativeModules[0], "native_math");
+}
+
+Y_UNIT_TEST(ParseNativeHostManifest) {
+    const TString manifest = R"({
+        "module_name": "native_math",
+        "host_exports": [
+            {
+                "name": "host_add",
+                "symbol": "native_add",
+                "params": ["i64", "i64"],
+                "results": ["i64"]
+            }
+        ]
+    })";
+
+    const auto parsed = ParseNativeHostManifest(manifest);
+    UNIT_ASSERT_VALUES_EQUAL(parsed.ModuleName, "native_math");
+    UNIT_ASSERT_VALUES_EQUAL(parsed.HostExports.size(), 1u);
+    UNIT_ASSERT_VALUES_EQUAL(parsed.HostExports[0].Name, "host_add");
+    UNIT_ASSERT_VALUES_EQUAL(parsed.HostExports[0].Symbol, "native_add");
+    UNIT_ASSERT_VALUES_EQUAL(parsed.HostExports[0].Params.size(), 2u);
+    UNIT_ASSERT(parsed.HostExports[0].Params[0] == EWasmHostValueType::I64);
+    UNIT_ASSERT_VALUES_EQUAL(parsed.HostExports[0].Results.size(), 1u);
+    UNIT_ASSERT(HasHostExports(manifest));
+}
+
+Y_UNIT_TEST(RejectNativeHostWithoutModuleName) {
+    const TString manifest = R"({
+        "host_exports": [
+            {"name": "host_add", "params": ["i32"], "results": ["i32"]}
+        ]
+    })";
+    UNIT_ASSERT_EXCEPTION(ParseNativeHostManifest(manifest), yexception);
+}
+
 } // Y_UNIT_TEST_SUITE

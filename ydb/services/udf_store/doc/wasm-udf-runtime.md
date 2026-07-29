@@ -18,7 +18,7 @@ WASM UDF живут в UDF Store и исполняются через WAVM:
 
 ```mermaid
 flowchart TD
-  Upload["upload_udf<br/>WASM / library / native"] --> Modules["modules + module_chunks"]
+  Upload["UploadModule gRPC<br/>or legacy upload_udf"] --> Modules["modules + module_chunks"]
   Modules --> Svc["TUdfStoreService<br/>metadata snapshot"]
   Svc --> LibAOT["TWasmLibraryCompileActor<br/>AOT library → artifact"]
   LibAOT --> ModAOT["TWasmCompileActor<br/>AOT module (после ready libs)"]
@@ -56,9 +56,19 @@ WHERE ModuleType = "WASM";
 
 Колонки view: `Uid`, `Md5`, `Name`, `ModuleType`, `Version`, `Size`, `ChunkCount`, `CompileStatus`, `CompileError`, `CreatedAt`, `CompileStartedAt`, `CompileFinishedAt`, `Manifest`.
 
-Upload helper: `ydb/tests/functional/udf_store/upload_udf`  
-(`--action upload|delete`, `--kind udf|library`; для library нужен `--library-name`;
-delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
+### Загрузка модулей (два способа)
+
+1. **Рекомендуемый — gRPC `Ydb.UdfStore.V1.UdfStoreService`**
+   - `UploadModule` / `DeleteModule` / `DescribeModule` / `ListModules`
+   - Сервер пишет в те же таблицы; compile асинхронный → поллить `DescribeModule` или `.sys/udf_modules`
+   - ACL: администратор; флаги `UdfStoreConfig.Enabled` + `EnableWasmUdf` / `EnableUnsafeNativeUdf`
+   - См. [adr-udf-store-upload-api.md](./adr-udf-store-upload-api.md)
+
+2. **Legacy helper `ydb/tests/functional/udf_store/upload_udf`**
+   - Query UPSERT + `kv_volume_tool` для native
+   - Остаётся для тестов/отладки; **не удаляется**
+   - (`--action upload|delete`, `--kind udf|library`; для library нужен `--library-name`;
+     delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
 
 ---
 
@@ -89,11 +99,36 @@ JSON, парсится `wasm/manifest.*` → `TWasmManifest`:
 - **`required_libraries`** — **упорядоченный** список имён библиотек (`modules.type=LIBRARY`).
   - **Первая** библиотека ставится как runtime via `AddSdk` / `CreateImageFromSdk` → модуль линкуется как **`"env"`**.
   - Остальные — `AddPrecompiledModule(..., name)` под своим именем (например `"helpers"`).
+- **`required_native_modules`** — имена native host-модулей (`NATIVE_UNSAFE` с `host_exports`); линкуются как named Intrinsics instances до UDF module.
 - **`functions`** — plain экспорты и типы ABI (`unversioned_value`).
 - **`objects`** — stateful UDF с TypeConfig (ParseTskv-style). Разворачиваются в `functions` с `yql_binding=type_config_callable` (create/call/destroy exports). Реестр объектов — **static** `object_framework`, не отдельный wasm в `required_libraries`.
 
 Пустой `required_libraries` → compartment из `CreateEmptyImage()` (standard host intrinsics: `AllocateBytes`, `ThrowException`).  
 Если нужны `malloc`/`free` без пользовательского sdk — это отдельная тема (см. pitfalls).
+
+### Native host modules (`NATIVE_UNSAFE` + `host_exports`)
+
+Манифест native-модуля (не путать с WASM manifest):
+
+```json
+{
+  "module_name": "native_math",
+  "host_exports": [
+    {
+      "name": "host_add",
+      "symbol": "native_add",
+      "params": ["i64", "i64"],
+      "results": ["i64"]
+    }
+  ]
+}
+```
+
+- C-символ: intrinsic calling convention (`ContextRuntimeData*` первым аргументом; guest его не передаёт).
+- Storage: KV + `modules` как обычный `NATIVE_UNSAFE`; on-disk `UnsafeNativeUdfDir/<md5>`.
+- Runtime: `TNativeHostModuleCatalog` → `AddNativeHostModule` в Acquire.
+- WASM: `(import "native_math" "host_add" …)` + `required_native_modules: ["native_math"]`.
+- См. [adr-native-host-imports.md](./adr-native-host-imports.md).
 
 ### Objects / TypeConfigCallable
 

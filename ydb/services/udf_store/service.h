@@ -62,21 +62,30 @@ private:
     std::deque<TPendingUdf> PendingWasmLoad;
     std::deque<TPendingLibrary> PendingLibraryCompile;
     THashMap<TString, TString> LoadedWasmModuleNames;
+    //! md5 -> YQL module names registered from NATIVE_UNSAFE LoadUdfs
+    THashMap<TString, TVector<TString>> LoadedNativeYqlModules;
+    //! md5 -> host module_name from native host catalog
+    THashMap<TString, TString> LoadedNativeHostModuleNames;
 
     bool IsMd5Pending(const TString& md5, EUdfType type) const;
     bool IsLibraryPending(const TString& name) const;
-    void EnqueueNativeUdfIfNeeded(const TString& md5, ui64 expectedSize);
+    void EnqueueNativeUdfIfNeeded(const TString& md5, ui64 expectedSize, TStringBuf manifest = {});
     void EnqueueWasmCompileIfNeeded(const TUdfModule& udf, const TSnapshot* snapshot = nullptr);
     void EnqueueWasmLoadIfNeeded(const TUdfModule& udf);
     void EnqueueLibraryCompileIfNeeded(const TUdfModule& library);
     bool AreLibraryDependenciesReady(TStringBuf manifest, const TSnapshot* snapshot = nullptr) const;
+    bool AreNativeDependenciesReady(TStringBuf manifest) const;
+    bool AreDependenciesReady(TStringBuf manifest, const TSnapshot* snapshot = nullptr) const;
     void RetryPendingWasmCompilesForLibrary(const TString& libraryName);
+    void RetryPendingWasmCompilesForNative(const TString& hostModuleName);
     void UnloadWasmUdfsDependingOnLibrary(const TString& libraryName);
+    void UnloadWasmUdfsDependingOnNative(const TString& hostModuleName);
     void FetchNextNativeBody();
     void FetchNextWasmCompile();
     void FetchNextWasmLoad();
     void FetchNextLibraryCompile();
     void UnloadWasmUdf(const TString& md5);
+    void UnloadNativeUdf(const TString& md5);
     static TString GetModuleExtensionFromManifest(TStringBuf manifest);
     void EnsureArtifactTable();
 

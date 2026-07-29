@@ -2,6 +2,11 @@
 
 #include <ydb/library/actors/core/event_local.h>
 #include <ydb/library/actors/core/events.h>
+#include <ydb/public/api/protos/ydb_status_codes.pb.h>
+#include <ydb/public/api/protos/ydb_udf_store.pb.h>
+
+#include <util/generic/string.h>
+#include <util/generic/vector.h>
 
 namespace NKikimr::NUdfStore {
 
@@ -12,6 +17,11 @@ enum EEv {
     EvReadBodyResponse,
     EvWasmCompileResponse,
     EvLibraryCompileResponse,
+    EvKvBodyWriteResponse,
+    EvUploadModuleResult,
+    EvDeleteModuleResult,
+    EvDescribeModuleResult,
+    EvListModulesResult,
     EvEnd
 };
 
@@ -40,6 +50,8 @@ struct TEvReadBodyResponse : public NActors::TEventLocal<TEvReadBodyResponse, Ev
     bool Success;
     TString Name;
     TString ErrorMessage;
+    TString HostModuleName;
+    TVector<TString> YqlModuleNames;
 
     TEvReadBodyResponse(bool success, const TString& name, const TString& errorMessage = {})
         : Success(success)
@@ -76,6 +88,39 @@ struct TEvLibraryCompileResponse : public NActors::TEventLocal<TEvLibraryCompile
         , LibraryName(libraryName)
         , ErrorMessage(errorMessage)
     {}
+};
+
+struct TEvKvBodyWriteResponse : public NActors::TEventLocal<TEvKvBodyWriteResponse, EvKvBodyWriteResponse> {
+    bool Success = false;
+    TString ErrorMessage;
+
+    TEvKvBodyWriteResponse(bool success, TString errorMessage = {})
+        : Success(success)
+        , ErrorMessage(std::move(errorMessage))
+    {}
+};
+
+struct TEvUploadModuleResult : public NActors::TEventLocal<TEvUploadModuleResult, EvUploadModuleResult> {
+    Ydb::StatusIds::StatusCode Status = Ydb::StatusIds::SUCCESS;
+    TString ErrorMessage;
+    Ydb::UdfStore::UploadModuleResult Result;
+};
+
+struct TEvDeleteModuleResult : public NActors::TEventLocal<TEvDeleteModuleResult, EvDeleteModuleResult> {
+    Ydb::StatusIds::StatusCode Status = Ydb::StatusIds::SUCCESS;
+    TString ErrorMessage;
+};
+
+struct TEvDescribeModuleResult : public NActors::TEventLocal<TEvDescribeModuleResult, EvDescribeModuleResult> {
+    Ydb::StatusIds::StatusCode Status = Ydb::StatusIds::SUCCESS;
+    TString ErrorMessage;
+    Ydb::UdfStore::DescribeModuleResult Result;
+};
+
+struct TEvListModulesResult : public NActors::TEventLocal<TEvListModulesResult, EvListModulesResult> {
+    Ydb::StatusIds::StatusCode Status = Ydb::StatusIds::SUCCESS;
+    TString ErrorMessage;
+    Ydb::UdfStore::ListModulesResult Result;
 };
 
 } // namespace NKikimr::NUdfStore

@@ -247,6 +247,23 @@ TWasmManifest ParseManifest(TStringBuf manifestJson) {
         }
     }
 
+    if (root.Has("required_native_modules")) {
+        const auto& natives = root["required_native_modules"];
+        if (!natives.IsArray()) {
+            ythrow yexception() << "required_native_modules must be an array in wasm manifest";
+        }
+        for (const auto& nativeNode : natives.GetArray()) {
+            if (!nativeNode.IsString()) {
+                ythrow yexception() << "Each required_native_modules entry must be a string";
+            }
+            const auto name = nativeNode.GetString();
+            if (name.empty()) {
+                ythrow yexception() << "required_native_modules entries must be non-empty";
+            }
+            manifest.RequiredNativeModules.push_back(name);
+        }
+    }
+
     if (root.Has("functions")) {
         const auto& functions = root["functions"];
         if (!functions.IsArray()) {
@@ -273,6 +290,123 @@ TWasmManifest ParseManifest(TStringBuf manifestJson) {
             << "Wasm manifest must declare non-empty functions[] and/or objects[]";
     }
     return manifest;
+}
+
+namespace {
+
+EWasmHostValueType ParseHostValueType(TStringBuf type) {
+    if (type == "i32") {
+        return EWasmHostValueType::I32;
+    }
+    if (type == "i64") {
+        return EWasmHostValueType::I64;
+    }
+    if (type == "f32") {
+        return EWasmHostValueType::F32;
+    }
+    if (type == "f64") {
+        return EWasmHostValueType::F64;
+    }
+    ythrow yexception() << "Unsupported native host value type: " << type
+        << " (expected i32|i64|f32|f64)";
+}
+
+TVector<EWasmHostValueType> ParseHostTypeList(const NJson::TJsonValue& node, TStringBuf field) {
+    if (!node.IsArray()) {
+        ythrow yexception() << field << " must be an array in native host manifest";
+    }
+    TVector<EWasmHostValueType> result;
+    for (const auto& item : node.GetArray()) {
+        if (!item.IsString()) {
+            ythrow yexception() << "Each " << field << " entry must be a string";
+        }
+        result.push_back(ParseHostValueType(item.GetString()));
+    }
+    return result;
+}
+
+TNativeHostExportDescriptor ParseHostExport(const NJson::TJsonValue& node) {
+    if (!node.IsMap()) {
+        ythrow yexception() << "Each host_exports entry must be an object";
+    }
+    if (!node.Has("name") || !node["name"].IsString() || node["name"].GetString().empty()) {
+        ythrow yexception() << "host_exports[].name is required";
+    }
+
+    TNativeHostExportDescriptor exportDesc;
+    exportDesc.Name = node["name"].GetString();
+    if (node.Has("symbol")) {
+        if (!node["symbol"].IsString() || node["symbol"].GetString().empty()) {
+            ythrow yexception() << "host_exports[].symbol must be a non-empty string";
+        }
+        exportDesc.Symbol = node["symbol"].GetString();
+    } else {
+        exportDesc.Symbol = exportDesc.Name;
+    }
+
+    if (node.Has("params")) {
+        exportDesc.Params = ParseHostTypeList(node["params"], "host_exports[].params");
+    }
+    if (node.Has("results")) {
+        exportDesc.Results = ParseHostTypeList(node["results"], "host_exports[].results");
+    }
+    if (exportDesc.Results.size() > 1) {
+        ythrow yexception()
+            << "host_exports[].results supports at most one value in v1, got "
+            << exportDesc.Results.size() << " for '" << exportDesc.Name << "'";
+    }
+    return exportDesc;
+}
+
+} // namespace
+
+TNativeHostManifest ParseNativeHostManifest(TStringBuf manifestJson) {
+    if (manifestJson.empty()) {
+        return {};
+    }
+
+    NJson::TJsonValue root;
+    if (!NJson::ReadJsonTree(manifestJson, &root, true)) {
+        ythrow yexception() << "Failed to parse native host manifest JSON";
+    }
+    if (!root.IsMap()) {
+        ythrow yexception() << "Native host manifest must be a JSON object";
+    }
+
+    TNativeHostManifest manifest;
+    if (root.Has("module_name")) {
+        if (!root["module_name"].IsString()) {
+            ythrow yexception() << "module_name must be a string in native host manifest";
+        }
+        manifest.ModuleName = root["module_name"].GetString();
+    }
+
+    if (root.Has("host_exports")) {
+        const auto& exports = root["host_exports"];
+        if (!exports.IsArray()) {
+            ythrow yexception() << "host_exports must be an array";
+        }
+        for (const auto& exportNode : exports.GetArray()) {
+            manifest.HostExports.push_back(ParseHostExport(exportNode));
+        }
+    }
+
+    if (!manifest.HostExports.empty() && manifest.ModuleName.empty()) {
+        ythrow yexception()
+            << "module_name is required when host_exports is non-empty";
+    }
+    return manifest;
+}
+
+bool HasHostExports(TStringBuf manifestJson) {
+    if (manifestJson.empty()) {
+        return false;
+    }
+    try {
+        return !ParseNativeHostManifest(manifestJson).HostExports.empty();
+    } catch (...) {
+        return false;
+    }
 }
 
 } // namespace NKikimr::NUdfStore::NWasm
