@@ -23,8 +23,13 @@
 #include <util/system/thread.h>
 #include <util/generic/hash_set.h>
 #include <util/generic/scope.h>
+#include <util/system/event.h>
 #include <util/system/mutex.h>
 #include <util/system/type_name.h>
+
+#include <memory>
+#include <exception>
+#include <list>
 
 using NYT::FormatValue;
 using NYT::MakeFormattableView;
@@ -203,6 +208,7 @@ Runtime::ModuleRef LoadModuleFromBytecode(TRef bytecode)
 {
     auto featureSpec = IR::FeatureSpec();
     featureSpec.memory64 = true;
+    featureSpec.table64 = true;
     featureSpec.exceptionHandling = true;
 
     auto loadError = WASM::LoadError();
@@ -1051,13 +1057,34 @@ void TWebAssemblyCompartment::AddExportsToGlobalOffsetTable(IR::Module& irModule
         if (elementSegment.type != IR::ElemSegment::Type::active) {
             continue;
         }
-        for (int index = 0; index < std::ssize(elementSegment.contents->elemIndices); index++) {
-            int functionIndex = elementSegment.contents->elemIndices[index];
-            auto& functionName = disassemblyNames.functions[functionIndex].name;
-            if (exportedFunctions.contains(functionName)) {
-                int globalOffsetTableIndex = baseOffset + index;
-                GlobalOffsetTableElements_.Functions[functionName] = globalOffsetTableIndex;
+
+        auto indexExportedFunction = [&](int tableIndex, Uptr functionIndex) {
+            if (functionIndex >= disassemblyNames.functions.size()) {
+                return;
             }
+            const auto& functionName = disassemblyNames.functions[functionIndex].name;
+            if (exportedFunctions.contains(functionName)) {
+                GlobalOffsetTableElements_.Functions[functionName] = baseOffset + tableIndex;
+            }
+        };
+
+        switch (elementSegment.contents->encoding) {
+            case IR::ElemSegment::Encoding::index:
+                for (int index = 0; index < std::ssize(elementSegment.contents->elemIndices); ++index) {
+                    indexExportedFunction(index, elementSegment.contents->elemIndices[index]);
+                }
+                break;
+            case IR::ElemSegment::Encoding::expr:
+                for (int index = 0; index < std::ssize(elementSegment.contents->elemExprs); ++index) {
+                    const auto& elemExpr = elementSegment.contents->elemExprs[index];
+                    if (elemExpr.type != IR::ElemExpr::Type::ref_func) {
+                        continue;
+                    }
+                    indexExportedFunction(index, elemExpr.index);
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -1231,6 +1258,7 @@ Runtime::ModuleRef LoadBuiltinSdk()
 {
     auto featureSpec = IR::FeatureSpec();
     featureSpec.memory64 = true;
+    featureSpec.table64 = true;
     featureSpec.exceptionHandling = true;
     auto irModule = IR::Module(std::move(featureSpec));
 
@@ -1369,29 +1397,92 @@ public:
 
     TCachedSdkImagePtr GetOrCreate(const TModuleBytecode& bytecode)
     {
+        std::shared_ptr<TInFlight> inFlight;
+        bool isCreator = false;
+
         with_lock (Lock_) {
             if (auto it = Cache_.find(bytecode)) {
-                return it->second;
+                Touch(it);
+                return it->second.Image;
+            }
+            if (auto it = InFlight_.find(bytecode)) {
+                inFlight = it->second;
+            } else {
+                inFlight = std::make_shared<TInFlight>();
+                InFlight_[bytecode] = inFlight;
+                isCreator = true;
             }
         }
 
-        auto compartment = CreateEmptyImage();
-        compartment->AddSdk(bytecode);
-        auto cachedImage = New<TCachedSdkImage>(std::move(compartment));
-
-        with_lock (Lock_) {
-            if (Cache_.size() >= DefaultCapacity && !Cache_.empty()) {
-                Cache_.erase(Cache_.begin());
+        if (!isCreator) {
+            inFlight->Done.WaitI();
+            if (inFlight->Error) {
+                std::rethrow_exception(inFlight->Error);
             }
-            Cache_[bytecode] = cachedImage;
+            YT_VERIFY(inFlight->Image);
+            return inFlight->Image;
         }
 
-        return cachedImage;
+        try {
+            auto compartment = CreateEmptyImage();
+            compartment->AddSdk(bytecode);
+            auto cachedImage = New<TCachedSdkImage>(std::move(compartment));
+
+            with_lock (Lock_) {
+                if (Cache_.size() >= DefaultCapacity) {
+                    EvictLru();
+                }
+                Lru_.push_front(bytecode);
+                Cache_[bytecode] = TCacheEntry{
+                    .Image = cachedImage,
+                    .LruIt = Lru_.begin(),
+                };
+                InFlight_.erase(bytecode);
+                inFlight->Image = cachedImage;
+            }
+            inFlight->Done.Signal();
+            return cachedImage;
+        } catch (...) {
+            with_lock (Lock_) {
+                InFlight_.erase(bytecode);
+                inFlight->Error = std::current_exception();
+            }
+            inFlight->Done.Signal();
+            throw;
+        }
     }
 
 private:
+    struct TInFlight
+    {
+        TManualEvent Done;
+        TCachedSdkImagePtr Image;
+        std::exception_ptr Error;
+    };
+
+    struct TCacheEntry
+    {
+        TCachedSdkImagePtr Image;
+        std::list<TModuleBytecode>::iterator LruIt;
+    };
+
+    void Touch(typename THashMap<TModuleBytecode, TCacheEntry>::iterator it)
+    {
+        Lru_.splice(Lru_.begin(), Lru_, it->second.LruIt);
+    }
+
+    void EvictLru()
+    {
+        YT_VERIFY(!Lru_.empty());
+        Cache_.erase(Lru_.back());
+        Lru_.pop_back();
+    }
+
     TMutex Lock_;
-    THashMap<TModuleBytecode, TCachedSdkImagePtr> Cache_;
+    // Front = most recently used, back = least recently used.
+    std::list<TModuleBytecode> Lru_;
+    THashMap<TModuleBytecode, TCacheEntry> Cache_;
+    THashMap<TModuleBytecode, std::shared_ptr<TInFlight>> InFlight_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
