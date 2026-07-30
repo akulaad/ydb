@@ -982,6 +982,120 @@ def test_using_wasm_udf_with_native_host():
         cluster.stop()
 
 
+def test_using_wasm_udf_with_native_http():
+    """
+    Upload native_http host (.so with host_http_get) + WASM UDF that imports it.
+    Query WithNativeHttp::http_get("mock://ok") → "hello-from-native-http" (no network).
+    """
+    udf_output_dir = yatest.common.output_path("ydb_udfs_native_http")
+    database = "/Root/test"
+    cluster = _make_cluster(
+        enable_udf_store=True,
+        enable_native_udf=True,
+        native_udf_dir=udf_output_dir,
+        enable_wasm_udf=True,
+    )
+    db_nodes = _create_database(cluster, database)
+    try:
+        node = cluster.nodes[1]
+        driver_config = ydb.DriverConfig(
+            endpoint="%s:%s" % (node.host, node.port),
+            database=database,
+        )
+        endpoint = "grpc://%s:%s" % (node.host, node.port)
+
+        assert _wait_for_condition(
+            lambda: _table_exists(driver_config, database),
+            timeout_seconds=60,
+            description="UDF metadata table creation at startup",
+        )
+        assert _wait_for_condition(
+            lambda: _kv_volume_exists(endpoint, database),
+            timeout_seconds=60,
+            description="KV volume creation at startup",
+        )
+
+        if os.path.exists(udf_output_dir):
+            shutil.rmtree(udf_output_dir)
+
+        data_dir = "ydb/tests/functional/udf_store/data/wasm"
+        native_so = yatest.common.binary_path(os.environ["YDB_NATIVE_HTTP_HOST_PATH"])
+        native_manifest = yatest.common.source_path("%s/native_http_manifest.json" % data_dir)
+        wasm_path = yatest.common.source_path("%s/with_native_http.wat" % data_dir)
+        wasm_manifest = yatest.common.source_path("%s/with_native_http_manifest.json" % data_dir)
+
+        UDF_QUERY = 'SELECT WithNativeHttp::http_get("mock://ok");'
+
+        def _wasm_compile_ready(md5):
+            try:
+                result = _run_query(
+                    driver_config,
+                    'SELECT compile_status FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
+                        database=database,
+                        path=UDF_TABLE_MODULES_PATH,
+                        md5=md5,
+                    ),
+                )
+                if not result or not result[0].rows:
+                    return False
+                return list(result[0].rows[0].values())[0] == "ready"
+            except Exception as e:
+                logger.debug("WASM compile status not ready yet for %s: %s", md5, e)
+                return False
+
+        native_md5 = _run_upload_udf(
+            endpoint,
+            database,
+            native_so,
+            udf_type="NATIVE_UNSAFE",
+            manifest_path=native_manifest,
+        )
+        expected_native_path = os.path.join(udf_output_dir, native_md5)
+        assert _wait_for_condition(
+            lambda: os.path.isfile(expected_native_path),
+            timeout_seconds=60,
+            description="native_http .so materialised on disk",
+        )
+
+        wasm_md5 = _run_upload_udf(
+            endpoint, database, wasm_path, udf_type="WASM", manifest_path=wasm_manifest
+        )
+        assert _wait_for_condition(
+            lambda: _wasm_compile_ready(wasm_md5),
+            timeout_seconds=180,
+            description="WithNativeHttp compile_status=ready",
+        )
+
+        query_ok = [False]
+
+        def try_query():
+            try:
+                result = _run_query(driver_config, UDF_QUERY)
+                assert result and result[0].rows, "empty result for %s" % UDF_QUERY
+                value = list(result[0].rows[0].values())[0]
+                expected = b"hello-from-native-http"
+                if isinstance(value, str):
+                    expected = "hello-from-native-http"
+                assert value == expected, "got %r" % (value,)
+                query_ok[0] = True
+                return True
+            except Exception as e:
+                logger.debug("http_get query not ready: %s", e)
+                return False
+
+        assert _wait_for_condition(
+            try_query,
+            timeout_seconds=120,
+            description="WithNativeHttp::http_get(mock://ok)",
+        )
+        assert query_ok[0]
+        logger.info("test_using_wasm_udf_with_native_http passed")
+    finally:
+        cluster.remove_database(database)
+        cluster.unregister_and_stop_slots(db_nodes)
+        cluster.stop()
+
+
 # ---------------------------------------------------------------------------
 # gRPC UdfStoreService Upload / Describe / Delete API
 # ---------------------------------------------------------------------------

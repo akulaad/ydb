@@ -1,0 +1,16 @@
+{
+  "module_name": "WithNativeHttp",
+  "calling_convention": "unversioned_value",
+  "module_extension": "wasm",
+  "required_libraries": [],
+  "required_native_modules": ["native_http"],
+  "functions": [
+    {
+      "name": "http_get",
+      "argument_types": [
+        {"value": "string", "tag": "concrete_type"}
+      ],
+      "result_type": {"value": "string", "tag": "concrete_type"}
+    }
+  ]
+}

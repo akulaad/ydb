@@ -10,7 +10,9 @@
 | `helpers/` | Промежуточная библиотека, export `helpers_scale` | — |
 | `with_helpers/` | UDF `WithHelpers::scale` | `["sdk", "helpers"]` |
 | `native_math/` | Native host `.so` (`host_add` / `native_add`) | — (NATIVE_UNSAFE) |
+| `native_http/` | Native HTTP host `.so` (`host_http_get`; `mock://` + `http://`) | — (NATIVE_UNSAFE) |
 | `with_native_host/` | UDF `WithNativeHost::udf_add` → import `native_math.host_add` | `required_native_modules: ["native_math"]` |
+| `with_native_http/` | UDF `WithNativeHttp::http_get` → import `native_http.host_http_get` | `required_native_modules: ["native_http"]` |
 | `md5/` | UDF с libc (MD5) | `["sdk"]` |
 | `add/` | Минимальный UDF без libs | `[]` |
 | `throw/` | Host `ThrowException` + wasm call stack | `["sdk"]` |
@@ -25,6 +27,7 @@ ya make --target-platform=clang20-emscripten-wasm64 --build profile \
   ydb/tests/functional/udf_store/examples/helpers \
   ydb/tests/functional/udf_store/examples/with_helpers \
   ydb/tests/functional/udf_store/examples/with_native_host \
+  ydb/tests/functional/udf_store/examples/with_native_http \
   ydb/tests/functional/udf_store/examples/md5 \
   ydb/tests/functional/udf_store/examples/add \
   ydb/tests/functional/udf_store/examples/throw \
@@ -53,6 +56,18 @@ ya make --target-platform=clang20-emscripten-wasm64 --build profile \
 4. Upload WASM: `with_native_host` `.wasm` + `examples/with_native_host/manifest.json`
 5. `SELECT WithNativeHost::udf_add(10, 20);` → `30`
 
+Порядок upload для with_native_http:
+
+1. Собрать native HTTP host (host platform):
+   `ya make ydb/tests/functional/udf_store/examples/native_http`
+2. Upload NATIVE_UNSAFE: `libnative_http_host.so` + `examples/native_http/manifest.json`
+3. Собрать WASM UDF:
+   `ya make --target-platform=clang18-emscripten-wasm64 --build profile \
+     ydb/tests/functional/udf_store/examples/with_native_http`
+4. Upload WASM: `with_native_http` `.wasm` + `examples/with_native_http/manifest.json`
+5. Offline: `SELECT WithNativeHttp::http_get("mock://ok");` → `hello-from-native-http`
+6. Real HTTP (optional): `SELECT WithNativeHttp::http_get("http://host:port/path");`
+
 Prefix (objects):
 
 1. upload library `sdk`
@@ -79,6 +94,8 @@ Shared context + Snapshot:
 | `with_helpers.wat` + `with_helpers_manifest.json` | UDF с `["sdk","helpers"]` |
 | `native_math_manifest.json` | host_exports для native `.so` |
 | `with_native_host.wat` + `with_native_host_manifest.json` | UDF с `required_native_modules: ["native_math"]` |
+| `native_http_manifest.json` | host_exports для native HTTP `.so` |
+| `with_native_http.wat` + `with_native_http_manifest.json` | UDF с `required_native_modules: ["native_http"]` |
 
 ---
 
@@ -91,6 +108,7 @@ Shared context + Snapshot:
 - `test_using_wasm_udf` — upload WAT, compile, `LocalUdf::udf_add(1,2)==3`
 - `test_using_wasm_udf_with_sdk_and_library` — sdk + helpers + module, `WithHelpers::scale(7)==21`
 - `test_using_wasm_udf_with_native_host` — native host_exports + WASM import, then unload
+- `test_using_wasm_udf_with_native_http` — native HTTP host + `http_get("mock://ok")`
 - `test_delete_wasm_udf_and_library` — delete module/libraries via `upload_udf --action delete`, UDF unloaded
 - `test_grpc_upload_describe_delete_wasm` — gRPC `UploadModule` / `DescribeModule` / `DeleteModule` + bad manifest / md5 mismatch
 - `test_grpc_upload_native_and_disabled_flag` — gRPC native upload + WASM → `UNSUPPORTED` when flag off

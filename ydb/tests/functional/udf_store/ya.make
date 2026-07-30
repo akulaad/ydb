@@ -6,6 +6,7 @@ ENV(YDB_KV_VOLUME_TOOL_PATH="ydb/tests/stress/kv_volume_tool/kv_volume_tool")
 ENV(YDB_DICTS_UDF_PATH="yql/essentials/udfs/examples/dicts/libdicts_udf.so")
 ENV(YDB_UPLOAD_UDF_PATH="ydb/tests/functional/udf_store/upload_udf/upload_udf")
 ENV(YDB_NATIVE_MATH_HOST_PATH="ydb/tests/functional/udf_store/examples/native_math/libnative_math_host.so")
+ENV(YDB_NATIVE_HTTP_HOST_PATH="ydb/tests/functional/udf_store/examples/native_http/libnative_http_host.so")
 
 TEST_SRCS(
     test_udf_store.py
@@ -18,6 +19,7 @@ DEPENDS(
     yql/essentials/udfs/examples/dicts
     ydb/tests/functional/udf_store/upload_udf
     ydb/tests/functional/udf_store/examples/native_math
+    ydb/tests/functional/udf_store/examples/native_http
 )
 
 PEERDIR(
@@ -48,13 +50,17 @@ END()
 #     ydb/tests/functional/udf_store/examples/md5 \
 #     ydb/tests/functional/udf_store/examples/throw \
 #     ydb/tests/functional/udf_store/examples/with_helpers \
-#     ydb/tests/functional/udf_store/examples/with_native_host
+#     ydb/tests/functional/udf_store/examples/with_native_host \
+#     ydb/tests/functional/udf_store/examples/with_native_http
 #
 # with_helpers needs upload order: library sdk → library helpers → UDF with_helpers
 # (manifest required_libraries: ["sdk", "helpers"]).
 #
 # with_native_host needs: native_math .so (+ host manifest) → UDF with_native_host
 # (manifest required_native_modules: ["native_math"]).
+#
+# with_native_http needs: native_http .so (+ host manifest) → UDF with_native_http
+# (manifest required_native_modules: ["native_http"]; try mock://ok offline).
 RECURSE(
     examples
     lib

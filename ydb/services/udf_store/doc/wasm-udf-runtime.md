@@ -128,6 +128,7 @@ JSON, парсится `wasm/manifest.*` → `TWasmManifest`:
 - Storage: KV + `modules` как обычный `NATIVE_UNSAFE`; on-disk `UnsafeNativeUdfDir/<md5>`.
 - Runtime: `TNativeHostModuleCatalog` → `AddNativeHostModule` в Acquire.
 - WASM: `(import "native_math" "host_add" …)` + `required_native_modules: ["native_math"]`.
+- Example with guest memory + HTTP: `examples/native_http` (`host_http_get` / `native_http_get`) + `examples/with_native_http` (`WithNativeHttp::http_get`); offline `mock://ok`.
 - См. [adr-native-host-imports.md](./adr-native-host-imports.md).
 
 ### Objects / TypeConfigCallable
