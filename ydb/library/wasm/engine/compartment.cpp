@@ -1493,7 +1493,9 @@ std::unique_ptr<IWebAssemblyCompartment> CreateImageFromSdk(const TModuleBytecod
         return CreateStandardRuntimeImage();
     }
 
-    static auto cache = New<TSdkImageCache>();
+    // Leaky like CreateEmptyImage / CreateStandardRuntimeImage: destroying the
+    // cache at static teardown races WAVM Module shutdown in unittests.
+    static auto* cache = New<TSdkImageCache>().Release();
     auto image = cache->GetOrCreate(bytecode);
     return image->Compartment->Clone();
 }
