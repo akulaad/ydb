@@ -1623,6 +1623,7 @@ std::unique_ptr<IWebAssemblyCompartment> CreateImageFromSdk(const TModuleBytecod
 
     // Leaky like CreateEmptyImage / CreateStandardRuntimeImage: destroying the
     // cache at static teardown races WAVM Module shutdown in unittests.
+<<<<<<< HEAD
     // LSan: see CreateLeakyImageSingleton.
     static auto* cache = []() -> TSdkImageCache* {
 #if defined(_asan_enabled_) || defined(_lsan_enabled_)
@@ -1634,6 +1635,9 @@ std::unique_ptr<IWebAssemblyCompartment> CreateImageFromSdk(const TModuleBytecod
 #endif
         return result;
     }();
+=======
+    static auto* cache = New<TSdkImageCache>().Release();
+>>>>>>> 13c288c0861 (fix compartment clone)
     auto image = cache->GetOrCreate(bytecode);
     return image->Compartment->Clone();
 }
