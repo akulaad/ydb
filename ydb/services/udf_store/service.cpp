@@ -463,12 +463,17 @@ void TUdfStoreService::Handle(NMetadata::NProvider::TEvRefreshSubscriberData::TP
 void TUdfStoreService::UnloadWasmUdf(const TString& md5) {
     if (auto it = LoadedWasmModuleNames.find(md5); it != LoadedWasmModuleNames.end()) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (auto* dynamicRegistry = NKqp::AsDynamicFunctionRegistry(FunctionRegistry.Get())) {
             dynamicRegistry->RemoveModule(it->second);
 =======
         if (FunctionRegistry) {
             FunctionRegistry->RemoveModule(it->second);
 >>>>>>> ceaf113964f (fixes)
+=======
+        if (auto* dynamicRegistry = NKqp::AsDynamicFunctionRegistry(FunctionRegistry.Get())) {
+            dynamicRegistry->RemoveModule(it->second);
+>>>>>>> af314b193a3 (add dynamic_function_registry)
         }
         LoadedWasmModuleNames.erase(it);
     }

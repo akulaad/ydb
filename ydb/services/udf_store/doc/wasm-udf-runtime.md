@@ -256,12 +256,16 @@ Calling convention `unversioned_value`: указатели на `TUnversionedVal
 Ошибки из wasm: `ThrowException` → C++ exception → `WasmError` → `UdfTerminate("name(); ex: …")` (+ call stack).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Unload WASM: при delete/replace вызывается `NKqp::IDynamicFunctionRegistry::RemoveModule(moduleName)` (через cast от `IMutableFunctionRegistry`); иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
 =======
 Unload WASM: при delete/replace вызывается `FunctionRegistry::RemoveModule(moduleName)`; иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
 
 Unload WASM: `FunctionRegistry::RemoveModule(moduleName)` при delete/replace; иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
 >>>>>>> ceaf113964f (fixes)
+=======
+Unload WASM: при delete/replace вызывается `NKqp::IDynamicFunctionRegistry::RemoveModule(moduleName)` (через cast от `IMutableFunctionRegistry`); иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
+>>>>>>> af314b193a3 (add dynamic_function_registry)
 ---
 
 ## 10. Линковка модулей (WAVM)

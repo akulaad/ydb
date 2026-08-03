@@ -565,7 +565,11 @@ public:
         THROW_ERROR_EXCEPTION_IF(
             !RuntimeLibraryInstance_,
             "WebAssembly FreeBytes failed: no runtime library (AddSdk) linked");
+<<<<<<< HEAD
         auto* freeFunction = Runtime::getTypedInstanceExport(RuntimeLibraryInstance_, "free", signature);
+=======
+        auto* freeFunction = getTypedInstanceExport(RuntimeLibraryInstance_, "free", signature);
+>>>>>>> af314b193a3 (add dynamic_function_registry)
         THROW_ERROR_EXCEPTION_IF(
             freeFunction == nullptr,
             "WebAssembly FreeBytes failed: runtime has no \"free\" export with signature (i64)->()");
