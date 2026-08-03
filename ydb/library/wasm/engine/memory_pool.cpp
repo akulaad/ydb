@@ -16,6 +16,8 @@ TWebAssemblyMemoryPool::~TWebAssemblyMemoryPool()
         // (for example, if the user's code causes the allocator to malfunction),
         // we catch the exception and skip the error, since we are already in the destructor.
         WAVM::Runtime::destroyException(exception);
+    } catch (...) {
+        // FreeBytes converts traps to THROW_ERROR_EXCEPTION; never throw from dtor.
     }
 }
 

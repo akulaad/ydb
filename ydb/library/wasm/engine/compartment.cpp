@@ -516,14 +516,28 @@ public:
         return static_cast<void*>(Context_);
     }
 
+    // See IWebAssemblyCompartment::AllocateBytes: may return 0 (malloc OOM).
+    // Missing runtime / export / traps → THROW_ERROR_EXCEPTION (not Exception*).
     uintptr_t AllocateBytes(size_t length) override
     {
         static const auto signature = IR::FunctionType(/*inResults*/ {IR::ValueType::i64}, /*inParams*/ {IR::ValueType::i64});
+        THROW_ERROR_EXCEPTION_IF(
+            !RuntimeLibraryInstance_,
+            "WebAssembly AllocateBytes failed: no runtime library (AddSdk) linked");
         auto* mallocFunction = Runtime::getTypedInstanceExport(RuntimeLibraryInstance_, "malloc", signature);
+        THROW_ERROR_EXCEPTION_IF(
+            mallocFunction == nullptr,
+            "WebAssembly AllocateBytes failed: runtime has no \"malloc\" export with signature (i64)->(i64)");
         auto arguments = std::array<IR::UntaggedValue, 1>{std::bit_cast<Uptr>(length)};
         auto result = IR::UntaggedValue{};
         SaveAndRestoreCompartment(this, [&] {
-            Runtime::invokeFunction(Context_, mallocFunction, signature, arguments.data(), &result);
+            try {
+                Runtime::invokeFunction(Context_, mallocFunction, signature, arguments.data(), &result);
+            } catch (WAVM::Runtime::Exception* ex) {
+                const auto description = WAVM::Runtime::describeException(ex);
+                WAVM::Runtime::destroyException(ex);
+                THROW_ERROR_EXCEPTION("WebAssembly AllocateBytes failed: %Qv", description);
+            }
         });
         return result.u64;
     }
@@ -531,10 +545,22 @@ public:
     void FreeBytes(uintptr_t offset) override
     {
         static const auto signature = IR::FunctionType(/*inResults*/ {}, /*inParams*/ {IR::ValueType::i64});
+        THROW_ERROR_EXCEPTION_IF(
+            !RuntimeLibraryInstance_,
+            "WebAssembly FreeBytes failed: no runtime library (AddSdk) linked");
         auto* freeFunction = getTypedInstanceExport(RuntimeLibraryInstance_, "free", signature);
+        THROW_ERROR_EXCEPTION_IF(
+            freeFunction == nullptr,
+            "WebAssembly FreeBytes failed: runtime has no \"free\" export with signature (i64)->()");
         auto arguments = std::array<IR::UntaggedValue, 1>{std::bit_cast<Uptr>(offset)};
         SaveAndRestoreCompartment(this, [&] {
-            Runtime::invokeFunction(Context_, freeFunction, signature, arguments.data(), {});
+            try {
+                Runtime::invokeFunction(Context_, freeFunction, signature, arguments.data(), {});
+            } catch (WAVM::Runtime::Exception* ex) {
+                const auto description = WAVM::Runtime::describeException(ex);
+                WAVM::Runtime::destroyException(ex);
+                THROW_ERROR_EXCEPTION("WebAssembly FreeBytes failed: %Qv", description);
+            }
         });
     }
 

@@ -19,7 +19,11 @@ TWebAssemblyMemoryPool::TWebAssemblyMemoryPool(IWebAssemblyCompartment* compartm
 
 Y_WEAK TWebAssemblyMemoryPool::~TWebAssemblyMemoryPool()
 {
-    Clear();
+    try {
+        Clear();
+    } catch (...) {
+        // FreeBytes may throw; never throw from dtor.
+    }
 }
 
 TWebAssemblyMemoryPool::TWebAssemblyMemoryPool(TWebAssemblyMemoryPool&& other) noexcept

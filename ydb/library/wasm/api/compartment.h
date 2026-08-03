@@ -49,9 +49,20 @@ struct IWebAssemblyCompartment
     //! NB: Cloning is slow and should not be called too often.
     virtual std::unique_ptr<IWebAssemblyCompartment> Clone() const = 0;
 
-    //! Allocates data inside of the compartment.
+    //! Allocates |length| bytes in compartment linear memory via wasm export
+    //! "malloc" with signature (i64)->(i64) on the runtime library instance
+    //! (installed by AddSdk, debug name typically "env").
+    //!
+    //! Outcomes:
+    //! - Success: non-zero compartment offset (host pointer via GetHostPointer).
+    //! - Soft OOM: returns 0 when malloc itself returns null; no throw.
+    //! - Hard failure: throws NYT::TErrorException if there is no runtime
+    //!   library, no matching "malloc" export, or invoke traps (e.g.
+    //!   memory.grow / OOB). WAVM::Runtime::Exception* is not propagated.
     virtual uintptr_t AllocateBytes(size_t length) = 0;
-    //! Deallocates data.
+    //! Deallocates an offset previously returned by AllocateBytes via wasm
+    //! "free" (i64)->(). Throws NYT::TErrorException on missing runtime /
+    //! export or trap (same conversion rules as AllocateBytes).
     virtual void FreeBytes(uintptr_t offset) = 0;
 
     //! Sets execution timeout for sandboxed code.

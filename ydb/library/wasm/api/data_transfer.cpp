@@ -14,7 +14,11 @@ TCopyGuard::TCopyGuard(IWebAssemblyCompartment* compartment, uintptr_t offset)
 Y_WEAK TCopyGuard::~TCopyGuard()
 {
     if (Compartment_ != nullptr && CopiedOffset_ != 0) {
-        Compartment_->FreeBytes(CopiedOffset_);
+        try {
+            Compartment_->FreeBytes(CopiedOffset_);
+        } catch (...) {
+            // FreeBytes may throw; never throw from dtor.
+        }
     }
 }
 
