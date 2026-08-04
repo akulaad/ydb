@@ -3,6 +3,7 @@ RECURSE(
     ctx
     helpers
     md5
+    parse_blob
     prefix
     sdk
     throw

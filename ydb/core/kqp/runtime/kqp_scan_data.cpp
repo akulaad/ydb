@@ -5,6 +5,7 @@
 #include <ydb/core/scheme/scheme_types_proto.h>
 #include <ydb/core/formats/arrow/accessor/plain/accessor.h>
 #include <ydb/core/formats/arrow/size_calcer.h>
+#include <ydb/services/udf_store/wasm/wasm_string.h>
 
 #include <yql/essentials/minikql/mkql_string_util.h>
 #include <yql/essentials/parser/pg_wrapper/interface/arrow.h>
@@ -295,7 +296,8 @@ public:
     static NYql::NUdf::TUnboxedValue ExtractValue(const arrow::FixedSizeBinaryArray& array, const ui32 rowIndex) {
         auto data = array.GetView(rowIndex);
         YQL_ENSURE(data.size() == sizeof(TGUID), "Wrong data size");
-        return MakeString(NUdf::TStringRef(data.data(), data.size()));
+        return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(
+            NUdf::TStringRef(data.data(), data.size()));
     }
     static TFixedWidthStatAccumulator BuildStatAccumulator(const NScheme::TTypeInfo& typeInfo) {
         return TFixedWidthStatAccumulator(typeInfo);
@@ -311,7 +313,8 @@ public:
 
     static NYql::NUdf::TUnboxedValue ExtractValue(const arrow::BinaryArray& array, const ui32 rowIndex) {
         auto data = array.GetView(rowIndex);
-        return MakeString(NUdf::TStringRef(data.data(), data.size()));
+        return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(
+            NUdf::TStringRef(data.data(), data.size()));
     }
     static TDefaultStatAccumulator BuildStatAccumulator(const NScheme::TTypeInfo& typeInfo) {
         return TDefaultStatAccumulator(typeInfo);
@@ -327,7 +330,8 @@ public:
 
     static NYql::NUdf::TUnboxedValue ExtractValue(const arrow::FixedSizeBinaryArray& array, const ui32 rowIndex) {
         auto data = array.GetView(rowIndex);
-        return MakeString(NUdf::TStringRef(data.data(), data.size() - 1));
+        return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(
+            NUdf::TStringRef(data.data(), data.size() - 1));
     }
     static TFixedWidthStatAccumulator BuildStatAccumulator(const NScheme::TTypeInfo& typeInfo) {
         return TFixedWidthStatAccumulator(typeInfo);

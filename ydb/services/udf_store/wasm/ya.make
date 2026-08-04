@@ -13,6 +13,7 @@ SRCS(
     system_libraries.cpp
     udf_configured_callable.cpp
     udf_function.cpp
+    wasm_string.cpp
 )
 
 ADDINCL(
