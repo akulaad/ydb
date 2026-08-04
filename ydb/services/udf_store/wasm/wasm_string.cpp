@@ -2,6 +2,7 @@
 
 #include "compartment_manager.h"
 
+#include <ydb/library/wasm/api/allocation_registry.h>
 #include <ydb/library/wasm/api/data_transfer.h>
 
 #include <util/generic/yexception.h>
@@ -18,7 +19,7 @@ using EAbiValueType = NYdb::NUdfStore::NAbi::EValueType;
 TUnboxedValuePod TWasmStringValue::Make(
     TStringRef data,
     IWebAssemblyCompartment* compartment,
-    ui64 /*generation*/)
+    ui64 generation)
 {
     if (!compartment) {
         ythrow yexception() << "TWasmStringValue::Make: compartment is null";
@@ -35,13 +36,13 @@ TUnboxedValuePod TWasmStringValue::Make(
     auto* header = TStringValue::ConstructInPlace(buffer.HostData(), data.Size(), data.Size());
     std::memcpy(header->Data(), data.Data(), data.Size());
 
-    // Lock refs negative: UnRef never calls UdfFreeWithSize on WASM memory.
-    // Region is reclaimed when the query compartment is destroyed.
-    TStringValue holder(header);
-    holder.LockRef();
+    const uintptr_t offset = buffer.Offset();
+    TWasmAllocationRegistry::Instance().Register(
+        header, compartment, offset, allocBytes, generation);
     buffer.Release();
 
-    return TUnboxedValuePod(std::move(holder));
+    // Normal refcount: last UnRef → UdfTryFreeExternalString → registry TryFree.
+    return TUnboxedValuePod(TStringValue(header));
 }
 
 TUnboxedValuePod TWasmStringValue::MakePreferWasm(TStringRef data)
@@ -53,15 +54,20 @@ TUnboxedValuePod TWasmStringValue::MakePreferWasm(TStringRef data)
         return TUnboxedValuePod::Embedded(data);
     }
 
-    auto* compartment = GetCurrentCompartment();
+    // Prefer query-compartment TLS (set for the whole compute Activate / scan),
+    // then fall back to GetCurrentCompartment (UDF Run only).
+    IWebAssemblyCompartment* compartment = nullptr;
+    ui64 generation = 0;
+    if (auto* handle = GetCurrentQueryCompartment()) {
+        compartment = handle->Compartment.get();
+        generation = handle->Generation;
+    } else {
+        compartment = GetCurrentCompartment();
+    }
+
     if (!compartment) {
         // Host fallback via UDF allocator (no MiniKQL MakeString dependency).
         return TUnboxedValuePod(TStringValue(data));
-    }
-
-    ui64 generation = 0;
-    if (auto* handle = GetCurrentQueryCompartment()) {
-        generation = handle->Generation;
     }
 
     return Make(data, compartment, generation);
@@ -134,3 +140,7 @@ void TWasmStringValue::FillAbiStringArg(
 }
 
 } // namespace NKikimr::NUdfStore::NWasm
+
+extern "C" bool UdfTryFreeExternalString(void* mem, ui64 /*size*/) {
+    return NYdb::NWasm::TWasmAllocationRegistry::Instance().TryFree(mem);
+}

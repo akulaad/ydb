@@ -52,6 +52,9 @@ class TStringValue {
             Y_DEBUG_ABORT_UNLESS(Refs_ > 0);
             if (!--Refs_) {
 #if UDF_ABI_COMPATIBILITY_VERSION_CURRENT >= UDF_ABI_COMPATIBILITY_VERSION(2, 8)
+                if (UdfTryFreeExternalString(this, sizeof(*this) + Capacity_)) {
+                    return;
+                }
                 UdfFreeWithSize(this, sizeof(*this) + Capacity_);
 #else
                 UdfFree(this);
@@ -75,6 +78,9 @@ class TStringValue {
 #endif
             if (!Refs_) {
 #if UDF_ABI_COMPATIBILITY_VERSION_CURRENT >= UDF_ABI_COMPATIBILITY_VERSION(2, 8)
+                if (UdfTryFreeExternalString(this, sizeof(*this) + Capacity_)) {
+                    return;
+                }
                 UdfFreeWithSize(this, sizeof(*this) + Capacity_);
 #else
                 UdfFree(this);

@@ -19,6 +19,8 @@ struct TQueryCompartmentHandle : public TNonCopyable {
     THashMap<TString, void*> Exports;
     // Monotonic id for this acquire; TypeConfig callables recreate objects on change.
     ui64 Generation = 0;
+
+    ~TQueryCompartmentHandle();
 };
 
 using TQueryCompartmentHandlePtr = std::unique_ptr<TQueryCompartmentHandle>;

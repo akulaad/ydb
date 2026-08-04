@@ -1,3 +1,4 @@
+#include <ydb/library/wasm/api/allocation_registry.h>
 #include <ydb/library/wasm/api/compartment.h>
 #include <ydb/library/wasm/api/data_transfer.h>
 #include <ydb/library/wasm/api/function.h>
@@ -306,6 +307,41 @@ TEST_F(TWebAssemblyTest, GuestBufferResidentOffset)
         NYT::TErrorException);
 
     compartment->FreeBytes(offset);
+}
+
+TEST_F(TWebAssemblyTest, AllocationRegistryTryFree)
+{
+    auto compartment = CreateMinimalRuntimeImage();
+    auto buffer = TGuestBuffer::Allocate(compartment.get(), 64);
+    void* host = buffer.HostData();
+    const uintptr_t offset = buffer.Offset();
+    const size_t size = buffer.Size();
+    buffer.Release();
+
+    auto& registry = TWasmAllocationRegistry::Instance();
+    registry.Register(host, compartment.get(), offset, size, /*generation*/ 1);
+    ASSERT_TRUE(registry.TryFree(host));
+    ASSERT_FALSE(registry.TryFree(host));
+}
+
+TEST_F(TWebAssemblyTest, AllocationRegistryInvalidateSkipsFreeBytes)
+{
+    auto compartment = CreateMinimalRuntimeImage();
+    auto buffer = TGuestBuffer::Allocate(compartment.get(), 64);
+    void* host = buffer.HostData();
+    const uintptr_t offset = buffer.Offset();
+    const size_t size = buffer.Size();
+    buffer.Release();
+
+    constexpr ui64 generation = 99;
+    auto& registry = TWasmAllocationRegistry::Instance();
+    registry.Register(host, compartment.get(), offset, size, generation);
+    registry.InvalidateGeneration(generation);
+
+    // Compartment gone: TryFree must not call FreeBytes on a dead compartment.
+    compartment.reset();
+    ASSERT_TRUE(registry.TryFree(host));
+    ASSERT_FALSE(registry.TryFree(host));
 }
 
 static const TStringBuf PointerDereference = R"(

@@ -11,9 +11,8 @@ namespace NKikimr::NUdfStore::NWasm {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! String payload resident in the current query compartment's linear memory.
-//! Returned UnboxedValue is a normal String (AsStringRef works); the TStringValue
-//! header+bytes live in WASM and are immortal for the compartment lifetime
-//! (refs locked negative so MKQL never UdfFree's WASM addresses).
+//! Returned UnboxedValue is a normal refcounted String (AsStringRef works);
+//! last UnRef frees via TWasmAllocationRegistry (UdfTryFreeExternalString).
 class TWasmStringValue {
 public:
     //! Allocate |data| in |compartment| and return a String UnboxedValue.
@@ -23,8 +22,9 @@ public:
         NYdb::NWasm::IWebAssemblyCompartment* compartment,
         ui64 generation);
 
-    //! Like Make, but uses GetCurrentCompartment(); falls back to host MakeString
-    //! when no compartment is active or the string fits in the embedded buffer.
+    //! Like Make, but uses the current query compartment (or GetCurrentCompartment);
+    //! falls back to host TStringValue when no compartment is active or the string
+    //! fits in the embedded buffer.
     static NYql::NUdf::TUnboxedValuePod MakePreferWasm(NYql::NUdf::TStringRef data);
 
     //! If |value| bytes already lie in |compartment| linear memory, set offset/length
