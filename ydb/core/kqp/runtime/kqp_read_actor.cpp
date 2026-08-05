@@ -22,7 +22,9 @@
 #include <ydb/library/wilson_ids/wilson.h>
 
 #include <util/generic/intrlist.h>
+#include <util/stream/output.h>
 #include <util/string/vector.h>
+#include <util/system/env.h>
 
 #define YDB_LOG_THIS_FILE_COMPONENT NKikimrServices::KQP_COMPUTE
 
@@ -1298,7 +1300,7 @@ public:
                     hasResultColumns = true;
                     stats.AddStatistics(
                         // TODO: what block tracking mode to use here?
-                        NMiniKQL::WriteColumnValuesFromArrow(editAccessors, NMiniKQL::TBatchDataAccessor(result->Get()->GetArrowBatch(), NKikimrConfig::TTableServiceConfig::BLOCK_TRACKING_NONE), columnIndex, resultColumnIndex, column.TypeInfo)
+                        NMiniKQL::WriteColumnValuesFromArrow(editAccessors, NMiniKQL::TBatchDataAccessor(result->Get()->GetArrowBatch(), NKikimrConfig::TTableServiceConfig::BLOCK_TRACKING_NONE), columnIndex, resultColumnIndex, column.TypeInfo, column.PreferWasm)
                     );
                     if (column.NotNull) {
                         std::shared_ptr<arrow::Array> columnSharedPtr = result->Get()->GetArrowBatch()->column(columnIndex);
@@ -1384,7 +1386,8 @@ public:
                         ReportNullValue(result, columnIndex);
                         return stats;
                     }
-                    rowItems[resultColumnIndex] = NMiniKQL::GetCellValue(row[columnIndex], column.TypeInfo);
+                    rowItems[resultColumnIndex] = NMiniKQL::GetCellValue(
+                        row[columnIndex], column.TypeInfo, column.PreferWasm);
                     columnIndex += 1;
                 }
             }
@@ -1678,6 +1681,25 @@ private:
     }
 
     void InitResultColumns() {
+        THashSet<TString> preferWasmColumns(
+            Settings->GetWasmUdfStringColumns().begin(),
+            Settings->GetWasmUdfStringColumns().end());
+        static const bool debugEnabled = [] {
+            const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
+            return v == "1" || v == "true" || v == "yes";
+        }();
+        if (debugEnabled) {
+            TStringBuilder names;
+            for (size_t i = 0; i < Settings->WasmUdfStringColumnsSize(); ++i) {
+                if (i) {
+                    names << ",";
+                }
+                names << Settings->GetWasmUdfStringColumns(i);
+            }
+            Cerr << "[WasmString] KqpReadActor InitResultColumns: WasmUdfStringColumns=["
+                 << names << "] settings_size=" << Settings->WasmUdfStringColumnsSize() << Endl;
+        }
+
         ResultColumns.reserve(Settings->ColumnsSize());
         for (size_t resultColumnIndex = 0; resultColumnIndex < Settings->ColumnsSize(); ++resultColumnIndex) {
             const auto& srcColumn = Settings->GetColumns(resultColumnIndex);
@@ -1686,6 +1708,11 @@ private:
             column.TypeInfo = MakeTypeInfo(srcColumn);
             column.IsSystem = IsSystemColumn(column.Tag);
             column.NotNull = srcColumn.GetNotNull();
+            column.Name = srcColumn.GetName();
+            column.PreferWasm = !column.Name.empty() && preferWasmColumns.contains(column.Name);
+            if (debugEnabled && column.PreferWasm) {
+                Cerr << "[WasmString] KqpReadActor PreferWasm column=" << column.Name << Endl;
+            }
             ResultColumns.push_back(column);
         }
     }
@@ -1696,6 +1723,8 @@ private:
         ui32 Tag = 0;
         NScheme::TTypeInfo TypeInfo;
         bool NotNull;
+        TString Name;
+        bool PreferWasm = false;
     };
 
     const NKikimrTxDataShard::TKqpReadRangesSourceSettings* Settings;

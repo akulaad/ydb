@@ -5,6 +5,10 @@
 #include <ydb/core/scheme/scheme_types_proto.h>
 #include <yql/essentials/parser/pg_wrapper/interface/type_desc.h>
 
+#include <util/stream/output.h>
+#include <util/string/builder.h>
+#include <util/system/env.h>
+
 namespace NKikimr::NMiniKQL {
 
 TScanDataMeta::TScanDataMeta(const NKikimrTxDataShard::TKqpTransaction_TScanTaskMeta& meta) {
@@ -48,6 +52,7 @@ TScanDataColumnsMeta::TScanDataColumnsMeta(const NKikimrTxDataShard::TKqpTransac
     for (const auto& column : meta.GetColumns()) {
         TKqpComputeContextBase::TColumn c;
         c.Tag = column.GetId();
+        c.Name = column.GetName();
         auto typeInfoMod = NScheme::TypeInfoModFromProtoColumnType(column.GetType(),
             column.HasTypeInfo() ? &column.GetTypeInfo() : nullptr);
         c.Type = typeInfoMod.TypeInfo;
@@ -68,6 +73,7 @@ TScanDataColumnsMeta::TScanDataColumnsMeta(const NKikimrTxDataShard::TKqpTransac
         for (const auto& resColumn : meta.GetResultColumns()) {
             TKqpComputeContextBase::TColumn c;
             c.Tag = resColumn.GetId();
+            c.Name = resColumn.GetName();
             auto typeInfoMod = NScheme::TypeInfoModFromProtoColumnType(resColumn.GetType(),
                 resColumn.HasTypeInfo() ? &resColumn.GetTypeInfo() : nullptr);
             c.Type = typeInfoMod.TypeInfo;
@@ -85,6 +91,44 @@ TScanDataColumnsMeta::TScanDataColumnsMeta(const NKikimrTxDataShard::TKqpTransac
         InitPgTypesForColumns(Columns, *typeEnv);
         InitPgTypesForColumns(SystemColumns, *typeEnv);
         InitPgTypesForColumns(ResultColumns, *typeEnv);
+    }
+}
+
+void TScanDataColumnsMeta::ApplyWasmUdfStringColumns(const THashSet<TString>& wasmUdfStringColumns) {
+    static const bool debugEnabled = [] {
+        const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
+        return v == "1" || v == "true" || v == "yes";
+    }();
+
+    if (wasmUdfStringColumns.empty()) {
+        if (debugEnabled) {
+            Cerr << "[WasmString] ApplyWasmUdfStringColumns: PreferWasm marked=[] settings_size=0"
+                 << Endl;
+        }
+        return;
+    }
+    TVector<TString> marked;
+    for (auto& column : ResultColumns) {
+        if (!column.Name.empty() && wasmUdfStringColumns.contains(column.Name)) {
+            column.PreferWasm = true;
+            marked.push_back(column.Name);
+        }
+    }
+    for (auto& column : Columns) {
+        if (!column.Name.empty() && wasmUdfStringColumns.contains(column.Name)) {
+            column.PreferWasm = true;
+        }
+    }
+    if (debugEnabled) {
+        TStringBuilder names;
+        for (size_t i = 0; i < marked.size(); ++i) {
+            if (i) {
+                names << ",";
+            }
+            names << marked[i];
+        }
+        Cerr << "[WasmString] ApplyWasmUdfStringColumns: PreferWasm marked=["
+             << names << "] settings_size=" << wasmUdfStringColumns.size() << Endl;
     }
 }
 

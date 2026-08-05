@@ -37,6 +37,7 @@ private:
     YDB_READONLY_FLAG(HasWatermarkGenerator, false);
     YDB_OPT(ui64, WatermarkGeneratorIdleTimeoutUs);
     THashSet<TString> WasmUdfModules_;
+    THashSet<TString> WasmUdfStringColumns_;
 
     YDB_READONLY(double, InputDataPrediction, 1);
     YDB_READONLY(double, OutputDataPrediction, 1);
@@ -51,6 +52,7 @@ public:
     void SerializeToKqpSettings(NYql::NDqProto::TProgram::TSettings& kqpProto) const;
     bool DeserializeFromKqpSettings(const NYql::NDqProto::TProgram::TSettings& kqpProto);
     TVector<TString> GetWasmUdfModules() const;
+    TVector<TString> GetWasmUdfStringColumns() const;
     static ui32 GetUsableThreads();
     static ui32 GetPossibleMaxLimitThreads();
     bool NeedLLVM() const;

@@ -1204,6 +1204,55 @@ private:
             hasEffectStage |= physicalStageByID[stage.Ref().UniqueId()]->GetIsEffectsStage();
             stagesMap[stage.Ref().UniqueId()] = txProto.StagesSize() - 1;
         }
+        // PreferWasm materialization happens on scan/source stages, while Apply(Udf)
+        // often lives on a downstream stage (RBO Map). Union column/module names onto
+        // stages that own table reads so scan init sees WasmUdfStringColumns.
+        {
+            THashSet<TString> allWasmUdfStringColumns;
+            THashSet<TString> allWasmUdfModules;
+            for (const auto& stage : txProto.GetStages()) {
+                const auto& settings = stage.GetProgram().GetSettings();
+                for (const auto& column : settings.GetWasmUdfStringColumns()) {
+                    allWasmUdfStringColumns.insert(column);
+                }
+                for (const auto& module : settings.GetWasmUdfModules()) {
+                    allWasmUdfModules.insert(module);
+                }
+            }
+            if (!allWasmUdfStringColumns.empty() || !allWasmUdfModules.empty()) {
+                for (auto& stage : *txProto.MutableStages()) {
+                    const bool hasTableRead = stage.TableOpsSize() > 0 || stage.SourcesSize() > 0;
+                    if (!hasTableRead) {
+                        continue;
+                    }
+                    auto* settings = stage.MutableProgram()->MutableSettings();
+                    for (const auto& column : allWasmUdfStringColumns) {
+                        bool found = false;
+                        for (const auto& existing : settings->GetWasmUdfStringColumns()) {
+                            if (existing == column) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            settings->AddWasmUdfStringColumns(column);
+                        }
+                    }
+                    for (const auto& module : allWasmUdfModules) {
+                        bool found = false;
+                        for (const auto& existing : settings->GetWasmUdfModules()) {
+                            if (existing == module) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            settings->AddWasmUdfModules(module);
+                        }
+                    }
+                }
+            }
+        }
         for (auto&& i : *txProto.MutableStages()) {
             i.MutableProgram()->MutableSettings()->SetLevelDataPrediction(rPredictor.GetLevelDataVolume(i.GetProgram().GetSettings().GetStageLevel()));
         }

@@ -225,6 +225,7 @@ Shared context: один модуль линкует `object_framework`, пер�
 
 ## 8. Связка с KQP
 
+<<<<<<< HEAD
 1. **Compile / predictor** (`kqp_predictor`): обходит план, на `TCoUdf` ставит `HasUdf` и собирает имена модулей.
 2. Модули пишутся в **KQP** `TKqpPhyStage.WasmUdfModules` (не в DQ `TProgram::TSettings`).
 3. При сериализации task (`SerializeTaskToProto`) список кладётся в `TaskParams["_WasmUdfModules"]` (newline-separated).
@@ -237,6 +238,23 @@ Shared context: один модуль линкует `object_framework`, пер�
 
 Ошибка Acquire до появления task stats раньше маскировалась `AFL_ENSURE(stats.GetTasks().size() == 1)` в `kqp_executer_stats.cpp`; пустые Tasks при early failure теперь пропускаются, чтобы клиент видел исходный issue.
 
+=======
+1. **Compile / predictor** (`kqp_predictor`): обходит план, на `TCoUdf` собирает имена модулей в `WasmUdfModules`.
+2. Тот же обход эвристикой помечает **string-колонки**, текущие в аргументы `Apply(Udf, …)` (`Member` / WideMap `Argument` ↔ `KqpWideRead*::Columns`), в `WasmUdfStringColumns`.
+3. Модули и колонки попадают в `TProgram::TSettings` задачи.
+4. **Compute actor** (`kqp_pure_compute_actor`, `kqp_scan_compute_actor`) и **literal executer**:
+   - в bootstrap: `TQueryCompartmentScope(settings)` → `Acquire`;
+   - на init scan: `ApplyWasmUdfStringColumns` → `PreferWasm` только для имён из settings;
+   - на обработке событий / DoExecute: `Activate()` → TLS guard;
+   - при ошибке Acquire — `ErrorFromIssue` / failure state **до** `SetTaskRunner`.
+5. Материализация scan: marked string → `MakePreferWasm` (1-copy cell→WASM); остальные large strings → host `MakeString`. Если колонка всё же уйдёт в WASM UDF при false negative — `PrepareArg` сделает `CopyIntoCompartment`.
+6. Исполнение UDF → `TWasmUdfFunction::Run` или `TWasmConfiguredCallable::Run` читает TLS query compartment и вызывает export.
+
+Ошибка Acquire до появления task stats раньше маскировалась `AFL_ENSURE(stats.GetTasks().size() == 1)` в `kqp_executer_stats.cpp`; пустые Tasks при early failure теперь пропускаются, чтобы клиент видел исходный issue.
+
+**Авто resident columns (v1):** эвристика не полный SSA — literals / computed / join / чужие UDF-результаты могут дать false negative (корректный fallback через host + copy). Blocks path и lazy holder — вне скоупа.
+
+>>>>>>> ef6f57fa926 (add wasm allocator manager)
 ## 9. Host ABI и calling convention
 
 Файлы: `wasm/host.*`, `wasm/abi/udf_cpp_abi.h`.

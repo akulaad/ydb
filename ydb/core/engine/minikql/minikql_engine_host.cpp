@@ -12,6 +12,9 @@
 
 #include <library/cpp/containers/stack_vector/stack_vec.h>
 
+#include <util/stream/output.h>
+#include <util/system/env.h>
+
 #include <new>
 
 namespace NKikimr {
@@ -1006,10 +1009,29 @@ void AnalyzeRowType(TStructLiteral* columnIds, TSmallVec<NTable::TTag>& tags, TS
     }
 }
 
-NUdf::TUnboxedValue GetCellValue(const TCell& cell, NScheme::TTypeInfo type) {
+NUdf::TUnboxedValue GetCellValue(const TCell& cell, NScheme::TTypeInfo type, bool preferWasm) {
     if (cell.IsNull()) {
         return NUdf::TUnboxedValue();
     }
+
+    auto makeStringValue = [preferWasm](NUdf::TStringRef data) -> NUdf::TUnboxedValue {
+        static const bool debugEnabled = [] {
+            const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
+            return v == "1" || v == "true" || v == "yes";
+        }();
+        if (preferWasm) {
+            if (debugEnabled) {
+                Cerr << "[WasmString] GetCellValue: path=MakePreferWasm size="
+                     << data.Size() << Endl;
+            }
+            return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(data);
+        }
+        if (debugEnabled) {
+            Cerr << "[WasmString] GetCellValue: path=host_MakeString size="
+                 << data.Size() << Endl;
+        }
+        return MakeString(data);
+    };
 
     switch (type.GetTypeId()) {
         case NYql::NProto::TypeIds::Bool:
@@ -1089,8 +1111,7 @@ NUdf::TUnboxedValue GetCellValue(const TCell& cell, NScheme::TTypeInfo type) {
         case NYql::NProto::TypeIds::Uuid:
         case NYql::NProto::TypeIds::JsonDocument:
         case NYql::NProto::TypeIds::DyNumber:
-            return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(
-                NUdf::TStringRef(cell.Data(), cell.Size()));
+            return makeStringValue(NUdf::TStringRef(cell.Data(), cell.Size()));
 
         default:
             break;
@@ -1101,8 +1122,7 @@ NUdf::TUnboxedValue GetCellValue(const TCell& cell, NScheme::TTypeInfo type) {
     }
 
     Y_DEBUG_ABORT("Unsupported type: %" PRIu16, type.GetTypeId());
-    return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(
-        NUdf::TStringRef(cell.Data(), cell.Size()));
+    return makeStringValue(NUdf::TStringRef(cell.Data(), cell.Size()));
 }
 
 }}

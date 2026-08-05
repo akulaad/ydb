@@ -324,7 +324,7 @@ TEST_F(TWebAssemblyTest, AllocationRegistryTryFree)
     ASSERT_FALSE(registry.TryFree(host));
 }
 
-TEST_F(TWebAssemblyTest, AllocationRegistryInvalidateSkipsFreeBytes)
+TEST_F(TWebAssemblyTest, AllocationRegistryInvalidateFreesThenOrphans)
 {
     auto compartment = CreateMinimalRuntimeImage();
     auto buffer = TGuestBuffer::Allocate(compartment.get(), 64);
@@ -336,12 +336,44 @@ TEST_F(TWebAssemblyTest, AllocationRegistryInvalidateSkipsFreeBytes)
     constexpr ui64 generation = 99;
     auto& registry = TWasmAllocationRegistry::Instance();
     registry.Register(host, compartment.get(), offset, size, generation);
+    ASSERT_EQ(registry.CountGeneration(generation), 1u);
+    // FreeBytes while compartment is still alive; host ptr stays orphaned.
     registry.InvalidateGeneration(generation);
+    ASSERT_EQ(registry.CountGeneration(generation), 0u);
 
-    // Compartment gone: TryFree must not call FreeBytes on a dead compartment.
     compartment.reset();
+    // Late UnRef must not FreeBytes / UdfFreeWithSize a dead WASM address.
     ASSERT_TRUE(registry.TryFree(host));
     ASSERT_FALSE(registry.TryFree(host));
+}
+
+TEST_F(TWebAssemblyTest, AllocationRegistryUnRefFreesBeforeInvalidate)
+{
+    // Models PreferWasm string lifetime: Make → drop UnboxedValue (UnRef) →
+    // FreeBytes via UdfTryFreeExternalString while compartment is still alive.
+    // Intermediate rows must not accumulate in the registry until teardown.
+    auto compartment = CreateMinimalRuntimeImage();
+    auto& registry = TWasmAllocationRegistry::Instance();
+    constexpr ui64 generation = 77;
+
+    const TString payload(64, 'x');
+    for (int i = 0; i < 8; ++i) {
+        {
+            auto buffer = TGuestBuffer::Allocate(compartment.get(), 80);
+            void* host = buffer.HostData();
+            const uintptr_t offset = buffer.Offset();
+            buffer.Release();
+            registry.Register(host, compartment.get(), offset, 80, generation);
+            ASSERT_EQ(registry.CountGeneration(generation), 1u);
+            // Simulate TStringValue UnRef → UdfTryFreeExternalString.
+            ASSERT_TRUE(registry.TryFree(host));
+        }
+        ASSERT_EQ(registry.CountGeneration(generation), 0u)
+            << "row " << i << " leaked past UnRef";
+    }
+
+    registry.InvalidateGeneration(generation);
+    ASSERT_EQ(registry.CountGeneration(generation), 0u);
 }
 
 static const TStringBuf PointerDereference = R"(

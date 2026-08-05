@@ -28,6 +28,8 @@
 #include <ydb/library/yql/providers/pq/common/yql_names.h>
 #include <ydb/services/udf_store/wasm/query_compartment_scope.h>
 
+#include <util/system/env.h>
+
 #include <algorithm>
 
 #define YDB_LOG_THIS_FILE_COMPONENT NKikimrServices::KQP_EXECUTER
@@ -2161,6 +2163,10 @@ void TKqpTasksGraph::RestoreTasksGraphInfo(const TVector<NKikimrKqp::TKqpNodeRes
                             // TODO: should we setup Database and PoolId for settings?
                             FillScanTaskLockTxId(*sourceSettings);
                             sourceSettings->ClearSnapshot();
+                            const auto& restoredStage = stageInfo.Meta.GetStage(stageId);
+                            for (const auto& columnName : restoredStage.GetProgram().GetSettings().GetWasmUdfStringColumns()) {
+                                sourceSettings->AddWasmUdfStringColumns(columnName);
+                            }
                         } else if (settings.Is<NKikimrKqp::TKqpFullTextSourceSettings>()) {
                             auto* sourceSettings = newInput.Meta.FullTextSourceSettings = GetMeta().Allocate<NKikimrKqp::TKqpFullTextSourceSettings>();
                             // TODO: should we setup Database and PoolId for settings?
@@ -3044,6 +3050,28 @@ TMaybe<size_t> TKqpTasksGraph::BuildScanTasksFromSource(TStageInfo& stageInfo, T
                 *protoColumn->MutableTypeInfo() = *columnType.TypeInfo;
             }
             protoColumn->SetName(column.Name);
+        }
+
+        for (const auto& columnName : stage.GetProgram().GetSettings().GetWasmUdfStringColumns()) {
+            settings->AddWasmUdfStringColumns(columnName);
+        }
+        {
+            static const bool debugEnabled = [] {
+                const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
+                return v == "1" || v == "true" || v == "yes";
+            }();
+            if (debugEnabled) {
+                TStringBuilder names;
+                for (size_t i = 0; i < settings->WasmUdfStringColumnsSize(); ++i) {
+                    if (i) {
+                        names << ",";
+                    }
+                    names << settings->GetWasmUdfStringColumns(i);
+                }
+                Cerr << "[WasmString] BuildScanTasksFromSource: WasmUdfStringColumns=["
+                     << names << "] stage_settings_size="
+                     << stage.GetProgram().GetSettings().WasmUdfStringColumnsSize() << Endl;
+            }
         }
 
         if (GetMeta().CheckDuplicateRows) {

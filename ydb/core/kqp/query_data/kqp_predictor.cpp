@@ -3,6 +3,7 @@
 
 #include <ydb/core/base/appdata.h>
 #include <yql/essentials/core/yql_expr_optimize.h>
+#include <yql/essentials/core/yql_expr_type_annotation.h>
 #include <yql/essentials/core/yql_type_annotation.h>
 #include <util/system/info.h>
 #include <ydb/library/yql/dq/expr_nodes/dq_expr_nodes.h>
@@ -13,6 +14,7 @@
 #include <ydb/library/services/services.pb.h>
 
 #include <util/generic/algorithm.h>
+#include <util/generic/hash.h>
 #include <util/string/cast.h>
 
 #include <cmath>
@@ -23,6 +25,186 @@
 namespace NKikimr::NKqp {
 
 using namespace NActors;
+using namespace NYql;
+using namespace NYql::NNodes;
+
+namespace {
+
+bool IsStringLikeDataSlot(NUdf::EDataSlot slot) {
+    switch (slot) {
+        case NUdf::EDataSlot::String:
+        case NUdf::EDataSlot::Utf8:
+        case NUdf::EDataSlot::Yson:
+        case NUdf::EDataSlot::Json:
+        case NUdf::EDataSlot::JsonDocument:
+        case NUdf::EDataSlot::DyNumber:
+        case NUdf::EDataSlot::Uuid:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool IsStringLikeTypeAnn(const TTypeAnnotationNode* type) {
+    if (!type) {
+        return false;
+    }
+    bool isOptional = false;
+    const TDataExprType* dataType = nullptr;
+    if (!IsDataOrOptionalOfData(type, isOptional, dataType) || !dataType) {
+        return false;
+    }
+    return IsStringLikeDataSlot(dataType->GetSlot());
+}
+
+const TExprNode* PeelTrivialWrappers(const TExprNode* node) {
+    while (node) {
+        TExprBase base(node);
+        if (auto just = base.Maybe<TCoJust>()) {
+            node = just.Cast().Input().Raw();
+        } else if (auto unwrap = base.Maybe<TCoUnwrap>()) {
+            node = unwrap.Cast().Optional().Raw();
+        } else if (auto coalesce = base.Maybe<TCoCoalesce>()) {
+            // Prefer the primary branch for column detection.
+            node = coalesce.Cast().Predicate().Raw();
+        } else if (auto cast = base.Maybe<TCoSafeCast>()) {
+            node = cast.Cast().Value().Raw();
+        } else {
+            break;
+        }
+    }
+    return node;
+}
+
+const TExprNode* PeelFlowWrappers(const TExprNode* node) {
+    while (node) {
+        TExprBase base(node);
+        if (auto toFlow = base.Maybe<TCoToFlow>()) {
+            node = toFlow.Cast().Input().Raw();
+        } else if (auto fromFlow = base.Maybe<TCoFromFlow>()) {
+            node = fromFlow.Cast().Input().Raw();
+        } else {
+            break;
+        }
+    }
+    return node;
+}
+
+TMaybeNode<TCoAtomList> TryGetWideReadColumns(TExprBase input) {
+    if (auto read = input.Maybe<TKqpWideReadTable>()) {
+        return read.Cast().Columns();
+    }
+    if (auto read = input.Maybe<TKqpWideReadTableRanges>()) {
+        return read.Cast().Columns();
+    }
+    if (auto read = input.Maybe<TKqpWideReadOlapTableRanges>()) {
+        return read.Cast().Columns();
+    }
+    return {};
+}
+
+//! WideMap(ExpandMap(_, λ → Member(row, c0), Member(row, c1), ...), λ(a0, a1, ...))
+//! maps a_i → c_i. Used by RBO / source-stage physical plans.
+bool TryGetExpandMapMemberColumns(TExprBase input, TVector<TString>& columns) {
+    const TExprNode* node = PeelFlowWrappers(input.Raw());
+    if (!node || !node->IsCallable("ExpandMap") || node->ChildrenSize() < 2) {
+        return false;
+    }
+    const TExprNode& lambda = *node->Child(1);
+    if (!lambda.IsLambda() || lambda.ChildrenSize() < 2) {
+        return false;
+    }
+    // Lambda: Child(0)=args, Child(1..)=body items (Member for each column).
+    columns.clear();
+    columns.reserve(lambda.ChildrenSize() - 1);
+    for (ui32 i = 1; i < lambda.ChildrenSize(); ++i) {
+        TExprBase bodyItem(lambda.Child(i));
+        auto member = bodyItem.Maybe<TCoMember>();
+        if (!member) {
+            columns.clear();
+            return false;
+        }
+        columns.emplace_back(TString(member.Cast().Name().Value()));
+    }
+    return !columns.empty();
+}
+
+void RegisterWideMapColumnArgs(
+    TExprBase node,
+    THashMap<const TExprNode*, TString>& argToColumn)
+{
+    auto wideMap = node.Maybe<TCoWideMap>();
+    if (!wideMap) {
+        return;
+    }
+    const auto lambda = wideMap.Cast().Lambda();
+    const auto args = lambda.Args();
+
+    if (auto columns = TryGetWideReadColumns(wideMap.Cast().Input())) {
+        const auto cols = columns.Cast();
+        const ui32 n = Min<ui32>(args.Size(), cols.Size());
+        for (ui32 i = 0; i < n; ++i) {
+            argToColumn[args.Arg(i).Raw()] = TString(cols.Item(i).Value());
+        }
+        return;
+    }
+
+    TVector<TString> expandColumns;
+    if (TryGetExpandMapMemberColumns(wideMap.Cast().Input(), expandColumns)) {
+        const ui32 n = Min<ui32>(args.Size(), expandColumns.size());
+        for (ui32 i = 0; i < n; ++i) {
+            argToColumn[args.Arg(i).Raw()] = expandColumns[i];
+        }
+    }
+}
+
+bool AllowStringColumnArg(const TExprNode* argNode) {
+    if (!argNode) {
+        return false;
+    }
+    // Phy plans sometimes lack type ann on Member/Argument; still accept.
+    // If ann is present, require string-like.
+    if (!argNode->GetTypeAnn()) {
+        return true;
+    }
+    return IsStringLikeTypeAnn(argNode->GetTypeAnn());
+}
+
+void CollectStringColumnsFromApply(
+    TExprBase node,
+    const THashMap<const TExprNode*, TString>& argToColumn,
+    THashSet<TString>& outColumns)
+{
+    auto apply = node.Maybe<TCoApply>();
+    if (!apply) {
+        return;
+    }
+    auto callable = apply.Cast().Callable();
+    if (!callable.Maybe<TCoUdf>() && !callable.Maybe<TCoScriptUdf>()) {
+        return;
+    }
+
+    // Apply children: 0 = callable, 1.. = args
+    const auto& ref = apply.Cast().Ref();
+    for (ui32 i = 1; i < ref.ChildrenSize(); ++i) {
+        const TExprNode* argNode = PeelTrivialWrappers(ref.Child(i));
+        if (!AllowStringColumnArg(argNode)) {
+            continue;
+        }
+        TExprBase arg(argNode);
+        if (auto member = arg.Maybe<TCoMember>()) {
+            outColumns.insert(TString(member.Cast().Name().Value()));
+            continue;
+        }
+        if (auto argument = arg.Maybe<TCoArgument>()) {
+            if (const TString* name = argToColumn.FindPtr(argument.Cast().Raw())) {
+                outColumns.insert(*name);
+            }
+        }
+    }
+}
+
+} // namespace
 
 void TStagePredictor::Prepare() {
     InputDataPrediction = 1;
@@ -49,6 +231,7 @@ void TStagePredictor::Prepare() {
 }
 
 void TStagePredictor::Scan(const NYql::TExprNode::TPtr& stageNode) {
+    THashMap<const TExprNode*, TString> wideArgToColumn;
     NYql::VisitExpr(stageNode, [&](const NYql::TExprNode::TPtr& exprNode) {
         NYql::NNodes::TExprBase node(exprNode);
         ++NodesCount;
@@ -100,6 +283,9 @@ void TStagePredictor::Scan(const NYql::TExprNode::TPtr& stageNode) {
                 WasmUdfModules_.insert(TString(moduleName));
             }
         }
+
+        RegisterWideMapColumnArgs(node, wideArgToColumn);
+        CollectStringColumnsFromApply(node, wideArgToColumn, WasmUdfStringColumns_);
         return true;
         });
 }
@@ -133,6 +319,10 @@ void TStagePredictor::SerializeToKqpSettings(NYql::NDqProto::TProgram::TSettings
     for (const auto& module : GetWasmUdfModules()) {
         kqpProto.AddWasmUdfModules(module);
     }
+    kqpProto.ClearWasmUdfStringColumns();
+    for (const auto& column : GetWasmUdfStringColumns()) {
+        kqpProto.AddWasmUdfStringColumns(column);
+    }
 }
 
 bool TStagePredictor::DeserializeFromKqpSettings(const NYql::NDqProto::TProgram::TSettings& kqpProto) {
@@ -161,6 +351,10 @@ bool TStagePredictor::DeserializeFromKqpSettings(const NYql::NDqProto::TProgram:
     for (const auto& module : kqpProto.GetWasmUdfModules()) {
         WasmUdfModules_.insert(module);
     }
+    WasmUdfStringColumns_.clear();
+    for (const auto& column : kqpProto.GetWasmUdfStringColumns()) {
+        WasmUdfStringColumns_.insert(column);
+    }
     return true;
 }
 
@@ -168,6 +362,12 @@ TVector<TString> TStagePredictor::GetWasmUdfModules() const {
     TVector<TString> modules(WasmUdfModules_.begin(), WasmUdfModules_.end());
     Sort(modules);
     return modules;
+}
+
+TVector<TString> TStagePredictor::GetWasmUdfStringColumns() const {
+    TVector<TString> columns(WasmUdfStringColumns_.begin(), WasmUdfStringColumns_.end());
+    Sort(columns);
+    return columns;
 }
 
 ui32 TStagePredictor::GetUsableThreads() {
