@@ -312,6 +312,7 @@ Unload WASM: при delete/replace вызывается `NKqp::IDynamicFunctionR
 |---|---|---|
 | Минимальный WAT без libc | `[]` | Empty image + host; без wasm-malloc в RuntimeLibrary |
 | throw (`Throw::fail`) | `["sdk"]` | host `ThrowException` + call stack |
+| oob (`Oob::crash` / `bad_index` / `null_deref` / `bad_ref`) | `[]` | WAVM OOB / null+offset / poison-ref traps + call stack |
 | md5 | `["sdk"]` | полный emscripten sdk как env |
 | with_helpers | `["sdk", "helpers"]` | sdk + промежуточная библиотека + модуль |
 | prefix (objects) | `["sdk"]` | TypeConfig + `object_framework` PEERDIR |
