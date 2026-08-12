@@ -376,6 +376,18 @@ For more information, see [{#T}](datamodel/backup-collection.md).
 
 **YQL ({{ ydb-short-name }} Query Language)** is a high-level language for working with the system. It is a dialect of [ANSI SQL](https://en.wikipedia.org/wiki/SQL). There are many materials dedicated to YQL, including a [tutorial](../dev/yql-tutorial/index.md), [reference guide](../yql/reference/syntax/index.md), and [recipes](../yql/reference/recipes/index.md).
 
+### UDF {#udf}
+
+**UDF** (**user-defined function**) is a function that extends YQL beyond the language built-ins. In {{ ydb-short-name }}, UDFs can be [built-in](../yql/reference/udf/list/index.md) (shipped with the server) or [user-defined](../dev/udf-store/index.md) (uploaded via [UDF Store](#udf-store)).
+
+### UDF Store {#udf-store}
+
+**UDF Store** is storage for custom [UDF](#udf) modules in a {{ ydb-short-name }} database. It lets you upload modules of types `WASM`, `LIBRARY`, and `NATIVE_UNSAFE` and call registered functions from YQL. See the guide [{#T}](../dev/udf-store/index.md).
+
+### WASM UDF {#wasm-udf}
+
+**WASM UDF** is a custom [UDF](#udf) module in [WebAssembly](https://webassembly.org/) format uploaded into [UDF Store](#udf-store). It runs in a WebAssembly sandbox; functions are described by a JSON manifest. See [{#T}](../dev/udf-store/wasm/index.md).
+
 ### Federated queries {#federated-queries}
 
 **Federated queries** — functionality that allows executing queries against data stored in systems external to the {{ ydb-short-name }} cluster.

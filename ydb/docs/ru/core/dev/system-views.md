@@ -740,3 +740,49 @@ WHERE Sid = "user3"
 | `RetryCount`      | Число перезапусков запроса<br />Тип: `Uint64`|
 | `LastFailAt`      | Время последней ошибки исполнения запроса<br />Тип: `Timestamp`|
 | `SuspendedUntil`  | Время, когда будет предпринята попытка возобновить остановившийся запрос<br />Тип: `Timestamp`|
+
+## Пользовательские UDF {#udf-modules}
+
+### Просмотр модулей UDF Store {#udf-modules-view}
+
+Системное представление `udf_modules` содержит информацию о модулях, загруженных в [UDF Store](../concepts/glossary.md#udf-store).
+
+Структура таблицы:
+
+| Колонка | Описание |
+|---------|----------|
+| `Uid` | Уникальный идентификатор записи модуля.<br />Тип: `Utf8`.<br />Ключ: `0`. |
+| `Md5` | MD5 содержимого модуля (для UDF) или идентификатор артефакта.<br />Тип: `Utf8`. |
+| `Name` | Имя модуля (`module_name` для WASM, имя библиотеки для `LIBRARY`).<br />Тип: `Utf8`. |
+| `ModuleType` | Тип модуля: `WASM`, `LIBRARY` или `NATIVE_UNSAFE`.<br />Тип: `Utf8`. |
+| `Version` | Версия записи.<br />Тип: `Uint64`. |
+| `Size` | Размер исходника в байтах.<br />Тип: `Uint64`. |
+| `ChunkCount` | Число чанков тела модуля.<br />Тип: `Uint64`. |
+| `CompileStatus` | Статус компиляции/обработки (для WASM/LIBRARY), например `ready`, `compiling`, `failed`.<br />Тип: `Utf8`. |
+| `CompileError` | Текст ошибки компиляции, если есть.<br />Тип: `Utf8`. |
+| `CreatedAt` | Время создания записи.<br />Тип: `Timestamp`. |
+| `CompileStartedAt` | Время начала компиляции.<br />Тип: `Timestamp`. |
+| `CompileFinishedAt` | Время окончания компиляции.<br />Тип: `Timestamp`. |
+| `Manifest` | JSON-манифест модуля (для WASM).<br />Тип: `Utf8`. |
+
+### Примеры запросов {#udf-modules-examples}
+
+Список WASM-модулей и статус компиляции:
+
+```yql
+SELECT Uid, Name, ModuleType, CompileStatus, Md5, CompileError
+FROM `.sys/udf_modules`
+WHERE ModuleType = "WASM";
+```
+
+Список библиотек:
+
+```yql
+SELECT Name, CompileStatus, Size
+FROM `.sys/udf_modules`
+WHERE ModuleType = "LIBRARY"
+ORDER BY Name;
+```
+
+Практическое руководство: [{#T}](udf-store/index.md).
+
