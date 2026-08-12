@@ -1,0 +1,10 @@
+items:
+- name: Managing modules
+  href: managing.md
+- name: WASM UDFs
+  href: wasm/index.md
+  include:
+    mode: link
+    path: wasm/toc_p.yaml
+- name: Native unsafe UDFs
+  href: native-unsafe.md

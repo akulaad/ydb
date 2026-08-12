@@ -51,6 +51,11 @@ items:
   href: timeouts.md
 - name: Системные представления
   href: system-views.md
+- name: Пользовательские UDF
+  href: udf-store/index.md
+  include:
+    mode: link
+    path: udf-store/toc_p.yaml
 - name: Change Data Capture
   href: cdc.md
 - name: Устройство и ограничения разделяемого читателя топика

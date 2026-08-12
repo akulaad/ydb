@@ -51,6 +51,11 @@ items:
   href: timeouts.md
 - name: System views
   href: system-views.md
+- name: User-defined UDFs
+  href: udf-store/index.md
+  include:
+    mode: link
+    path: udf-store/toc_p.yaml
 - name: Change Data Capture
   href: cdc.md
 - name: Terraform

@@ -782,3 +782,49 @@ Table structure:
 | `RetryCount` | Number of query restarts<br />Type: `Uint64` |
 | `LastFailAt` | Time of the last query execution error<br />Type: `Timestamp` |
 | `SuspendedUntil` | Time when an attempt will be made to resume a stopped query<br />Type: `Timestamp` |
+
+## User-defined UDFs {#udf-modules}
+
+### Viewing UDF Store modules {#udf-modules-view}
+
+The `udf_modules` system view contains information about modules loaded into [UDF Store](../concepts/glossary.md#udf-store).
+
+Table structure:
+
+| Column | Description |
+| --- | --- |
+| `Uid` | Unique module row identifier.<br />Type: `Utf8`.<br />Key: `0`. |
+| `Md5` | MD5 of the module contents (for UDFs) or artifact id.<br />Type: `Utf8`. |
+| `Name` | Module name (`module_name` for WASM, library name for `LIBRARY`).<br />Type: `Utf8`. |
+| `ModuleType` | Module type: `WASM`, `LIBRARY`, or `NATIVE_UNSAFE`.<br />Type: `Utf8`. |
+| `Version` | Row version.<br />Type: `Uint64`. |
+| `Size` | Source size in bytes.<br />Type: `Uint64`. |
+| `ChunkCount` | Number of body chunks.<br />Type: `Uint64`. |
+| `CompileStatus` | Compilation/processing status (for WASM/LIBRARY), for example `ready`, `compiling`, `failed`.<br />Type: `Utf8`. |
+| `CompileError` | Compilation error text, if any.<br />Type: `Utf8`. |
+| `CreatedAt` | Row creation time.<br />Type: `Timestamp`. |
+| `CompileStartedAt` | Compilation start time.<br />Type: `Timestamp`. |
+| `CompileFinishedAt` | Compilation finish time.<br />Type: `Timestamp`. |
+| `Manifest` | Module JSON manifest (for WASM).<br />Type: `Utf8`. |
+
+### Query examples {#udf-modules-examples}
+
+List WASM modules and compile status:
+
+```yql
+SELECT Uid, Name, ModuleType, CompileStatus, Md5, CompileError
+FROM `.sys/udf_modules`
+WHERE ModuleType = "WASM";
+```
+
+List libraries:
+
+```yql
+SELECT Name, CompileStatus, Size
+FROM `.sys/udf_modules`
+WHERE ModuleType = "LIBRARY"
+ORDER BY Name;
+```
+
+Practical guide: [{#T}](udf-store/index.md).
+

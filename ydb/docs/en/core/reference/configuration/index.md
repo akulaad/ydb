@@ -36,6 +36,7 @@ The following configuration sections are available, listed in alphabetical order
 | [{#T}](table_service_config.md) | No | Query execution configuration settings |
 | [{#T}](tli_config.md) | No | Diagnostics parameters for [transaction lock invalidation](../../concepts/glossary.md#tli) (TLI) |
 | [{#T}](tls.md) | No | TLS configuration for secure connections |
+| [{#T}](udf_store_config.md) | No | Configuration of [UDF Store](../../concepts/glossary.md#udf-store) and user-defined UDFs |
 
 ## Practical recommendations
 

@@ -380,6 +380,18 @@ JSON-индекс, как и [полнотекстовый индекс](#fullte
 
 **YQL ({{ ydb-short-name }} Query Language)** — это высокоуровневый язык для работы с системой. Он является диалектом [ANSI SQL](https://en.wikipedia.org/wiki/SQL). Существует много материалов, посвящённых YQL, включая [туториал](../dev/yql-tutorial/index.md), [справочник](../yql/reference/syntax/index.md) и [рецепты](../yql/reference/recipes/index.md).
 
+### UDF {#udf}
+
+**UDF** (**user-defined function**, пользовательская функция) — функция, расширяющая возможности YQL за пределами встроенных операторов языка. В {{ ydb-short-name }} UDF бывают [встроенными](../yql/reference/udf/list/index.md) (поставляются с сервером) и [пользовательскими](../dev/udf-store/index.md) (загружаются через [UDF Store](#udf-store)).
+
+### UDF Store {#udf-store}
+
+**UDF Store** — хранилище пользовательских [UDF](#udf)-модулей в базе данных {{ ydb-short-name }}. Позволяет загружать модули типов `WASM`, `LIBRARY` и `NATIVE_UNSAFE` и вызывать зарегистрированные функции из YQL. Подробнее — в руководстве [{#T}](../dev/udf-store/index.md).
+
+### WASM UDF {#wasm-udf}
+
+**WASM UDF** — пользовательский [UDF](#udf)-модуль в формате [WebAssembly](https://webassembly.org/), загружаемый в [UDF Store](#udf-store). Исполняется в песочнице WebAssembly; функции описываются JSON-манифестом. Подробнее — в разделе [{#T}](../dev/udf-store/wasm/index.md).
+
 ### Федеративные запросы {#federated-queries}
 
 **Федеративные запросы** или **federated queries** — это функциональность, позволяющая выполнять запросы к данным, хранящимся в системах, внешних по отношению к кластеру {{ ydb-short-name }}.

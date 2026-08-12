@@ -1,0 +1,7 @@
+items:
+- name: Манифест
+  href: manifest.md
+- name: Библиотеки
+  href: libraries.md
+- name: Ограничения
+  href: limitations.md
