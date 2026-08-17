@@ -58,15 +58,7 @@ WHERE ModuleType = "WASM";
 
 Upload helper: `ydb/tests/functional/udf_store/upload_udf`  
 (`--action upload|delete`, `--kind udf|library`; для library нужен `--library-name`;
-<<<<<<< HEAD
-<<<<<<< HEAD
 delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
-=======
-delete udf — `--md5` или `--udf-file`; delete чистит meta/source(+chunks) и best-effort AOT artifacts).
->>>>>>> ceaf113964f (fixes)
-=======
-delete udf — `--md5` или `--udf-file`; delete чистит modules(+chunks) и best-effort AOT artifacts).
->>>>>>> 98bfa56d974 (add ddl function)
 
 ---
 
@@ -225,36 +217,23 @@ Shared context: один модуль линкует `object_framework`, пер�
 
 ## 8. Связка с KQP
 
-<<<<<<< HEAD
 1. **Compile / predictor** (`kqp_predictor`): обходит план, на `TCoUdf` ставит `HasUdf` и собирает имена модулей.
-2. Модули пишутся в **KQP** `TKqpPhyStage.WasmUdfModules` (не в DQ `TProgram::TSettings`).
-3. При сериализации task (`SerializeTaskToProto`) список кладётся в `TaskParams["_WasmUdfModules"]` (newline-separated).
-4. **Compute actor** / **literal executer**:
+2. Тот же обход эвристикой помечает **string-колонки**, текущие в аргументы `Apply(Udf, …)` (`Member` / WideMap `Argument` ↔ `KqpWideRead*::Columns`), в `WasmUdfStringColumns`.
+3. Модули пишутся в **KQP** `TKqpPhyStage.WasmUdfModules`; string columns остаются в `TProgram::TSettings.WasmUdfStringColumns` и копируются в scan/source settings.
+4. При сериализации task (`SerializeTaskToProto`) список модулей кладётся в `TaskParams["_WasmUdfModules"]` (newline-separated).
+5. **Compute actor** / **literal executer**:
    - CA читает `TaskParams`; literal — напрямую `stage.GetWasmUdfModules()`;
    - `TQueryCompartmentScope(modules)` → `FilterLoadedWasmUdfModules` (только каталог) → `Acquire`;
+   - на init scan: `ApplyWasmUdfStringColumns` → `PreferWasm` только для имён из settings;
    - на обработке событий / DoExecute: `MakeTlsGuard()` → TLS guard;
    - при ошибке Acquire — `ErrorFromIssue` / failure state **до** `SetTaskRunner`.
-5. Исполнение UDF → `TWasmUdfFunction::Run` / `TWasmConfiguredCallable::Run` читает TLS query compartment.
-
-Ошибка Acquire до появления task stats раньше маскировалась `AFL_ENSURE(stats.GetTasks().size() == 1)` в `kqp_executer_stats.cpp`; пустые Tasks при early failure теперь пропускаются, чтобы клиент видел исходный issue.
-
-=======
-1. **Compile / predictor** (`kqp_predictor`): обходит план, на `TCoUdf` собирает имена модулей в `WasmUdfModules`.
-2. Тот же обход эвристикой помечает **string-колонки**, текущие в аргументы `Apply(Udf, …)` (`Member` / WideMap `Argument` ↔ `KqpWideRead*::Columns`), в `WasmUdfStringColumns`.
-3. Модули и колонки попадают в `TProgram::TSettings` задачи.
-4. **Compute actor** (`kqp_pure_compute_actor`, `kqp_scan_compute_actor`) и **literal executer**:
-   - в bootstrap: `TQueryCompartmentScope(settings)` → `Acquire`;
-   - на init scan: `ApplyWasmUdfStringColumns` → `PreferWasm` только для имён из settings;
-   - на обработке событий / DoExecute: `Activate()` → TLS guard;
-   - при ошибке Acquire — `ErrorFromIssue` / failure state **до** `SetTaskRunner`.
-5. Материализация scan: marked string → `MakePreferWasm` (1-copy cell→WASM); остальные large strings → host `MakeString`. Если колонка всё же уйдёт в WASM UDF при false negative — `PrepareArg` сделает `CopyIntoCompartment`.
-6. Исполнение UDF → `TWasmUdfFunction::Run` или `TWasmConfiguredCallable::Run` читает TLS query compartment и вызывает export.
+6. Материализация scan: marked string → `MakePreferWasm` (1-copy cell→WASM); остальные large strings → host `MakeString`. Если колонка всё же уйдёт в WASM UDF при false negative — `FillAbiStringArg` сделает `CopyIntoCompartment`.
+7. Исполнение UDF → `TWasmUdfFunction::Run` / `TWasmConfiguredCallable::Run` читает TLS query compartment.
 
 Ошибка Acquire до появления task stats раньше маскировалась `AFL_ENSURE(stats.GetTasks().size() == 1)` в `kqp_executer_stats.cpp`; пустые Tasks при early failure теперь пропускаются, чтобы клиент видел исходный issue.
 
 **Авто resident columns (v1):** эвристика не полный SSA — literals / computed / join / чужие UDF-результаты могут дать false negative (корректный fallback через host + copy). Blocks path и lazy holder — вне скоупа.
 
->>>>>>> ef6f57fa926 (add wasm allocator manager)
 ## 9. Host ABI и calling convention
 
 Файлы: `wasm/host.*`, `wasm/abi/udf_cpp_abi.h`.
@@ -273,17 +252,7 @@ Calling convention `unversioned_value`: указатели на `TUnversionedVal
 
 Ошибки из wasm: `ThrowException` → C++ exception → `WasmError` → `UdfTerminate("name(); ex: …")` (+ call stack).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 Unload WASM: при delete/replace вызывается `NKqp::IDynamicFunctionRegistry::RemoveModule(moduleName)` (через cast от `IMutableFunctionRegistry`); иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
-=======
-Unload WASM: при delete/replace вызывается `FunctionRegistry::RemoveModule(moduleName)`; иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
-
-Unload WASM: `FunctionRegistry::RemoveModule(moduleName)` при delete/replace; иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
->>>>>>> ceaf113964f (fixes)
-=======
-Unload WASM: при delete/replace вызывается `NKqp::IDynamicFunctionRegistry::RemoveModule(moduleName)` (через cast от `IMutableFunctionRegistry`); иначе reupload того же `module_name` падает с `UDF module duplication`, а в registry остаётся старый набор функций.
->>>>>>> af314b193a3 (add dynamic_function_registry)
 ---
 
 ## 10. Линковка модулей (WAVM)

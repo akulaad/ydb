@@ -25,16 +25,6 @@ inline TVector<TString> ParseWasmUdfModulesTaskParam(TStringBuf data) {
     return modules;
 }
 
-template <typename TRepeatedString>
-inline TVector<TString> WasmUdfModulesFromRepeated(const TRepeatedString& repeated) {
-    TVector<TString> modules;
-    modules.reserve(repeated.size());
-    for (const auto& module : repeated) {
-        modules.push_back(module);
-    }
-    return FilterLoadedWasmUdfModules(modules);
-}
-
 //! Keep only module names registered in the WASM catalog.
 //! Stage predictor records every TCoUdf module (String, Knn, ...);
 //! native UDFs must not trigger Acquire / ResolveModules.
@@ -50,6 +40,16 @@ inline TVector<TString> FilterLoadedWasmUdfModules(
         }
     }
     return result;
+}
+
+template <typename TRepeatedString>
+inline TVector<TString> WasmUdfModulesFromRepeated(const TRepeatedString& repeated) {
+    TVector<TString> modules;
+    modules.reserve(repeated.size());
+    for (const auto& module : repeated) {
+        modules.push_back(module);
+    }
+    return FilterLoadedWasmUdfModules(modules);
 }
 
 // Owns a per-query compartment. Install it as the current TLS compartment only

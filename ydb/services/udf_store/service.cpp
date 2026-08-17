@@ -155,7 +155,6 @@ void TUdfStoreService::EnqueueWasmLoadIfNeeded(const TUdfModule& udf) {
                 << " before loading md5=" << udf.GetMd5();
             UnloadWasmUdf(md5);
         }
-<<<<<<< HEAD
     } catch (const std::exception& ex) {
         ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
             << "TUdfStoreService: skipping WASM load for md5=" << udf.GetMd5()
@@ -166,9 +165,6 @@ void TUdfStoreService::EnqueueWasmLoadIfNeeded(const TUdfModule& udf) {
             << "TUdfStoreService: skipping WASM load for md5=" << udf.GetMd5()
             << " due to unknown manifest parse error";
         return;
-=======
-    } catch (...) {
->>>>>>> ceaf113964f (fixes)
     }
     PendingWasmLoad.push_back(TPendingUdf{
         .Md5 = udf.GetMd5(),
@@ -462,18 +458,8 @@ void TUdfStoreService::Handle(NMetadata::NProvider::TEvRefreshSubscriberData::TP
 
 void TUdfStoreService::UnloadWasmUdf(const TString& md5) {
     if (auto it = LoadedWasmModuleNames.find(md5); it != LoadedWasmModuleNames.end()) {
-<<<<<<< HEAD
-<<<<<<< HEAD
         if (auto* dynamicRegistry = NKqp::AsDynamicFunctionRegistry(FunctionRegistry.Get())) {
             dynamicRegistry->RemoveModule(it->second);
-=======
-        if (FunctionRegistry) {
-            FunctionRegistry->RemoveModule(it->second);
->>>>>>> ceaf113964f (fixes)
-=======
-        if (auto* dynamicRegistry = NKqp::AsDynamicFunctionRegistry(FunctionRegistry.Get())) {
-            dynamicRegistry->RemoveModule(it->second);
->>>>>>> af314b193a3 (add dynamic_function_registry)
         }
         LoadedWasmModuleNames.erase(it);
     }
