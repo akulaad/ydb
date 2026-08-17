@@ -1,6 +1,6 @@
 # WASM UDF limitations
 
-The following limitations and common failures apply when working with [WASM UDFs](index.md). Each item follows from the current execution model (per-query WebAssembly sandbox and library linking).
+The following limitations and common failures apply when working with [WASM UDFs](index.md). Each item follows from the current execution model (per-query WebAssembly sandbox and library linking). How to write modules with an sdk, without one, and with `object_framework` is covered in [Writing and building](writing.md).
 
 ## Configuration and availability {#config}
 
@@ -25,6 +25,7 @@ The following limitations and common failures apply when working with [WASM UDFs
 
 ## See also
 
+- [Writing and building](writing.md)
 - [Libraries](libraries.md)
 - [Manifest](manifest.md)
 - [Native unsafe UDFs](../native-unsafe.md)

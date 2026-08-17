@@ -15,7 +15,7 @@ Unlike built-in libraries, UDF Store modules are not shipped with the server: yo
 ## Sections
 
 - [Managing modules](managing.md) — enabling the store, upload and delete, monitoring via `.sys/udf_modules`
-- [WASM UDFs](wasm/index.md) — lifecycle, manifest, libraries, and WASM limitations
+- [WASM UDFs](wasm/index.md): lifecycle, [writing and building](wasm/writing.md), manifest, libraries, and WASM limitations
 - [Native unsafe UDFs](native-unsafe.md) — native modules
 
 ## See also

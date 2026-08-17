@@ -15,7 +15,7 @@
 ## Разделы
 
 - [Управление модулями](managing.md) — включение store, загрузка и удаление, мониторинг через `.sys/udf_modules`
-- [WASM UDF](wasm/index.md) — жизненный цикл, манифест, библиотеки и ограничения WASM
+- [WASM UDF](wasm/index.md): жизненный цикл, [написание и сборка](wasm/writing.md), манифест, библиотеки и ограничения WASM
 - [Native unsafe UDF](native-unsafe.md) — нативные модули
 
 ## См. также

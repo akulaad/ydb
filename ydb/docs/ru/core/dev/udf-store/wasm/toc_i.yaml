@@ -1,4 +1,6 @@
 items:
+- name: Написание и сборка
+  href: writing.md
 - name: Манифест
   href: manifest.md
 - name: Библиотеки

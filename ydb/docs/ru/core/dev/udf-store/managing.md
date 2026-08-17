@@ -29,6 +29,8 @@ udf_store_config:
 
 ## Загрузка и удаление {#upload}
 
+Как написать и собрать `.wasm`, описано в разделе [Написание и сборка WASM UDF](wasm/writing.md).
+
 Публичной команды `ydb` CLI для загрузки модулей пока нет. На практике используется утилита из дерева исходников `ydb/tests/functional/udf_store/upload_udf` (dev/tooling), которая пишет строки в таблицы store.
 
 Основные параметры:
@@ -84,5 +86,6 @@ FROM `.sys/udf_modules`;
 ## См. также
 
 - [WASM UDF](wasm/index.md)
+- [Написание и сборка WASM UDF](wasm/writing.md)
 - [Native unsafe UDF](native-unsafe.md)
 - [`udf_store_config`](../../reference/configuration/udf_store_config.md)

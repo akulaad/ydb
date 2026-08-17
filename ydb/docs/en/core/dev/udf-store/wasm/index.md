@@ -7,7 +7,7 @@ After upload, {{ ydb-short-name }} AOT-compiles the module for the node CPU, reg
 ## Quick start {#quick-start}
 
 1. Enable the store and WASM: see [Managing modules](../managing.md#enable).
-2. Prepare a binary (`.wasm` or `.wat`) and a JSON [manifest](manifest.md).
+2. Write and build the module: [Writing and building](writing.md). You need a binary (`.wasm` or `.wat`) and a JSON [manifest](manifest.md).
 3. Upload the module (and [libraries](libraries.md) if needed).
 4. Wait for `CompileStatus = "ready"` in [`.sys/udf_modules`](../../system-views.md#udf-modules).
 5. Call the function from YQL:
@@ -39,9 +39,10 @@ Minimal manifest without libraries:
 
 ## Sections
 
-- [Manifest](manifest.md) — JSON module contract, functions, and TypeConfig objects
-- [Libraries](libraries.md) — `LIBRARY` type, `required_libraries`, sdk order
-- [Limitations](limitations.md) — limitations and common failures
+- [Writing and building](writing.md): C++ ABI, Ya Make, Emscripten, module examples
+- [Manifest](manifest.md): JSON module contract, functions, and TypeConfig objects
+- [Libraries](libraries.md): `LIBRARY` type, `required_libraries`, sdk order
+- [Limitations](limitations.md): limitations and common failures
 
 ## See also
 

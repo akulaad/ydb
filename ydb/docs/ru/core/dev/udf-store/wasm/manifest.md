@@ -92,6 +92,7 @@ Handle объекта валиден только в рамках текущег
 
 ## См. также
 
+- [Написание и сборка](writing.md)
 - [Библиотеки](libraries.md)
 - [Ограничения](limitations.md)
 - [WASM UDF](index.md)

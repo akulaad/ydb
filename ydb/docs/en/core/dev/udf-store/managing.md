@@ -29,6 +29,8 @@ WASM/LIBRARY metadata and sources live in `.metadata/udf_store/modules` and `.me
 
 ## Upload and delete {#upload}
 
+How to write and build a `.wasm` file is described in [Writing and building WASM UDFs](wasm/writing.md).
+
 There is no public `ydb` CLI command for uploading modules yet. In practice, use the helper from the source tree at `ydb/tests/functional/udf_store/upload_udf` (dev/tooling), which writes rows into the store tables.
 
 Main parameters:
@@ -84,5 +86,6 @@ For WASM, wait until `CompileStatus = "ready"` before calling functions in queri
 ## See also
 
 - [WASM UDFs](wasm/index.md)
+- [Writing and building WASM UDFs](wasm/writing.md)
 - [Native unsafe UDFs](native-unsafe.md)
 - [`udf_store_config`](../../reference/configuration/udf_store_config.md)

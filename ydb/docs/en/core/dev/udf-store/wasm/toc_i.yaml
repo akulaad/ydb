@@ -1,4 +1,6 @@
 items:
+- name: Writing and building
+  href: writing.md
 - name: Manifest
   href: manifest.md
 - name: Libraries

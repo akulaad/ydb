@@ -40,12 +40,15 @@ upload_udf ... --kind udf --type WASM --udf-file with_helpers.wasm --manifest ma
 SELECT WithHelpers::scale(7);  -- 21
 ```
 
+How to build the sdk, a helper library, and a UDF that imports symbols with `import_module` is described in [Writing and building](writing.md#build).
+
 ## Delete and dependencies {#delete}
 
 When a library is deleted or replaced, dependent WASM UDFs may be unloaded and may need recompilation after dependencies are restored. Before deleting a library, make sure no active module manifests still reference it.
 
 ## See also
 
+- [Writing and building](writing.md)
 - [Manifest](manifest.md)
 - [Managing modules](../managing.md)
 - [Limitations](limitations.md)

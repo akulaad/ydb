@@ -7,7 +7,7 @@
 ## Быстрый старт {#quick-start}
 
 1. Включите store и WASM: см. [Управление модулями](../managing.md#enable).
-2. Подготовьте бинарник (`.wasm` или `.wat`) и JSON-[манифест](manifest.md).
+2. Напишите и соберите модуль: [Написание и сборка](writing.md). Нужны бинарник (`.wasm` или `.wat`) и JSON-[манифест](manifest.md).
 3. Загрузите модуль (и при необходимости [библиотеки](libraries.md)).
 4. Дождитесь `CompileStatus = "ready"` в [`.sys/udf_modules`](../../system-views.md#udf-modules).
 5. Вызовите функцию из YQL:
@@ -39,9 +39,10 @@ SELECT Add::add(10, 32);
 
 ## Разделы
 
-- [Манифест](manifest.md) — JSON-контракт модуля, функции и объекты с TypeConfig
-- [Библиотеки](libraries.md) — тип `LIBRARY`, `required_libraries`, порядок sdk
-- [Ограничения](limitations.md) — ограничения и типичные ошибки
+- [Написание и сборка](writing.md): C++ ABI, Ya Make, Emscripten, примеры модулей
+- [Манифест](manifest.md): JSON-контракт модуля, функции и объекты с TypeConfig
+- [Библиотеки](libraries.md): тип `LIBRARY`, `required_libraries`, порядок sdk
+- [Ограничения](limitations.md): ограничения и типичные ошибки
 
 ## См. также
 

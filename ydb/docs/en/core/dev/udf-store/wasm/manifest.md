@@ -92,6 +92,7 @@ The object handle is valid only within the current query. Method names become YQ
 
 ## See also
 
+- [Writing and building](writing.md)
 - [Libraries](libraries.md)
 - [Limitations](limitations.md)
 - [WASM UDFs](index.md)
