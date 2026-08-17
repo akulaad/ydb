@@ -13,7 +13,6 @@
 #include <library/cpp/containers/stack_vector/stack_vec.h>
 
 #include <util/stream/output.h>
-#include <util/system/env.h>
 
 #include <new>
 
@@ -1015,20 +1014,8 @@ NUdf::TUnboxedValue GetCellValue(const TCell& cell, NScheme::TTypeInfo type, boo
     }
 
     auto makeStringValue = [preferWasm](NUdf::TStringRef data) -> NUdf::TUnboxedValue {
-        static const bool debugEnabled = [] {
-            const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
-            return v == "1" || v == "true" || v == "yes";
-        }();
         if (preferWasm) {
-            if (debugEnabled) {
-                Cerr << "[WasmString] GetCellValue: path=MakePreferWasm size="
-                     << data.Size() << Endl;
-            }
             return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(data);
-        }
-        if (debugEnabled) {
-            Cerr << "[WasmString] GetCellValue: path=host_MakeString size="
-                 << data.Size() << Endl;
         }
         return MakeString(data);
     };

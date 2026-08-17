@@ -1,15 +1,14 @@
-UNITTEST_FOR(ydb/core/kqp/query_data)
+UNITTEST_FOR(ydb/core/kqp/query_compiler)
 
 SIZE(SMALL)
 
 SRCS(
-    kqp_predictor_ut.cpp
+    kqp_wasm_string_columns_ut.cpp
 )
 
 PEERDIR(
-    ydb/core/kqp/common
     ydb/core/kqp/expr_nodes
-    ydb/core/kqp/query_data
+    ydb/core/kqp/query_compiler
     yql/essentials/ast
     yql/essentials/core
     yql/essentials/core/expr_nodes

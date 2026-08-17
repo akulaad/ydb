@@ -20,11 +20,11 @@
 #include <ydb/library/actors/core/interconnect.h>
 #include <ydb/library/actors/core/actorsystem.h>
 #include <ydb/library/wilson_ids/wilson.h>
+#include <ydb/services/udf_store/wasm/prefer_wasm_stats.h>
 
 #include <util/generic/intrlist.h>
 #include <util/stream/output.h>
 #include <util/string/vector.h>
-#include <util/system/env.h>
 
 #define YDB_LOG_THIS_FILE_COMPONENT NKikimrServices::KQP_COMPUTE
 
@@ -1684,22 +1684,8 @@ private:
         THashSet<TString> preferWasmColumns(
             Settings->GetWasmUdfStringColumns().begin(),
             Settings->GetWasmUdfStringColumns().end());
-        static const bool debugEnabled = [] {
-            const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
-            return v == "1" || v == "true" || v == "yes";
-        }();
-        if (debugEnabled) {
-            TStringBuilder names;
-            for (size_t i = 0; i < Settings->WasmUdfStringColumnsSize(); ++i) {
-                if (i) {
-                    names << ",";
-                }
-                names << Settings->GetWasmUdfStringColumns(i);
-            }
-            Cerr << "[WasmString] KqpReadActor InitResultColumns: WasmUdfStringColumns=["
-                 << names << "] settings_size=" << Settings->WasmUdfStringColumnsSize() << Endl;
-        }
 
+        ui64 preferWasmMarked = 0;
         ResultColumns.reserve(Settings->ColumnsSize());
         for (size_t resultColumnIndex = 0; resultColumnIndex < Settings->ColumnsSize(); ++resultColumnIndex) {
             const auto& srcColumn = Settings->GetColumns(resultColumnIndex);
@@ -1710,11 +1696,10 @@ private:
             column.NotNull = srcColumn.GetNotNull();
             column.Name = srcColumn.GetName();
             column.PreferWasm = !column.Name.empty() && preferWasmColumns.contains(column.Name);
-            if (debugEnabled && column.PreferWasm) {
-                Cerr << "[WasmString] KqpReadActor PreferWasm column=" << column.Name << Endl;
-            }
+            preferWasmMarked += column.PreferWasm ? 1 : 0;
             ResultColumns.push_back(column);
         }
+        NUdfStore::NWasm::TPreferWasmStats::Instance().OnColumnsMarked(preferWasmMarked);
     }
 
 private:

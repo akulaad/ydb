@@ -218,21 +218,24 @@ Shared context: один модуль линкует `object_framework`, пер�
 ## 8. Связка с KQP
 
 1. **Compile / predictor** (`kqp_predictor`): обходит план, на `TCoUdf` ставит `HasUdf` и собирает имена модулей.
-2. Тот же обход эвристикой помечает **string-колонки**, текущие в аргументы `Apply(Udf, …)` (`Member` / WideMap `Argument` ↔ `KqpWideRead*::Columns`), в `WasmUdfStringColumns`.
-3. Модули пишутся в **KQP** `TKqpPhyStage.WasmUdfModules`; string columns остаются в `TProgram::TSettings.WasmUdfStringColumns` и копируются в scan/source settings.
-4. При сериализации task (`SerializeTaskToProto`) список модулей кладётся в `TaskParams["_WasmUdfModules"]` (newline-separated).
-5. **Compute actor** / **literal executer**:
+2. **Резолвер string-колонок** (`kqp_wasm_string_columns`) для каждого стейджа отдельно ведёт аргументы `Apply(Udf, …)` назад к физическим колонкам чтения этого же стейджа (`KqpRowsSourceSettings::Columns` у источника, `KqpWideRead*::Columns` у чтения внутри программы). Прослеживаются только шаги, сохраняющие сам буфер: `Member` физического row, аргументы `ExpandMap` / `WideMap` по индексу, AutoMap-развёртка (`Map` / `FlatMap` / `IfPresent`), `Just` / `Unwrap` / `Coalesce`; всё остальное — fail-closed.
+3. Колонки попадают в `WasmUdfStringColumns` **только если стейдж содержит и чтение, и UDF**: буфер в линейной памяти WASM не переживает канал между стейджами, поэтому cross-stage пометки бессмысленны.
+4. Модули пишутся в **KQP** `TKqpPhyStage.WasmUdfModules`; string columns остаются в `TProgram::TSettings.WasmUdfStringColumns` и копируются в scan/source settings.
+5. При сериализации task (`SerializeTaskToProto`) список модулей кладётся в `TaskParams["_WasmUdfModules"]` (newline-separated).
+6. **Compute actor** / **literal executer**:
    - CA читает `TaskParams`; literal — напрямую `stage.GetWasmUdfModules()`;
    - `TQueryCompartmentScope(modules)` → `FilterLoadedWasmUdfModules` (только каталог) → `Acquire`;
    - на init scan: `ApplyWasmUdfStringColumns` → `PreferWasm` только для имён из settings;
    - на обработке событий / DoExecute: `MakeTlsGuard()` → TLS guard;
    - при ошибке Acquire — `ErrorFromIssue` / failure state **до** `SetTaskRunner`.
-6. Материализация scan: marked string → `MakePreferWasm` (1-copy cell→WASM); остальные large strings → host `MakeString`. Если колонка всё же уйдёт в WASM UDF при false negative — `FillAbiStringArg` сделает `CopyIntoCompartment`.
-7. Исполнение UDF → `TWasmUdfFunction::Run` / `TWasmConfiguredCallable::Run` читает TLS query compartment.
+7. Материализация scan: marked string → `MakePreferWasm` (1-copy cell→WASM); остальные large strings → host `MakeString`. Если колонка всё же уйдёт в WASM UDF при false negative — `FillAbiStringArg` сделает `CopyIntoCompartment`.
+8. Исполнение UDF → `TWasmUdfFunction::Run` / `TWasmConfiguredCallable::Run` читает TLS query compartment.
 
 Ошибка Acquire до появления task stats раньше маскировалась `AFL_ENSURE(stats.GetTasks().size() == 1)` в `kqp_executer_stats.cpp`; пустые Tasks при early failure теперь пропускаются, чтобы клиент видел исходный issue.
 
-**Авто resident columns (v1):** эвристика не полный SSA — literals / computed / join / чужие UDF-результаты могут дать false negative (корректный fallback через host + copy). Blocks path и lazy holder — вне скоупа.
+**Наблюдаемость:** `TPreferWasmStats` (`wasm/prefer_wasm_stats.h`) считает помеченные колонки, материализации в WASM, `CopyIntoCompartment` / reuse resident и fallback без compartment. `FallbackNoCompartment > 0` означает, что колонки помечены для стейджа без query compartment, то есть чтение и UDF всё-таки разъехались по разным task — планирование сломано.
+
+**Ограничения:** резолвер не различает wasm- и native-UDF (каталог модулей известен только в рантайме), поэтому в стейдже с обоими видами колонка native-UDF тоже может быть помечена — это лишняя запись в WASM, но не ошибка. Неотслеживаемые формы (literals / computed / join / результаты других UDF) дают false negative с корректным fallback через host + copy. Blocks path и lazy holder — вне скоупа.
 
 ## 9. Host ABI и calling convention
 

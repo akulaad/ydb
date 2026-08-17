@@ -4,10 +4,7 @@
 #include <ydb/core/protos/data_events.pb.h>
 #include <ydb/core/scheme/scheme_types_proto.h>
 #include <yql/essentials/parser/pg_wrapper/interface/type_desc.h>
-
-#include <util/stream/output.h>
-#include <util/string/builder.h>
-#include <util/system/env.h>
+#include <ydb/services/udf_store/wasm/prefer_wasm_stats.h>
 
 namespace NKikimr::NMiniKQL {
 
@@ -95,23 +92,14 @@ TScanDataColumnsMeta::TScanDataColumnsMeta(const NKikimrTxDataShard::TKqpTransac
 }
 
 void TScanDataColumnsMeta::ApplyWasmUdfStringColumns(const THashSet<TString>& wasmUdfStringColumns) {
-    static const bool debugEnabled = [] {
-        const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
-        return v == "1" || v == "true" || v == "yes";
-    }();
-
     if (wasmUdfStringColumns.empty()) {
-        if (debugEnabled) {
-            Cerr << "[WasmString] ApplyWasmUdfStringColumns: PreferWasm marked=[] settings_size=0"
-                 << Endl;
-        }
         return;
     }
-    TVector<TString> marked;
+    ui64 marked = 0;
     for (auto& column : ResultColumns) {
         if (!column.Name.empty() && wasmUdfStringColumns.contains(column.Name)) {
             column.PreferWasm = true;
-            marked.push_back(column.Name);
+            ++marked;
         }
     }
     for (auto& column : Columns) {
@@ -119,17 +107,7 @@ void TScanDataColumnsMeta::ApplyWasmUdfStringColumns(const THashSet<TString>& wa
             column.PreferWasm = true;
         }
     }
-    if (debugEnabled) {
-        TStringBuilder names;
-        for (size_t i = 0; i < marked.size(); ++i) {
-            if (i) {
-                names << ",";
-            }
-            names << marked[i];
-        }
-        Cerr << "[WasmString] ApplyWasmUdfStringColumns: PreferWasm marked=["
-             << names << "] settings_size=" << wasmUdfStringColumns.size() << Endl;
-    }
+    NUdfStore::NWasm::TPreferWasmStats::Instance().OnColumnsMarked(marked);
 }
 
 }

@@ -8,6 +8,7 @@
 #include <ydb/core/kqp/provider/yql_kikimr_provider_impl.h>
 #include <ydb/core/kqp/query_compiler/kqp_mkql_compiler.h>
 #include <ydb/core/kqp/query_compiler/kqp_olap_compiler.h>
+#include <ydb/core/kqp/query_compiler/kqp_wasm_string_columns.h>
 #include <ydb/core/kqp/query_data/kqp_predictor.h>
 #include <ydb/core/kqp/query_data/kqp_request_predictor.h>
 #include <ydb/core/scheme/scheme_tabledefs.h>
@@ -28,7 +29,9 @@
 #include <yql/essentials/providers/common/provider/yql_provider_names.h>
 #include <yql/essentials/providers/common/structured_token/yql_token_builder.h>
 
+#include <util/generic/algorithm.h>
 #include <util/generic/bitmap.h>
+#include <util/string/builder.h>
 
 namespace NKikimr::NKqp {
 
@@ -957,6 +960,36 @@ private:
         return type;
     }
 
+    //! PreferWasm materialization writes a column value straight into WASM linear
+    //! memory. It pays off only when the read and the wasm UDF run in one task:
+    //! data crossing a channel between stages is repacked, so the resident buffer
+    //! is lost. Mark columns only for a stage that owns both.
+    void FillWasmUdfStringColumns(const TDqPhyStage& stage, NYql::NDqProto::TProgram::TSettings& settings) {
+        const auto wasmColumns = CollectWasmUdfStringColumns(stage);
+
+        settings.ClearWasmUdfStringColumns();
+        if (wasmColumns.CanMaterializeInWasm()) {
+            TVector<TString> columns(wasmColumns.Columns.begin(), wasmColumns.Columns.end());
+            Sort(columns);
+            for (const auto& column : columns) {
+                settings.AddWasmUdfStringColumns(column);
+            }
+        }
+
+        if (wasmColumns.HasUdfCall) {
+            TStringBuilder columns;
+            for (const auto& column : settings.GetWasmUdfStringColumns()) {
+                if (columns) {
+                    columns << ",";
+                }
+                columns << column;
+            }
+            YQL_CLOG(DEBUG, ProviderKqp) << "Wasm UDF string columns for stage #" << stage.Ref().UniqueId()
+                << ", hasTableRead: " << wasmColumns.HasTableRead
+                << ", columns: [" << columns << "]";
+        }
+    }
+
     void CompileStage(
         const TDqPhyStage& stage,
         NKqpProto::TKqpPhyStage& stageProto,
@@ -1173,6 +1206,8 @@ private:
             stageProto.AddWasmUdfModules(module);
         }
 
+        FillWasmUdfStringColumns(stage, *programProto.MutableSettings());
+
         for (auto member : paramsType->GetItems()) {
             auto paramName = TString(member->GetName());
             stageProto.AddProgramParameters(paramName);
@@ -1203,55 +1238,6 @@ private:
             CompileStage(stage, *physicalStageByID[stage.Ref().UniqueId()], ctx, stagesMap, rPredictor, tablesMap, physicalStageByID);
             hasEffectStage |= physicalStageByID[stage.Ref().UniqueId()]->GetIsEffectsStage();
             stagesMap[stage.Ref().UniqueId()] = txProto.StagesSize() - 1;
-        }
-        // PreferWasm materialization happens on scan/source stages, while Apply(Udf)
-        // often lives on a downstream stage (RBO Map). Union column/module names onto
-        // stages that own table reads so scan init sees WasmUdfStringColumns.
-        {
-            THashSet<TString> allWasmUdfStringColumns;
-            THashSet<TString> allWasmUdfModules;
-            for (const auto& stage : txProto.GetStages()) {
-                const auto& settings = stage.GetProgram().GetSettings();
-                for (const auto& column : settings.GetWasmUdfStringColumns()) {
-                    allWasmUdfStringColumns.insert(column);
-                }
-                for (const auto& module : settings.GetWasmUdfModules()) {
-                    allWasmUdfModules.insert(module);
-                }
-            }
-            if (!allWasmUdfStringColumns.empty() || !allWasmUdfModules.empty()) {
-                for (auto& stage : *txProto.MutableStages()) {
-                    const bool hasTableRead = stage.TableOpsSize() > 0 || stage.SourcesSize() > 0;
-                    if (!hasTableRead) {
-                        continue;
-                    }
-                    auto* settings = stage.MutableProgram()->MutableSettings();
-                    for (const auto& column : allWasmUdfStringColumns) {
-                        bool found = false;
-                        for (const auto& existing : settings->GetWasmUdfStringColumns()) {
-                            if (existing == column) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            settings->AddWasmUdfStringColumns(column);
-                        }
-                    }
-                    for (const auto& module : allWasmUdfModules) {
-                        bool found = false;
-                        for (const auto& existing : settings->GetWasmUdfModules()) {
-                            if (existing == module) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            settings->AddWasmUdfModules(module);
-                        }
-                    }
-                }
-            }
         }
         for (auto&& i : *txProto.MutableStages()) {
             i.MutableProgram()->MutableSettings()->SetLevelDataPrediction(rPredictor.GetLevelDataVolume(i.GetProgram().GetSettings().GetStageLevel()));

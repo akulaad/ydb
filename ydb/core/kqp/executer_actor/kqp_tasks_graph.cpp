@@ -28,8 +28,6 @@
 #include <ydb/library/yql/providers/pq/common/yql_names.h>
 #include <ydb/services/udf_store/wasm/query_compartment_scope.h>
 
-#include <util/system/env.h>
-
 #include <algorithm>
 
 #define YDB_LOG_THIS_FILE_COMPONENT NKikimrServices::KQP_EXECUTER
@@ -3054,24 +3052,6 @@ TMaybe<size_t> TKqpTasksGraph::BuildScanTasksFromSource(TStageInfo& stageInfo, T
 
         for (const auto& columnName : stage.GetProgram().GetSettings().GetWasmUdfStringColumns()) {
             settings->AddWasmUdfStringColumns(columnName);
-        }
-        {
-            static const bool debugEnabled = [] {
-                const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
-                return v == "1" || v == "true" || v == "yes";
-            }();
-            if (debugEnabled) {
-                TStringBuilder names;
-                for (size_t i = 0; i < settings->WasmUdfStringColumnsSize(); ++i) {
-                    if (i) {
-                        names << ",";
-                    }
-                    names << settings->GetWasmUdfStringColumns(i);
-                }
-                Cerr << "[WasmString] BuildScanTasksFromSource: WasmUdfStringColumns=["
-                     << names << "] stage_settings_size="
-                     << stage.GetProgram().GetSettings().WasmUdfStringColumnsSize() << Endl;
-            }
         }
 
         if (GetMeta().CheckDuplicateRows) {

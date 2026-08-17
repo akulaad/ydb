@@ -14,7 +14,6 @@
 #include <yql/essentials/public/udf/arrow/util.h>
 #include <util/generic/guid.h>
 #include <util/stream/output.h>
-#include <util/system/env.h>
 #include <yql/essentials/utils/yql_panic.h>
 
 #include <contrib/libs/apache/arrow/cpp/src/arrow/compute/api_scalar.h>
@@ -225,20 +224,8 @@ public:
 };
 
 NYql::NUdf::TUnboxedValue MakeScanStringValue(NUdf::TStringRef data, bool preferWasm) {
-    static const bool debugEnabled = [] {
-        const TString v = GetEnv("YDB_WASM_STRING_DEBUG");
-        return v == "1" || v == "true" || v == "yes";
-    }();
     if (preferWasm) {
-        if (debugEnabled) {
-            Cerr << "[WasmString] MakeScanStringValue: path=MakePreferWasm size="
-                 << data.Size() << Endl;
-        }
         return NKikimr::NUdfStore::NWasm::TWasmStringValue::MakePreferWasm(data);
-    }
-    if (debugEnabled) {
-        Cerr << "[WasmString] MakeScanStringValue: path=host_MakeString size="
-             << data.Size() << Endl;
     }
     return MakeString(data);
 }
