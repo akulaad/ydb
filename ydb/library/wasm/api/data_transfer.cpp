@@ -160,18 +160,12 @@ TCopyGuard CopyIntoCompartment(TStringBuf data, IWebAssemblyCompartment* compart
 template <>
 TCopyGuard CopyIntoCompartment(const std::vector<i64>& data, IWebAssemblyCompartment* compartment)
 {
-<<<<<<< HEAD
     const size_t byteLength = data.size() * sizeof(i64);
     const uintptr_t offset = AllocateOrThrow(compartment, byteLength);
     if (offset == 0) {
         return {compartment, 0};
     }
     auto* destination = PtrFromVM(compartment, std::bit_cast<i64*>(offset), data.size());
-=======
-    i64 byteLength = std::ssize(data) * sizeof(i64);
-    uintptr_t offset = compartment->AllocateBytes(byteLength);
-    auto* destination = PtrFromVM(compartment, std::bit_cast<i64*>(offset), std::ssize(data));
->>>>>>> 3fa48d40b97 (fix issues)
     ::memcpy(destination, data.data(), byteLength);
     return {compartment, offset};
 }

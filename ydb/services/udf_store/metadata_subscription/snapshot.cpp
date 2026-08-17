@@ -3,8 +3,6 @@
 namespace NKikimr::NUdfStore {
 
 bool TSnapshot::DoDeserializeFromResultSet(const Ydb::Table::ExecuteQueryResult& rawDataResult) {
-<<<<<<< HEAD
-<<<<<<< HEAD
     if (rawDataResult.result_sets().size() != 1) {
         return false;
     }
@@ -18,31 +16,6 @@ bool TSnapshot::DoDeserializeFromResultSet(const Ydb::Table::ExecuteQueryResult&
                 Udfs.emplace(module.GetMd5(), std::move(module));
                 break;
         }
-=======
-    if (rawDataResult.result_sets().size() != 2) {
-        return false;
-    }
-    ParseSnapshotObjects<TUdfMeta>(rawDataResult.result_sets()[0], [this](TUdfMeta&& u) {
-        Udfs.emplace(u.GetMd5(), std::move(u));
-    });
-    ParseSnapshotObjects<TUdfLibrarySource>(rawDataResult.result_sets()[1], [this](TUdfLibrarySource&& library) {
-        Libraries.emplace(library.GetName(), std::move(library));
->>>>>>> 3fa48d40b97 (fix issues)
-=======
-    if (rawDataResult.result_sets().size() != 1) {
-        return false;
-    }
-    ParseSnapshotObjects<TUdfModule>(rawDataResult.result_sets()[0], [this](TUdfModule&& module) {
-        switch (module.GetType()) {
-            case EUdfType::LIBRARY:
-                Libraries.emplace(module.GetName(), std::move(module));
-                break;
-            case EUdfType::WASM:
-            case EUdfType::NATIVE_UNSAFE:
-                Udfs.emplace(module.GetMd5(), std::move(module));
-                break;
-        }
->>>>>>> 98bfa56d974 (add ddl function)
     });
     return true;
 }

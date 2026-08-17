@@ -54,44 +54,6 @@ NYdb::NWasm::TModuleBytecode MakeDefaultRegistrySdkBytecode() {
 
 } // namespace
 
-namespace {
-
-// Bump allocator used when a UDF has empty required_libraries.
-// CreateEmptyImage alone has host intrinsics but no RuntimeLibraryInstance_
-// with wasm malloc/free; compartment->AllocateBytes needs those exports.
-constexpr TStringBuf DefaultRegistrySdkWast = R"WAST(
-(module
-    (import "env" "memory" (memory i64 8 2097152))
-    (global $heap (mut i64) (i64.const 1024))
-    (func $malloc (param $n i64) (result i64)
-        (local $p i64)
-        (local.set $p (global.get $heap))
-        (global.set $heap
-            (i64.and
-                (i64.add (i64.add (local.get $p) (local.get $n)) (i64.const 7))
-                (i64.const -8)))
-        (local.get $p)
-    )
-    (func $free (param $p i64))
-    (export "malloc" (func $malloc))
-    (export "free" (func $free))
-)
-)WAST";
-
-NYdb::NWasm::TModuleBytecode MakeDefaultRegistrySdkBytecode() {
-    using namespace NKikimr::NUdfStore::NWasm;
-    using namespace NYdb::NWasm;
-    const auto objectCode = CompileModuleObjectCode(
-        DefaultRegistrySdkWast,
-        EBytecodeFormat::HumanReadable);
-    return MakeModuleBytecode(
-        DefaultRegistrySdkWast,
-        objectCode,
-        EBytecodeFormat::HumanReadable);
-}
-
-} // namespace
-
 namespace NKikimr::NUdfStore::NWasm {
 
 using namespace NYdb::NWasm;
@@ -164,21 +126,9 @@ void AddPrecompiledModule(
 std::unique_ptr<IWebAssemblyCompartment> CreateRegistryCompartment(
     const TVector<TNamedModuleBytecode>& libraries)
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
     // CreateImageFromSdk clones from a process-wide cache (first call is slow,
     // later Acquires are cheap). MinimalRuntime must not be used — it lacks
     // AllocateBytes / ThrowException.
-=======
-    // Prefer CreateEmptyImage + AddSdk over CreateImageFromSdk: the latter keeps a
-    // process-wide TSdkImageCache whose static dtor races WAVM Module teardown.
-    // MinimalRuntime must not be used — it lacks AllocateBytes / ThrowException.
->>>>>>> 98bfa56d974 (add ddl function)
-=======
-    // CreateImageFromSdk clones from a process-wide cache (first call is slow,
-    // later Acquires are cheap). MinimalRuntime must not be used — it lacks
-    // AllocateBytes / ThrowException.
->>>>>>> 13c288c0861 (fix compartment clone)
     //
     // Empty required_libraries: install a default bump-allocator as "env"
     // (CreateEmptyImage alone has host intrinsics but no RuntimeLibraryInstance_
@@ -197,16 +147,7 @@ std::unique_ptr<IWebAssemblyCompartment> CreateRegistryCompartment(
         sdkBytecode = &libraries.front().Bytecode;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     auto compartment = CreateImageFromSdk(*sdkBytecode);
-=======
-    auto compartment = CreateEmptyImage();
-    compartment->AddSdk(*sdkBytecode);
->>>>>>> 98bfa56d974 (add ddl function)
-=======
-    auto compartment = CreateImageFromSdk(*sdkBytecode);
->>>>>>> 13c288c0861 (fix compartment clone)
     for (size_t i = 1; i < libraries.size(); ++i) {
         AddPrecompiledModule(
             compartment.get(),

@@ -209,13 +209,8 @@ void TWasmLibraryCompileActor::StartWriteChunks() {
 
 void TWasmLibraryCompileActor::WriteNextChunk() {
     if (NextChunkWriteIndex_ >= PendingChunkWrites_.size()) {
-<<<<<<< HEAD
         Step_ = EStep::UpsertArtifact;
         ExecuteQuery(NTableQuery::BuildUpsertArtifactQuery(ArtifactTablePath_), false);
-=======
-        Step_ = EStep::UpdateMetaReady;
-        ExecuteQuery(NTableQuery::BuildUpdateCompileStatusQuery(ModulesTablePath_), false);
->>>>>>> 98bfa56d974 (add ddl function)
         return;
     }
     Step_ = EStep::WriteArtifactChunk;

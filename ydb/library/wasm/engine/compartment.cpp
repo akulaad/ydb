@@ -27,13 +27,10 @@
 #include <util/system/mutex.h>
 #include <util/system/type_name.h>
 
-<<<<<<< HEAD
 #if defined(_asan_enabled_) || defined(_lsan_enabled_)
 #include <sanitizer/lsan_interface.h>
 #endif
 
-=======
->>>>>>> 17868346bdc (ai review fixes)
 #include <memory>
 #include <exception>
 #include <list>
@@ -361,14 +358,7 @@ public:
     void AddModule(TRef bytecode, TStringBuf name = "") override
     {
         auto wavmModule = LoadModuleFromBytecode(bytecode);
-<<<<<<< HEAD
-<<<<<<< HEAD
         CoerceImportIndexTypesToLayout(wavmModule->ir, MemoryLayoutData_);
-=======
->>>>>>> ceaf113964f (fixes)
-=======
-        CoerceImportIndexTypesToLayout(wavmModule->ir, MemoryLayoutData_);
->>>>>>> 74fb1f7d5ab (fix)
         auto linkResult = LinkModule(wavmModule->ir);
         AddExportsToGlobalOffsetTable(wavmModule->ir);
         InstantiateModule(wavmModule, linkResult, name);
@@ -565,11 +555,7 @@ public:
         THROW_ERROR_EXCEPTION_IF(
             !RuntimeLibraryInstance_,
             "WebAssembly FreeBytes failed: no runtime library (AddSdk) linked");
-<<<<<<< HEAD
         auto* freeFunction = Runtime::getTypedInstanceExport(RuntimeLibraryInstance_, "free", signature);
-=======
-        auto* freeFunction = getTypedInstanceExport(RuntimeLibraryInstance_, "free", signature);
->>>>>>> af314b193a3 (add dynamic_function_registry)
         THROW_ERROR_EXCEPTION_IF(
             freeFunction == nullptr,
             "WebAssembly FreeBytes failed: runtime has no \"free\" export with signature (i64)->()");
@@ -1474,27 +1460,15 @@ public:
 
     TCachedSdkImagePtr GetOrCreate(const TModuleBytecode& bytecode)
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
         const auto key = TModuleBytecodeKey::From(bytecode);
-=======
->>>>>>> 17868346bdc (ai review fixes)
-=======
-        const auto key = TModuleBytecodeKey::From(bytecode);
->>>>>>> 9f05d94144c (fix issues)
         std::shared_ptr<TInFlight> inFlight;
         bool isCreator = false;
 
         with_lock (Lock_) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 9f05d94144c (fix issues)
             if (auto it = Cache_.find(key)) {
                 Y_ABORT_UNLESS(
                     it->second.Bytecode == bytecode,
                     "TSdkImageCache: bytecode key collision");
-<<<<<<< HEAD
                 Touch(it);
                 return it->second.Image;
             }
@@ -1507,27 +1481,6 @@ public:
                 inFlight = std::make_shared<TInFlight>();
                 inFlight->Bytecode = bytecode;
                 InFlight_[key] = inFlight;
-=======
-            if (auto it = Cache_.find(bytecode)) {
-=======
->>>>>>> 9f05d94144c (fix issues)
-                Touch(it);
-                return it->second.Image;
-            }
-            if (auto it = InFlight_.find(key)) {
-                Y_ABORT_UNLESS(
-                    it->second->Bytecode == bytecode,
-                    "TSdkImageCache: in-flight bytecode key collision");
-                inFlight = it->second;
-            } else {
-                inFlight = std::make_shared<TInFlight>();
-<<<<<<< HEAD
-                InFlight_[bytecode] = inFlight;
->>>>>>> 17868346bdc (ai review fixes)
-=======
-                inFlight->Bytecode = bytecode;
-                InFlight_[key] = inFlight;
->>>>>>> 9f05d94144c (fix issues)
                 isCreator = true;
             }
         }
@@ -1550,8 +1503,6 @@ public:
                 if (Cache_.size() >= DefaultCapacity) {
                     EvictLru();
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
                 Lru_.push_front(key);
                 Cache_[key] = TCacheEntry{
                     .Image = cachedImage,
@@ -1559,38 +1510,13 @@ public:
                     .LruIt = Lru_.begin(),
                 };
                 InFlight_.erase(key);
-=======
-                Lru_.push_front(bytecode);
-                Cache_[bytecode] = TCacheEntry{
-=======
-                Lru_.push_front(key);
-                Cache_[key] = TCacheEntry{
->>>>>>> 9f05d94144c (fix issues)
-                    .Image = cachedImage,
-                    .Bytecode = bytecode,
-                    .LruIt = Lru_.begin(),
-                };
-<<<<<<< HEAD
-                InFlight_.erase(bytecode);
->>>>>>> 17868346bdc (ai review fixes)
-=======
-                InFlight_.erase(key);
->>>>>>> 9f05d94144c (fix issues)
                 inFlight->Image = cachedImage;
             }
             inFlight->Done.Signal();
             return cachedImage;
         } catch (...) {
             with_lock (Lock_) {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 InFlight_.erase(key);
-=======
-                InFlight_.erase(bytecode);
->>>>>>> 17868346bdc (ai review fixes)
-=======
-                InFlight_.erase(key);
->>>>>>> 9f05d94144c (fix issues)
                 inFlight->Error = std::current_exception();
             }
             inFlight->Done.Signal();
@@ -1601,14 +1527,7 @@ public:
 private:
     struct TInFlight
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
         TModuleBytecode Bytecode;
-=======
->>>>>>> 17868346bdc (ai review fixes)
-=======
-        TModuleBytecode Bytecode;
->>>>>>> 9f05d94144c (fix issues)
         TManualEvent Done;
         TCachedSdkImagePtr Image;
         std::exception_ptr Error;
@@ -1617,26 +1536,11 @@ private:
     struct TCacheEntry
     {
         TCachedSdkImagePtr Image;
-<<<<<<< HEAD
-<<<<<<< HEAD
         TModuleBytecode Bytecode;
         std::list<TModuleBytecodeKey>::iterator LruIt;
     };
 
     void Touch(typename THashMap<TModuleBytecodeKey, TCacheEntry>::iterator it)
-=======
-        std::list<TModuleBytecode>::iterator LruIt;
-    };
-
-    void Touch(typename THashMap<TModuleBytecode, TCacheEntry>::iterator it)
->>>>>>> 17868346bdc (ai review fixes)
-=======
-        TModuleBytecode Bytecode;
-        std::list<TModuleBytecodeKey>::iterator LruIt;
-    };
-
-    void Touch(typename THashMap<TModuleBytecodeKey, TCacheEntry>::iterator it)
->>>>>>> 9f05d94144c (fix issues)
     {
         Lru_.splice(Lru_.begin(), Lru_, it->second.LruIt);
     }
@@ -1650,21 +1554,9 @@ private:
 
     TMutex Lock_;
     // Front = most recently used, back = least recently used.
-<<<<<<< HEAD
-<<<<<<< HEAD
     std::list<TModuleBytecodeKey> Lru_;
     THashMap<TModuleBytecodeKey, TCacheEntry> Cache_;
     THashMap<TModuleBytecodeKey, std::shared_ptr<TInFlight>> InFlight_;
-=======
-    std::list<TModuleBytecode> Lru_;
-    THashMap<TModuleBytecode, TCacheEntry> Cache_;
-    THashMap<TModuleBytecode, std::shared_ptr<TInFlight>> InFlight_;
->>>>>>> 17868346bdc (ai review fixes)
-=======
-    std::list<TModuleBytecodeKey> Lru_;
-    THashMap<TModuleBytecodeKey, TCacheEntry> Cache_;
-    THashMap<TModuleBytecodeKey, std::shared_ptr<TInFlight>> InFlight_;
->>>>>>> 9f05d94144c (fix issues)
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1677,7 +1569,6 @@ std::unique_ptr<IWebAssemblyCompartment> CreateImageFromSdk(const TModuleBytecod
 
     // Leaky like CreateEmptyImage / CreateStandardRuntimeImage: destroying the
     // cache at static teardown races WAVM Module shutdown in unittests.
-<<<<<<< HEAD
     // LSan: see CreateLeakyImageSingleton.
     static auto* cache = []() -> TSdkImageCache* {
 #if defined(_asan_enabled_) || defined(_lsan_enabled_)
@@ -1689,9 +1580,6 @@ std::unique_ptr<IWebAssemblyCompartment> CreateImageFromSdk(const TModuleBytecod
 #endif
         return result;
     }();
-=======
-    static auto* cache = New<TSdkImageCache>().Release();
->>>>>>> 13c288c0861 (fix compartment clone)
     auto image = cache->GetOrCreate(bytecode);
     return image->Compartment->Clone();
 }

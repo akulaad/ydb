@@ -208,10 +208,7 @@ def _run_upload_library(endpoint, database, library_file_path, library_name):
 
 
 def _run_delete_udf(endpoint, database, md5, udf_type="WASM"):
-<<<<<<< HEAD
     """Delete a UDF module row (and related chunks/artifacts) by md5."""
-=======
->>>>>>> ceaf113964f (fixes)
     return _run_upload_udf(
         endpoint,
         database,
@@ -223,10 +220,7 @@ def _run_delete_udf(endpoint, database, md5, udf_type="WASM"):
 
 
 def _run_delete_library(endpoint, database, library_name):
-<<<<<<< HEAD
     """Delete a WASM library by name."""
-=======
->>>>>>> ceaf113964f (fixes)
     return _run_upload_udf(
         endpoint,
         database,
@@ -627,21 +621,9 @@ def test_delete_wasm_udf_and_library():
             try:
                 result = _run_query(
                     driver_config,
-<<<<<<< HEAD
-<<<<<<< HEAD
                     'SELECT compile_status FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
                         database=database,
                         path=UDF_TABLE_MODULES_PATH,
-=======
-                    'SELECT compile_status FROM `{database}/{path}` WHERE name = "{name}"'.format(
-                        database=database,
-                        path=UDF_TABLE_LIBRARY_SOURCE_PATH,
->>>>>>> ceaf113964f (fixes)
-=======
-                    'SELECT compile_status FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
-                        database=database,
-                        path=UDF_TABLE_MODULES_PATH,
->>>>>>> 98bfa56d974 (add ddl function)
                         name=name,
                     ),
                 )
@@ -673,15 +655,7 @@ def test_delete_wasm_udf_and_library():
                     driver_config,
                     'SELECT compile_status FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
                         database=database,
-<<<<<<< HEAD
-<<<<<<< HEAD
                         path=UDF_TABLE_MODULES_PATH,
-=======
-                        path=UDF_TABLE_META_PATH,
->>>>>>> ceaf113964f (fixes)
-=======
-                        path=UDF_TABLE_MODULES_PATH,
->>>>>>> 98bfa56d974 (add ddl function)
                         md5=udf_md5,
                     ),
                 )
@@ -724,15 +698,7 @@ def test_delete_wasm_udf_and_library():
                     driver_config,
                     'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE md5 = "{md5}"'.format(
                         database=database,
-<<<<<<< HEAD
-<<<<<<< HEAD
                         path=UDF_TABLE_MODULES_PATH,
-=======
-                        path=UDF_TABLE_META_PATH,
->>>>>>> ceaf113964f (fixes)
-=======
-                        path=UDF_TABLE_MODULES_PATH,
->>>>>>> 98bfa56d974 (add ddl function)
                         md5=udf_md5,
                     ),
                 )
@@ -768,21 +734,9 @@ def test_delete_wasm_udf_and_library():
             try:
                 result = _run_query(
                     driver_config,
-<<<<<<< HEAD
-<<<<<<< HEAD
                     'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
                         database=database,
                         path=UDF_TABLE_MODULES_PATH,
-=======
-                    'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE name = "{name}"'.format(
-                        database=database,
-                        path=UDF_TABLE_LIBRARY_SOURCE_PATH,
->>>>>>> ceaf113964f (fixes)
-=======
-                    'SELECT COUNT(*) AS cnt FROM `{database}/{path}` WHERE name = "{name}" AND type = "LIBRARY"'.format(
-                        database=database,
-                        path=UDF_TABLE_MODULES_PATH,
->>>>>>> 98bfa56d974 (add ddl function)
                         name=name,
                     ),
                 )
@@ -794,15 +748,7 @@ def test_delete_wasm_udf_and_library():
         assert _wait_for_condition(
             lambda: _library_gone("helpers") and _library_gone("sdk"),
             timeout_seconds=30,
-<<<<<<< HEAD
-<<<<<<< HEAD
             description="library module rows deleted",
-=======
-            description="library_source rows deleted",
->>>>>>> ceaf113964f (fixes)
-=======
-            description="library module rows deleted",
->>>>>>> 98bfa56d974 (add ddl function)
         )
         logger.info("Test passed: deleted UDF md5=%s and libraries sdk/helpers", udf_md5)
 

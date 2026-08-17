@@ -11,11 +11,7 @@ namespace {
 ui64 HashSharedRef(const TSharedRef& ref)
 {
     const auto buf = ref.ToStringBuf();
-<<<<<<< HEAD
     return CityHash64(buf.data(), buf.size());
-=======
-    return buf.empty() ? 0 : CityHash64(buf.data(), buf.size());
->>>>>>> 9f05d94144c (fix issues)
 }
 
 } // namespace

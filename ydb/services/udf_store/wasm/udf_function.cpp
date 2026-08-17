@@ -216,12 +216,6 @@ TUnboxedValue TWasmUdfFunction::Run(
         TCurrentCompartmentGuard compartmentGuard(compartment);
         TWasmUdfInvocationContext context(compartment);
         TCurrentInvocationContextGuard invocationGuard(&context);
-<<<<<<< HEAD
-=======
-        Y_DEFER {
-            context.WebAssemblyPool.Clear();
-        };
->>>>>>> 3fa48d40b97 (fix issues)
 
         TVector<TPreparedArg> preparedArgs;
         preparedArgs.reserve(Descriptor_.Args.size());

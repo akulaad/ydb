@@ -29,24 +29,14 @@ Y_WEAK TWebAssemblyMemoryPool::~TWebAssemblyMemoryPool()
 }
 
 TWebAssemblyMemoryPool::TWebAssemblyMemoryPool(TWebAssemblyMemoryPool&& other) noexcept
-<<<<<<< HEAD
     : Compartment_(std::exchange(other.Compartment_, nullptr))
     , Size_(std::exchange(other.Size_, 0))
     , Allocations_(std::move(other.Allocations_))
 { }
-=======
-    : Compartment_(other.Compartment_)
-{
-    std::swap(Size_, other.Size_);
-    Allocations_.swap(other.Allocations_);
-    other.Compartment_ = nullptr;
-}
->>>>>>> 3fa48d40b97 (fix issues)
 
 TWebAssemblyMemoryPool& TWebAssemblyMemoryPool::operator=(TWebAssemblyMemoryPool&& other) noexcept
 {
     if (this != &other) {
-<<<<<<< HEAD
         try {
             Clear();
         } catch (...) {
@@ -55,14 +45,6 @@ TWebAssemblyMemoryPool& TWebAssemblyMemoryPool::operator=(TWebAssemblyMemoryPool
         Compartment_ = std::exchange(other.Compartment_, nullptr);
         Size_ = std::exchange(other.Size_, 0);
         Allocations_ = std::move(other.Allocations_);
-=======
-        Clear();
-        Compartment_ = other.Compartment_;
-        Size_ = other.Size_;
-        Allocations_ = std::move(other.Allocations_);
-        other.Compartment_ = nullptr;
-        other.Size_ = 0;
->>>>>>> 3fa48d40b97 (fix issues)
     }
     return *this;
 }
