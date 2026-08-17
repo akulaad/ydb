@@ -965,9 +965,13 @@ private:
     //! data crossing a channel between stages is repacked, so the resident buffer
     //! is lost. Mark columns only for a stage that owns both.
     void FillWasmUdfStringColumns(const TDqPhyStage& stage, NYql::NDqProto::TProgram::TSettings& settings) {
+        settings.ClearWasmUdfStringColumns();
+        if (!Config->GetEnableWasmUdfResidentStringColumns()) {
+            return;
+        }
+
         const auto wasmColumns = CollectWasmUdfStringColumns(stage);
 
-        settings.ClearWasmUdfStringColumns();
         if (wasmColumns.CanMaterializeInWasm()) {
             TVector<TString> columns(wasmColumns.Columns.begin(), wasmColumns.Columns.end());
             Sort(columns);

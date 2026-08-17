@@ -43,7 +43,12 @@ TUnboxedValuePod TWasmStringValue::Make(
         header, compartment, offset, allocBytes, generation);
     buffer.Release();
 
-    // Normal refcount: last UnRef → UdfTryFreeExternalString → registry TryFree.
+    // ConstructInPlace starts at one reference while a freshly built pod must
+    // carry none (see MiniKQL MakeString): the owner that wraps the pod into a
+    // TUnboxedValue takes the first one. Keeping the extra reference would hold
+    // the guest buffer until the whole query compartment is torn down instead of
+    // freeing it on the last UnRef (→ UdfTryFreeExternalString → registry).
+    header->ReleaseRef();
     return TUnboxedValuePod(TStringValue(header));
 }
 
@@ -107,13 +112,17 @@ bool TWasmStringValue::TryGetResidentOffset(
         return true;
     }
 
-    try {
-        offset = compartment->GetCompartmentOffset(const_cast<char*>(ref.Data()));
-        compartment->GetHostPointer(offset, length);
-        return true;
-    } catch (...) {
+    // Plain range check rather than GetCompartmentOffset: a host string is the
+    // expected outcome here, and throwing per UDF argument costs tens of
+    // microseconds. Base is re-read every time because memory.grow moves it.
+    const auto base = std::bit_cast<uintptr_t>(compartment->GetHostPointer(0, 1));
+    const auto data = std::bit_cast<uintptr_t>(ref.Data());
+    if (data < base || data - base + length > compartment->GetLinearMemorySize()) {
         return false;
     }
+
+    offset = data - base;
+    return true;
 }
 
 void TWasmStringValue::FillAbiStringArg(

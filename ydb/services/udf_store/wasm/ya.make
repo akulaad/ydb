@@ -41,5 +41,6 @@ END()
 
 RECURSE(
     abi
+    benchmark
     object_framework
 )
