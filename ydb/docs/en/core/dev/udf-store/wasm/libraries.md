@@ -29,11 +29,11 @@ Example for a module that needs sdk and helpers:
 
 ```bash
 # 1. runtime
-upload_udf ... --kind library --library-name sdk --udf-file sdk.wasm
+upload_udf ... --kind library --library-name sdk --udf-file libsdk.so
 # 2. helper library
-upload_udf ... --kind library --library-name helpers --udf-file helpers.wasm
+upload_udf ... --kind library --library-name helpers --udf-file libhelpers.so
 # 3. UDF with required_libraries: ["sdk", "helpers"]
-upload_udf ... --kind udf --type WASM --udf-file with_helpers.wasm --manifest manifest.json
+upload_udf ... --kind udf --type WASM --udf-file libwith_helpers.so --manifest manifest.json
 ```
 
 ```yql

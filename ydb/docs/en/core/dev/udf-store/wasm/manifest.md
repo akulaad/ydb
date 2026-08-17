@@ -10,7 +10,7 @@ The manifest is supplied at [upload](../managing.md#upload) time together with t
 |---|---|
 | `module_name` | Module name in YQL (`ModuleName::func`) |
 | `calling_convention` | Calling convention. Currently: `unversioned_value` |
-| `module_extension` | Source format: `wasm`, `wat`, or `wast` |
+| `module_extension` | Source format: `wasm` (binary WASM, including the Ya Make `.so` for WAVM), `wat`, or `wast` (WAT text; the C++ build does not emit it) |
 | `required_libraries` | Ordered list of [library](libraries.md) names (`ModuleType = LIBRARY`) |
 | `functions` | List of plain functions (export + argument and result types) |
 | `objects` | Optional: stateful TypeConfig objects (see below) |

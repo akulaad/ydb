@@ -10,7 +10,7 @@
 |---|---|
 | `module_name` | Имя модуля в YQL (`ModuleName::func`) |
 | `calling_convention` | Соглашение о вызове. Сейчас: `unversioned_value` |
-| `module_extension` | Формат исходника: `wasm`, `wat` или `wast` |
+| `module_extension` | Формат исходника: `wasm` (бинарный WASM, в том числе `.so` сборки Ya Make для WAVM), `wat` или `wast` (текстовый WAT, его C++-сборка не генерирует) |
 | `required_libraries` | Упорядоченный список имён [библиотек](libraries.md) (`ModuleType = LIBRARY`) |
 | `functions` | Список plain-функций (экспорт + типы аргументов и результата) |
 | `objects` | Опционально: stateful-объекты с TypeConfig (см. ниже) |

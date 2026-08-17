@@ -19,7 +19,7 @@ udf_store_config:
 
 | | WASM | Native unsafe |
 |---|---|---|
-| Формат | `.wasm` / `.wat` + манифест | `.so` |
+| Формат | `.so` (бинарный WASM для WAVM) или `.wat` + манифест | нативный `.so` |
 | Изоляция | песочница WebAssembly | код процесса сервера |
 | Флаг | `enable_wasm_udf` | `enable_unsafe_native_udf` |
 | AOT-компиляция в store | да (`CompileStatus`) | нет (загрузка бинарника) |

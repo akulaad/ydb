@@ -2,7 +2,7 @@
 
 A [WASM UDF](index.md) for [UDF Store](../../../concepts/glossary.md#udf-store) is a [WebAssembly](https://webassembly.org/) module plus a JSON [manifest](manifest.md). The module exports functions using the `unversioned_value` calling convention. After [upload](../managing.md#upload), the server AOT-compiles the binary and calls the exports from YQL as `ModuleName::func`.
 
-This article shows how to implement those functions in C++, build a `.wasm` file with Ya Make and Emscripten, and prepare the module for upload. For the simplest cases without libc, you can write [WAT](https://webassembly.github.io/spec/core/text/index.html) by hand instead.
+This article shows how to implement those functions in C++, build a `.so` for the WAVM runtime with Ya Make and Emscripten, and prepare the module for upload. The build does **not** emit [WAT](https://webassembly.github.io/spec/core/text/index.html) text: write WAT by hand only for the simplest cases without libc.
 
 Reference implementations live in the source tree under `ydb/tests/functional/udf_store/examples/`.
 
@@ -10,7 +10,7 @@ Reference implementations live in the source tree under `ydb/tests/functional/ud
 
 1. Enable the store and WASM as described in [Managing modules](../managing.md#enable). Check that the node config sets `udf_store_config.enabled` and `enable_wasm_udf`.
 2. Build modules for the Emscripten **wasm64** platform. Do not mix wasm32 with the {{ ydb-short-name }} runtime: ABI pointers are 64-bit.
-3. After the build, upload the `.wasm` file and the manifest with the helper at `ydb/tests/functional/udf_store/upload_udf`. There is no public `ydb` CLI upload command yet.
+3. After the build, upload the resulting `.so` and the manifest with the helper at `ydb/tests/functional/udf_store/upload_udf`. There is no public `ydb` CLI upload command yet.
 
 ## Calling convention {#abi}
 
@@ -62,7 +62,15 @@ ya make --target-platform=clang20-emscripten-wasm64 --build profile \
   ydb/tests/functional/udf_store/examples/add
 ```
 
-The target output directory contains a `.wasm` file. Pass that path as `--udf-file` on upload.
+The target output directory contains `lib<name>.so` (for `add` this is `libadd.so`). That file is a **binary** WebAssembly module (wasm64) for the [WAVM](https://github.com/WAVM/WAVM) runtime, not WAT text and not a native [NATIVE_UNSAFE](../native-unsafe.md) library. The `.so` suffix is the Ya Make `DLL()` convention. The file contents are a WASM binary (`\0asm` magic). Pass that path as `--udf-file` on upload.
+
+In the manifest for this artifact set `"module_extension": "wasm"`. Use `"wat"` only when the source is actually WAT text. The C++ build does not produce WAT.
+
+{% note info %}
+
+Do not confuse this `.so` with a native unsafe UDF: same suffix, different `ModuleType`, different loader. A WASM `.so` runs in the WAVM sandbox after server-side AOT.
+
+{% endnote %}
 
 Three binary roles use three linking schemes:
 
@@ -74,7 +82,7 @@ Three binary roles use three linking schemes:
 
 UDF targets that need the sdk should `INCLUDE` `ydb/tests/functional/udf_store/examples/sdk/webassembly_udf.inc`. That file enables an `LD_PLUGIN` (`ld_plugin.py`) which strips sdk archives from the linker command. Otherwise libc would appear both in the sdk and in the UDF, and query-time linking would fail.
 
-Do **not** `PEERDIR` a helper library into the UDF. `PEERDIR` statically merges the code into one `.wasm`, while the store links the library separately from `required_libraries`. Import the symbol from the UDF instead:
+Do **not** `PEERDIR` a helper library into the UDF. `PEERDIR` statically merges the code into one `.so`, while the store links the library separately from `required_libraries`. Import the symbol from the UDF instead:
 
 ```cpp
 __attribute__((import_module("helpers"), import_name("helpers_scale")))
@@ -324,7 +332,7 @@ Directory `ydb/tests/functional/udf_store/examples/`:
 | `prefix/` | TypeConfig and `object_framework` | `["sdk"]` |
 | `ctx/` | Shared ctx, Snapshot | `["sdk"]` |
 
-CI without Emscripten uses WAT fixtures in `ydb/tests/functional/udf_store/data/wasm/`. They implement the same ABI (wasm64 pointers to `TUnversionedValue`). For application modules, C++ is the practical path.
+CI without Emscripten uses WAT fixtures in `ydb/tests/functional/udf_store/data/wasm/`. Those files are written by hand; the C++ build does not generate them. They implement the same ABI (wasm64 pointers to `TUnversionedValue`). For application modules, C++ → a WAVM `.so` is the practical path.
 
 ## Uploading a built module {#upload}
 

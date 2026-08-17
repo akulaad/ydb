@@ -19,7 +19,7 @@ The service copies the binary from the KV volume `.metadata/udf_store/binaries` 
 
 | | WASM | Native unsafe |
 |---|---|---|
-| Format | `.wasm` / `.wat` + manifest | `.so` |
+| Format | `.so` (WASM binary for WAVM) or `.wat` + manifest | native `.so` |
 | Isolation | WebAssembly sandbox | server process code |
 | Flag | `enable_wasm_udf` | `enable_unsafe_native_udf` |
 | AOT compilation in the store | yes (`CompileStatus`) | no (binary load) |

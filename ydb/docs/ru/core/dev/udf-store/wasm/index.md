@@ -7,7 +7,7 @@
 ## Быстрый старт {#quick-start}
 
 1. Включите store и WASM: см. [Управление модулями](../managing.md#enable).
-2. Напишите и соберите модуль: [Написание и сборка](writing.md). Нужны бинарник (`.wasm` или `.wat`) и JSON-[манифест](manifest.md).
+2. Напишите и соберите модуль: [Написание и сборка](writing.md). Нужны бинарник (`.so` для WAVM или вручную написанный `.wat`) и JSON-[манифест](manifest.md).
 3. Загрузите модуль (и при необходимости [библиотеки](libraries.md)).
 4. Дождитесь `CompileStatus = "ready"` в [`.sys/udf_modules`](../../system-views.md#udf-modules).
 5. Вызовите функцию из YQL:

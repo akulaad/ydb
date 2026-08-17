@@ -29,7 +29,7 @@ WASM/LIBRARY metadata and sources live in `.metadata/udf_store/modules` and `.me
 
 ## Upload and delete {#upload}
 
-How to write and build a `.wasm` file is described in [Writing and building WASM UDFs](wasm/writing.md).
+How to write and build a `.so` for WAVM is described in [Writing and building WASM UDFs](wasm/writing.md).
 
 There is no public `ydb` CLI command for uploading modules yet. In practice, use the helper from the source tree at `ydb/tests/functional/udf_store/upload_udf` (dev/tooling), which writes rows into the store tables.
 
@@ -40,7 +40,7 @@ Main parameters:
 | `--action upload\|delete` | Upload or delete |
 | `--kind udf\|library` | UDF module or library |
 | `--type WASM\|NATIVE_UNSAFE` | Module type (for `--kind udf`) |
-| `--udf-file` | Path to the binary (`.wasm` / `.wat` / `.so`) |
+| `--udf-file` | Path to the binary. For a C++ WASM UDF this is the Ya Make `.so` (`lib<name>.so` for WAVM), not WAT. Also `.wat` for text fixtures and a native `.so` for `NATIVE_UNSAFE` |
 | `--manifest` | Path to the JSON [manifest](wasm/manifest.md) (for WASM) |
 | `--library-name` | Library name (for `--kind library`) |
 | `--md5` | MD5 for deleting a UDF (if `--udf-file` is not given) |
@@ -54,7 +54,7 @@ upload_udf \
   --database /Root/db \
   --kind udf \
   --type WASM \
-  --udf-file add.wasm \
+  --udf-file libadd.so \
   --manifest manifest.json
 ```
 
@@ -67,7 +67,7 @@ upload_udf \
   --database /Root/db \
   --kind library \
   --library-name sdk \
-  --udf-file sdk.wasm
+  --udf-file libsdk.so
 ```
 
 For WASM modules with dependencies, upload all `LIBRARY` entries from `required_libraries` first, then the UDF. See [Libraries](wasm/libraries.md).

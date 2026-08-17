@@ -29,7 +29,7 @@ udf_store_config:
 
 ## Загрузка и удаление {#upload}
 
-Как написать и собрать `.wasm`, описано в разделе [Написание и сборка WASM UDF](wasm/writing.md).
+Как написать и собрать `.so` для WAVM, описано в разделе [Написание и сборка WASM UDF](wasm/writing.md).
 
 Публичной команды `ydb` CLI для загрузки модулей пока нет. На практике используется утилита из дерева исходников `ydb/tests/functional/udf_store/upload_udf` (dev/tooling), которая пишет строки в таблицы store.
 
@@ -40,7 +40,7 @@ udf_store_config:
 | `--action upload\|delete` | Загрузить или удалить |
 | `--kind udf\|library` | UDF-модуль или библиотека |
 | `--type WASM\|NATIVE_UNSAFE` | Тип модуля (для `--kind udf`) |
-| `--udf-file` | Путь к бинарнику (`.wasm` / `.wat` / `.so`) |
+| `--udf-file` | Путь к бинарнику. Для C++ WASM UDF это `.so` сборки Ya Make (`lib<имя>.so` для WAVM), не WAT. Также `.wat` для текстовых фикстур и нативный `.so` для `NATIVE_UNSAFE` |
 | `--manifest` | Путь к JSON-[манифесту](wasm/manifest.md) (для WASM) |
 | `--library-name` | Имя библиотеки (для `--kind library`) |
 | `--md5` | MD5 для удаления UDF (если не передан `--udf-file`) |
@@ -54,7 +54,7 @@ upload_udf \
   --database /Root/db \
   --kind udf \
   --type WASM \
-  --udf-file add.wasm \
+  --udf-file libadd.so \
   --manifest manifest.json
 ```
 
@@ -67,7 +67,7 @@ upload_udf \
   --database /Root/db \
   --kind library \
   --library-name sdk \
-  --udf-file sdk.wasm
+  --udf-file libsdk.so
 ```
 
 Для WASM с зависимостями сначала загрузите все `LIBRARY` из `required_libraries`, затем сам UDF. Подробнее — в разделе [Библиотеки](wasm/libraries.md).

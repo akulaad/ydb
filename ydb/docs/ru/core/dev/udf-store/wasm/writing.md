@@ -2,7 +2,7 @@
 
 [WASM UDF](index.md) для [UDF Store](../../../concepts/glossary.md#udf-store) является модулем [WebAssembly](https://webassembly.org/) с JSON-[манифестом](manifest.md). Модуль экспортирует функции по соглашению `unversioned_value`. После [загрузки](../managing.md#upload) сервер компилирует бинарник (AOT) и вызывает экспорты из YQL как `ModuleName::func`.
 
-Эта статья показывает, как реализовать такие функции на C++, собрать `.wasm` через Ya Make и Emscripten и подготовить модуль к загрузке. Альтернатива для самых простых случаев без libc: написать [WAT](https://webassembly.github.io/spec/core/text/index.html) вручную.
+Эта статья показывает, как реализовать такие функции на C++, собрать `.so` для рантайма WAVM через Ya Make и Emscripten и подготовить модуль к загрузке. Сборка **не** выдаёт текстовый [WAT](https://webassembly.github.io/spec/core/text/index.html): WAT пишут вручную только для самых простых случаев без libc.
 
 Готовые эталоны лежат в исходниках: `ydb/tests/functional/udf_store/examples/`.
 
@@ -10,7 +10,7 @@
 
 1. Включите store и WASM, как в разделе [Управление модулями](../managing.md#enable). Проверка: в конфигурации узла заданы `udf_store_config.enabled` и `enable_wasm_udf`.
 2. Собирайте модули с платформой Emscripten **wasm64**. Смешивать wasm32 с рантаймом {{ ydb-short-name }} нельзя: указатели в ABI имеют ширину 64 бита.
-3. После сборки загрузите `.wasm` и манифест утилитой из `ydb/tests/functional/udf_store/upload_udf`. Публичной команды `ydb` CLI для загрузки пока нет.
+3. После сборки загрузите получившийся `.so` и манифест утилитой из `ydb/tests/functional/udf_store/upload_udf`. Публичной команды `ydb` CLI для загрузки пока нет.
 
 ## Соглашение о вызове {#abi}
 
@@ -62,7 +62,15 @@ ya make --target-platform=clang20-emscripten-wasm64 --build profile \
   ydb/tests/functional/udf_store/examples/add
 ```
 
-В выходном каталоге таргета появляется `.wasm`. Этот файл передают в `--udf-file` при загрузке.
+В выходном каталоге таргета появляется `lib<имя>.so` (для `add` это `libadd.so`). Это **бинарный** модуль WebAssembly (wasm64) для рантайма [WAVM](https://github.com/WAVM/WAVM), а не текстовый WAT и не нативная библиотека типа [NATIVE_UNSAFE](../native-unsafe.md). Расширение `.so` здесь соглашение Ya Make для `DLL()`. Содержимое файла — WASM-бинарник (магическая последовательность `\0asm`). Его передают в `--udf-file` при загрузке.
+
+В манифесте для такого артефакта укажите `"module_extension": "wasm"`. Значение `"wat"` нужно только если исходник действительно текстовый WAT, его C++-сборка не производит.
+
+{% note info %}
+
+Не путайте этот `.so` с native unsafe UDF: тот же суффикс, другой `ModuleType`, другой загрузчик. WASM-`.so` исполняется в песочнице WAVM после AOT на стороне сервера.
+
+{% endnote %}
 
 Три роли бинарников и три схемы линковки:
 
@@ -74,7 +82,7 @@ ya make --target-platform=clang20-emscripten-wasm64 --build profile \
 
 UDF, которым нужен sdk, подключают include `ydb/tests/functional/udf_store/examples/sdk/webassembly_udf.inc`. Он включает `LD_PLUGIN` (`ld_plugin.py`), который вырезает архивы sdk из командной строки линкера. Иначе libc окажется и в sdk, и в UDF, и линковка в запросе сломается.
 
-Вспомогательную библиотеку **нельзя** подключать через `PEERDIR` в UDF. `PEERDIR` статически вшьёт код в один `.wasm`, а store линкует библиотеку отдельно по `required_libraries`. Из UDF импортируйте символ:
+Вспомогательную библиотеку **нельзя** подключать через `PEERDIR` в UDF. `PEERDIR` статически вшьёт код в один `.so`, а store линкует библиотеку отдельно по `required_libraries`. Из UDF импортируйте символ:
 
 ```cpp
 __attribute__((import_module("helpers"), import_name("helpers_scale")))
@@ -324,7 +332,7 @@ Handle нельзя передавать в другой WASM-модуль: у �
 | `prefix/` | TypeConfig и `object_framework` | `["sdk"]` |
 | `ctx/` | Общий ctx, Snapshot | `["sdk"]` |
 
-Для CI без Emscripten есть WAT-фикстуры в `ydb/tests/functional/udf_store/data/wasm/`. Они реализуют тот же ABI (wasm64-указатели на `TUnversionedValue`), но для прикладных модулей удобнее C++.
+Для CI без Emscripten есть WAT-фикстуры в `ydb/tests/functional/udf_store/data/wasm/`. Их пишут вручную, сборка C++ их не генерирует. Они реализуют тот же ABI (wasm64-указатели на `TUnversionedValue`), но для прикладных модулей удобнее C++ → `.so` для WAVM.
 
 ## Загрузка собранного модуля {#upload}
 
