@@ -51,7 +51,7 @@ END()
 #     ydb/tests/functional/udf_store/examples/with_helpers
 #
 # with_helpers needs upload order: library sdk → library helpers → UDF with_helpers
-# (manifest required_libraries: ["sdk", "helpers"]).
+# (manifest required_libraries: ["sdk", "helpers"]). 
 # parse_blob: library sdk → UDF parse_blob; query scans a large blob column into WASM.
 RECURSE(
     examples
