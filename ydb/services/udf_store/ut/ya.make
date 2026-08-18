@@ -10,6 +10,8 @@ PEERDIR(
     ydb/services/udf_store/wasm
     ydb/services/udf_store/wasm/object_framework
     yql/essentials/minikql
+    # DeleteString: the string release entry point emitted by MiniKQL codegen.
+    yql/essentials/minikql/computation/llvm16
     yql/essentials/public/udf/service/exception_policy
     yql/essentials/sql/pg_dummy
 )

@@ -18,6 +18,9 @@
 using namespace NKikimr::NUdfStore::NWasm;
 using namespace NYdb::NWasm;
 
+//! Refcount release emitted by the MiniKQL LLVM codegen (mkql_computation_node_codegen).
+extern "C" void DeleteString(void* strData);
+
 using NYql::NUdf::TStringRef;
 using NYql::NUdf::TUnboxedValue;
 using NYql::NUdf::TUnboxedValuePod;
@@ -54,7 +57,7 @@ std::unique_ptr<IWebAssemblyCompartment> MakeAllocatingCompartment() {
 }
 
 TQueryCompartmentHandlePtr MakeQueryCompartment(ui64 generation) {
-    auto handle = std::make_unique<TQueryCompartmentHandle>();
+    auto handle = std::make_shared<TQueryCompartmentHandle>();
     handle->Compartment = MakeAllocatingCompartment();
     handle->Generation = generation;
     return handle;
@@ -162,6 +165,58 @@ Y_UNIT_TEST(NoQueryCompartmentFallsBackToHost) {
     UNIT_ASSERT_VALUES_EQUAL(stats.FallbackNoCompartment, 1);
     UNIT_ASSERT_VALUES_EQUAL(stats.MaterializedInWasm, 0);
     UNIT_ASSERT_VALUES_EQUAL(TStringBuf(value.AsStringRef()), TStringBuf(blob));
+}
+
+//! A compute actor is destroyed before its task runner tears the computation
+//! graph down, so a value left in a graph slot outlives the query scope. Its
+//! refcount header lives in linear memory, so the compartment has to stay mapped
+//! until that last value is released.
+Y_UNIT_TEST(ResidentValueOutlivesQueryScope) {
+    NKikimr::NMiniKQL::TScopedAlloc alloc(__LOCATION__);
+    constexpr ui64 generation = 42;
+    const TString blob = MakeBlob(BlobSize);
+
+    std::weak_ptr<TQueryCompartmentHandle> weakHandle;
+    TUnboxedValue value;
+    {
+        auto handle = MakeQueryCompartment(generation);
+        weakHandle = handle;
+        TCurrentQueryCompartmentGuard queryGuard(handle.get());
+        value = TUnboxedValue(TWasmStringValue::MakePreferWasm(TStringRef(blob.data(), blob.size())));
+        // What TQueryCompartmentScope does when the actor goes away.
+        TWasmAllocationRegistry::Instance().ReleaseOwner(generation);
+    }
+
+    UNIT_ASSERT(!weakHandle.expired());
+    UNIT_ASSERT_VALUES_EQUAL(TStringBuf(value.AsStringRef()), TStringBuf(blob));
+    UNIT_ASSERT_VALUES_EQUAL(TWasmAllocationRegistry::Instance().CountGeneration(generation), 1);
+
+    value.Clear();
+    UNIT_ASSERT(weakHandle.expired());
+    UNIT_ASSERT_VALUES_EQUAL(TWasmAllocationRegistry::Instance().CountGeneration(generation), 0);
+}
+
+//! The LLVM codegen path does not call TStringValue::TData::UnRef: it decrements
+//! the refcount inline and calls DeleteString. That entry point has to consult
+//! the registry too, otherwise a resident value released inside JIT-compiled code
+//! is handed to the MiniKQL allocator, which never allocated those bytes.
+Y_UNIT_TEST(CodegenDeleteStringReachesRegistry) {
+    NKikimr::NMiniKQL::TScopedAlloc alloc(__LOCATION__);
+    constexpr ui64 generation = 11;
+    auto handle = MakeQueryCompartment(generation);
+    TCurrentQueryCompartmentGuard queryGuard(handle.get());
+
+    const TString blob = MakeBlob(BlobSize);
+    // Deliberately a bare pod: nothing else owns the value, so DeleteString below
+    // is the only release, exactly as in generated code.
+    const auto value = TWasmStringValue::MakePreferWasm(TStringRef(blob.data(), blob.size()));
+    UNIT_ASSERT_VALUES_EQUAL(TWasmAllocationRegistry::Instance().CountGeneration(generation), 1);
+
+    const auto headerBytes = NYql::NUdf::TStringValue::AllocationBytes(0);
+    void* header = const_cast<char*>(value.AsStringRef().Data()) - headerBytes;
+    DeleteString(header);
+
+    UNIT_ASSERT_VALUES_EQUAL(TWasmAllocationRegistry::Instance().CountGeneration(generation), 0);
 }
 
 //! Bytes of another compartment must never be passed as an offset.

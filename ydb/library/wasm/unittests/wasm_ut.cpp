@@ -324,9 +324,12 @@ TEST_F(TWebAssemblyTest, AllocationRegistryTryFree)
     ASSERT_FALSE(registry.TryFree(host));
 }
 
-TEST_F(TWebAssemblyTest, AllocationRegistryInvalidateFreesThenOrphans)
+TEST_F(TWebAssemblyTest, AllocationRegistryOwnerOutlivesLiveAllocations)
 {
-    auto compartment = CreateMinimalRuntimeImage();
+    // A string materialized into linear memory keeps its refcount header there,
+    // so even destroying the value reads guest memory. Releasing the owner while
+    // an allocation is live must not unmap it.
+    std::shared_ptr<IWebAssemblyCompartment> compartment = CreateMinimalRuntimeImage();
     auto buffer = TGuestBuffer::Allocate(compartment.get(), 64);
     void* host = buffer.HostData();
     const uintptr_t offset = buffer.Offset();
@@ -335,19 +338,20 @@ TEST_F(TWebAssemblyTest, AllocationRegistryInvalidateFreesThenOrphans)
 
     constexpr ui64 generation = 99;
     auto& registry = TWasmAllocationRegistry::Instance();
-    registry.Register(host, compartment.get(), offset, size, generation);
+    registry.Register(host, compartment.get(), offset, size, generation, compartment);
     ASSERT_EQ(registry.CountGeneration(generation), 1u);
-    // FreeBytes while compartment is still alive; host ptr stays orphaned.
-    registry.InvalidateGeneration(generation);
-    ASSERT_EQ(registry.CountGeneration(generation), 0u);
 
+    std::weak_ptr<IWebAssemblyCompartment> weak = compartment;
+    registry.ReleaseOwner(generation);
     compartment.reset();
-    // Late UnRef must not FreeBytes / UdfFreeWithSize a dead WASM address.
+    ASSERT_FALSE(weak.expired()) << "compartment died under a live allocation";
+
     ASSERT_TRUE(registry.TryFree(host));
+    ASSERT_TRUE(weak.expired()) << "compartment leaked past the last allocation";
     ASSERT_FALSE(registry.TryFree(host));
 }
 
-TEST_F(TWebAssemblyTest, AllocationRegistryUnRefFreesBeforeInvalidate)
+TEST_F(TWebAssemblyTest, AllocationRegistryUnRefFreesBeforeOwnerRelease)
 {
     // Models PreferWasm string lifetime: Make → drop UnboxedValue (UnRef) →
     // FreeBytes via UdfTryFreeExternalString while compartment is still alive.
@@ -372,7 +376,7 @@ TEST_F(TWebAssemblyTest, AllocationRegistryUnRefFreesBeforeInvalidate)
             << "row " << i << " leaked past UnRef";
     }
 
-    registry.InvalidateGeneration(generation);
+    registry.ReleaseOwner(generation);
     ASSERT_EQ(registry.CountGeneration(generation), 0u);
 }
 

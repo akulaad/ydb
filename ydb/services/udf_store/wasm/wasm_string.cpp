@@ -21,7 +21,8 @@ using EAbiValueType = NYdb::NUdfStore::NAbi::EValueType;
 TUnboxedValuePod TWasmStringValue::Make(
     TStringRef data,
     IWebAssemblyCompartment* compartment,
-    ui64 generation)
+    ui64 generation,
+    std::shared_ptr<void> owner)
 {
     if (!compartment) {
         ythrow yexception() << "TWasmStringValue::Make: compartment is null";
@@ -40,7 +41,7 @@ TUnboxedValuePod TWasmStringValue::Make(
 
     const uintptr_t offset = buffer.Offset();
     TWasmAllocationRegistry::Instance().Register(
-        header, compartment, offset, allocBytes, generation);
+        header, compartment, offset, allocBytes, generation, std::move(owner));
     buffer.Release();
 
     // ConstructInPlace starts at one reference while a freshly built pod must
@@ -61,25 +62,22 @@ TUnboxedValuePod TWasmStringValue::MakePreferWasm(TStringRef data)
         return TUnboxedValuePod::Embedded(data);
     }
 
-    // Prefer query-compartment TLS (set for the whole compute Activate / scan),
-    // then fall back to GetCurrentCompartment (UDF Run only).
-    IWebAssemblyCompartment* compartment = nullptr;
-    ui64 generation = 0;
-    if (auto* handle = GetCurrentQueryCompartment()) {
-        compartment = handle->Compartment.get();
-        generation = handle->Generation;
-    } else {
-        compartment = GetCurrentCompartment();
-    }
-
-    if (!compartment) {
+    // Only the query compartment: it can be kept alive for as long as the value
+    // lives (the registry holds the handle). A compartment borrowed from a UDF
+    // call in flight offers no such guarantee, and the value may well outlive it.
+    auto* handle = GetCurrentQueryCompartment();
+    if (!handle || !handle->Compartment) {
         // Host fallback via UDF allocator (no MiniKQL MakeString dependency).
         TPreferWasmStats::Instance().OnFallbackNoCompartment();
         return TUnboxedValuePod(TStringValue(data));
     }
 
     TPreferWasmStats::Instance().OnMaterializedInWasm();
-    return Make(data, compartment, generation);
+    return Make(
+        data,
+        handle->Compartment.get(),
+        handle->Generation,
+        handle->shared_from_this());
 }
 
 bool TWasmStringValue::TryGetResidentOffset(

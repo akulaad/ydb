@@ -6,6 +6,8 @@
 
 #include <yql/essentials/public/udf/udf_value.h>
 
+#include <memory>
+
 namespace NKikimr::NUdfStore::NWasm {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,14 +19,17 @@ class TWasmStringValue {
 public:
     //! Allocate |data| in |compartment| and return a String UnboxedValue.
     //! Soft OOM / null compartment: throws.
+    //! |owner| is registered as the keep-alive for |generation|: the value can
+    //! outlive the query scope, and its refcount header lives in linear memory.
     static NYql::NUdf::TUnboxedValuePod Make(
         NYql::NUdf::TStringRef data,
         NYdb::NWasm::IWebAssemblyCompartment* compartment,
-        ui64 generation);
+        ui64 generation,
+        std::shared_ptr<void> owner = nullptr);
 
-    //! Like Make, but uses the current query compartment (or GetCurrentCompartment);
-    //! falls back to host TStringValue when no compartment is active or the string
-    //! fits in the embedded buffer.
+    //! Like Make, but uses the current query compartment; falls back to a host
+    //! TStringValue when no query compartment is active or the string fits in the
+    //! embedded buffer.
     static NYql::NUdf::TUnboxedValuePod MakePreferWasm(NYql::NUdf::TStringRef data);
 
     //! If |value| bytes already lie in |compartment| linear memory, set offset/length

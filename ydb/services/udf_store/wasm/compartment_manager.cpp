@@ -18,7 +18,7 @@ namespace NKikimr::NUdfStore::NWasm {
 
 TQueryCompartmentHandle::~TQueryCompartmentHandle() {
     if (Generation != 0) {
-        NYdb::NWasm::TWasmAllocationRegistry::Instance().InvalidateGeneration(Generation);
+        NYdb::NWasm::TWasmAllocationRegistry::Instance().ForgetGeneration(Generation);
     }
 }
 
@@ -103,7 +103,7 @@ TQueryCompartmentHandlePtr TWasmCompartmentManager::Acquire(
         }
     }
 
-    auto handle = std::make_unique<TQueryCompartmentHandle>();
+    auto handle = std::make_shared<TQueryCompartmentHandle>();
     handle->Generation = NextCompartmentGeneration();
     // CreateRegistryCompartment clones SDK from CreateImageFromSdk cache ("env");
     // only then do we AddPrecompiledModule the UDF (e.g. Md5).

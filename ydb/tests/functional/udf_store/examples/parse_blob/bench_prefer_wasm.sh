@@ -13,11 +13,16 @@
 # Prerequisites: a running database with the ParseBlob UDF uploaded (see
 # ../../test_udf_store.py and upload_udf), and the ydb CLI in PATH.
 #
-# Note on the query shape: each row feeds its blob to exactly one UDF call,
-# because YQL collapses repeated identical calls into one. At one call per value
-# both paths do a single guest malloc/copy/free, so the measured difference stays
-# inside the run-to-run noise (a few percent); the resident path pulls ahead only
-# when one value reaches several UDF calls.
+# SHAPE picks what the row does with its blob, which decides whether the saved
+# copy is visible at all:
+#
+#   head  - ParseBlob::blob_head, one call, body O(1) in the blob size. The copies
+#           are then most of the work, so the difference shows up.
+#   both  - blob_head plus parse_blob: two calls on the same value (identical
+#           calls would be collapsed by YQL into one, different UDFs are not),
+#           so the host path pays one copy per call.
+#   parse - ParseBlob::parse_blob only: the body xors the whole blob and costs
+#           ~99% of the query, burying the difference in the noise.
 
 set -euo pipefail
 
@@ -25,10 +30,23 @@ YDB=${YDB:-ydb}
 ENDPOINT=${ENDPOINT:-grpc://localhost:31011}
 DB=${DB:-/Root/test}
 TABLE=${TABLE:-parse_blob_bench}
-ROWS=${ROWS:-2048}           # rounded up to a power of two
+ROWS=${ROWS:-2048}
 BLOB_SIZE=${BLOB_SIZE:-65536}
+SEED_BATCH_BYTES=${SEED_BATCH_BYTES:-16777216}   # payload cap of one seeding query
 RUNS=${RUNS:-7}
 SKIP_SEED=${SKIP_SEED:-0}
+SHAPE=${SHAPE:-head}
+
+case $SHAPE in
+    head) PROJECTION='SUM(CAST(LENGTH(ParseBlob::blob_head(blob)) AS Uint64))' ;;
+    both) PROJECTION='SUM(CAST(LENGTH(ParseBlob::blob_head(blob)) AS Uint64)
+                        + CAST(LENGTH(ParseBlob::parse_blob(blob)) AS Uint64))' ;;
+    parse) PROJECTION='SUM(CAST(LENGTH(ParseBlob::parse_blob(blob)) AS Uint64))' ;;
+    *)
+        echo "unknown SHAPE=$SHAPE, expected head, both or parse" >&2
+        exit 1
+        ;;
+esac
 
 STATS_DIR=$(mktemp -d)
 trap 'rm -rf "$STATS_DIR"' EXIT
@@ -48,11 +66,22 @@ seed() {
     blob=$(head -c "$BLOB_SIZE" /dev/zero | tr '\0' 'a')
     run_sql "UPSERT INTO $TABLE (id, blob) VALUES (0ul, \"$blob\");"
 
-    # Doubling keeps the seeding queries small: one row of SQL text, log2(ROWS) queries.
+    # Grow by copying rows already in the table, which keeps the SQL text at one
+    # row regardless of ROWS. The copy doubles the table until a single query
+    # would move more than SEED_BATCH_BYTES - past that point the transaction
+    # runs out of buffer memory (the default limit is 64 MB), so the rest is
+    # appended in equal batches.
+    local batch=$((SEED_BATCH_BYTES / BLOB_SIZE))
+    ((batch < 1)) && batch=1
+
     local rows=1
     while ((rows < ROWS)); do
-        run_sql "UPSERT INTO $TABLE (id, blob) SELECT id + ${rows}ul AS id, blob FROM $TABLE;"
-        rows=$((rows * 2))
+        local take=$rows
+        ((take > batch)) && take=$batch
+        ((take > ROWS - rows)) && take=$((ROWS - rows))
+        run_sql "UPSERT INTO $TABLE (id, blob)
+                 SELECT id + ${rows}ul AS id, blob FROM $TABLE WHERE id < ${take}ul;"
+        rows=$((rows + take))
     done
     echo "seeded $rows rows"
 }
@@ -61,7 +90,7 @@ make_query() {
     local enabled=$1
     cat <<EOF
 PRAGMA ydb.EnableWasmUdfResidentStringColumns = "$enabled";
-SELECT SUM(CAST(LENGTH(ParseBlob::parse_blob(blob)) AS Uint64)) AS checksum
+SELECT $PROJECTION AS checksum
 FROM $TABLE;
 EOF
 }
@@ -107,7 +136,7 @@ read -r resident_ms resident_cpu < <(summarize "$STATS_DIR/samples-true")
 read -r host_ms host_cpu < <(summarize "$STATS_DIR/samples-false")
 
 echo
-echo "rows=$ROWS blob=$BLOB_SIZE runs=$RUNS (medians)"
+echo "shape=$SHAPE rows=$ROWS blob=$BLOB_SIZE runs=$RUNS (medians)"
 printf '  resident (PreferWasm on):  %6s ms wall, %8s us cpu\n' "$resident_ms" "$resident_cpu"
 printf '  host     (PreferWasm off): %6s ms wall, %8s us cpu\n' "$host_ms" "$host_cpu"
 awk -v aw="$resident_ms" -v bw="$host_ms" -v ac="$resident_cpu" -v bc="$host_cpu" 'BEGIN {
