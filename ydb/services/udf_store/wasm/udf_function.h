@@ -81,11 +81,18 @@ private:
 
     TUnboxedValue Run(const IValueBuilder* valueBuilder, const TUnboxedValuePod* args) const override;
 
+    //! Nothing downstream re-reads the declared type, so a guest that returns
+    //! a handle of the wrong shape hands MiniKQL a value it will read as the
+    //! declared one. Compare what can be compared cheaply: the family of the
+    //! returned node against the family of ResultType_.
+    void EnsureResultFamily(EBridgeValueKind kind) const;
+
     TWasmCompartmentStatePtr State_;
     TWasmUdfDescriptor Descriptor_;
     TVector<TType*> ArgTypes_;
     TType* ResultType_ = nullptr;
     ITypeInfoHelper::TPtr TypeInfoHelper_;
+    EBridgeKindFamily ResultFamily_ = EBridgeKindFamily::Null;
 };
 
 class TWasmSoModule: public IUdfModule {

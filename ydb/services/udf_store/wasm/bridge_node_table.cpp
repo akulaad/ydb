@@ -11,18 +11,21 @@ namespace NKikimr::NUdfStore::NWasm {
 using namespace NYql::NUdf;
 using namespace NYdb::NWasm;
 
-const void* BridgeIdentityKey(const TUnboxedValuePod& value) {
+TBridgeIdentity BridgeIdentityKey(const TUnboxedValuePod& value) {
     if (!value) {
-        return nullptr;
+        return {};
     }
     if (value.IsBoxed()) {
-        return value.AsBoxed().Get();
+        return {value.AsRawBoxed(), nullptr, 0};
     }
     if (value.IsString()) {
         // Large MiniKQL strings are EMarkers::String (TStringValue), not Boxed.
-        return value.AsRawStringValue();
+        // A substring shares the buffer and only moves the view, so the view
+        // itself is the identity.
+        const TStringRef bytes = value.AsStringRef();
+        return {value.AsRawStringValue(), bytes.Data(), bytes.Size()};
     }
-    return nullptr;
+    return {};
 }
 
 namespace {
@@ -205,7 +208,7 @@ ui64 TWasmBridgeNodeTable::RegisterUntracked(
     node.Value = std::move(value);
     node.Refs = 1;
 
-    if (const void* key = BridgeIdentityKey(node.Value)) {
+    if (const TBridgeIdentity key = BridgeIdentityKey(node.Value)) {
         // Aliasing values (Optional over the same pod) must not steal the
         // entry: only the first registration owns and erases it.
         node.OwnsIdentity = Identity_.emplace(key, index).second;
@@ -242,7 +245,7 @@ ui64 TWasmBridgeNodeTable::RegisterOrReuse(
 }
 
 ui64 TWasmBridgeNodeTable::TryReuse(const TUnboxedValuePod& value) const {
-    const void* key = BridgeIdentityKey(value);
+    const TBridgeIdentity key = BridgeIdentityKey(value);
     if (!key) {
         return NullBridgeHandle;
     }
@@ -288,7 +291,7 @@ void TWasmBridgeNodeTable::Unref(ui64 handle) {
         return;
     }
     if (it->second.OwnsIdentity) {
-        if (const void* key = BridgeIdentityKey(it->second.Value)) {
+        if (const TBridgeIdentity key = BridgeIdentityKey(it->second.Value)) {
             Identity_.erase(key);
         }
     }
@@ -341,7 +344,7 @@ ui64 EnsureBridgeStringResident(
             << static_cast<int>(node.ValueKind);
     }
     const TStringRef bytes = node.Value.AsStringRef();
-    if (const void* key = BridgeIdentityKey(node.Value)) {
+    if (const TBridgeIdentity key = BridgeIdentityKey(node.Value)) {
         return cache.Pin(key, node.Value, bytes);
     }
     // Embedded strings live inside the pod: no identity to key a pin on, and

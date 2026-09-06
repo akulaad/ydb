@@ -4,6 +4,7 @@
 
 #include <util/generic/utility.h>
 #include <util/generic/yexception.h>
+#include <util/generic/ylimits.h>
 
 #include <bit>
 #include <cstring>
@@ -37,6 +38,11 @@ ui64 BlockSizeFor(ui64 length) {
     }
     if (length <= PowerOfTwoLimit) {
         return std::bit_ceil(length);
+    }
+    // Rounding up wraps for lengths this close to the top and would hand back
+    // a block smaller than asked for.
+    if (length > Max<ui64>() - PowerOfTwoLimit + 1) {
+        ythrow yexception() << "Bridge: resident block of " << length << " bytes is out of range";
     }
     return RoundUpTo(length, PowerOfTwoLimit);
 }
@@ -128,12 +134,17 @@ ui64 TCompartmentResidentCache::AllocGuest(ui64 length) {
     if (length == 0) {
         return 0;
     }
+    if (length > Budget_) {
+        ythrow yexception()
+            << "Bridge: BridgeAllocResident of " << length
+            << " bytes is larger than the whole resident budget (" << Budget_ << ")";
+    }
     const ui64 blockSize = BlockSizeFor(length);
-    if (GuestBytes_ + blockSize > Budget_) {
+    if (ResidentBytes() + blockSize > Budget_) {
         ythrow yexception()
             << "Bridge: BridgeAllocResident of " << length
             << " bytes would exceed the resident budget ("
-            << GuestBytes_ << " + " << blockSize << " > " << Budget_ << ")";
+            << ResidentBytes() << " + " << blockSize << " > " << Budget_ << ")";
     }
     const ui64 offset = Alloc(length);
     if (offset != 0) {
@@ -171,7 +182,7 @@ void TCompartmentResidentCache::WriteBytes(ui64 offset, TStringRef bytes) {
     std::memcpy(destination, bytes.Data(), bytes.Size());
 }
 
-void TCompartmentResidentCache::Touch(const void* key, TPin& pin) {
+void TCompartmentResidentCache::Touch(const TBridgeIdentity& key, TPin& pin) {
     pin.LastRun = CurrentRun_;
     Lru_.erase(pin.LruIt);
     Lru_.push_back(key);
@@ -179,7 +190,7 @@ void TCompartmentResidentCache::Touch(const void* key, TPin& pin) {
 }
 
 void TCompartmentResidentCache::EvictFor(ui64 length) {
-    for (auto it = Lru_.begin(); it != Lru_.end() && PinnedBytes_ + length > Budget_;) {
+    for (auto it = Lru_.begin(); it != Lru_.end() && ResidentBytes() + length > Budget_;) {
         auto* pin = Pins_.FindPtr(*it);
         if (!pin || pin->LastRun == CurrentRun_) {
             // In use by the Run that is running right now: its offset is live.
@@ -195,7 +206,7 @@ void TCompartmentResidentCache::EvictFor(ui64 length) {
 }
 
 ui64 TCompartmentResidentCache::Pin(
-    const void* key,
+    const TBridgeIdentity& key,
     const TUnboxedValue& owner,
     TStringRef bytes)
 {
@@ -232,11 +243,11 @@ ui64 TCompartmentResidentCache::PinScratch(TStringRef bytes) {
         return 0;
     }
     const ui64 blockSize = BlockSizeFor(bytes.Size());
-    if (ScratchBytes_ + blockSize > Budget_) {
+    if (ResidentBytes() + blockSize > Budget_) {
         ythrow yexception()
             << "Bridge: scratch pin of " << bytes.Size()
             << " bytes would exceed the resident budget ("
-            << ScratchBytes_ << " + " << blockSize << " > " << Budget_ << ")";
+            << ResidentBytes() << " + " << blockSize << " > " << Budget_ << ")";
     }
     const ui64 offset = AllocBlock(bytes.Size());
     ScratchBlocks_.push_back(offset);
@@ -245,13 +256,13 @@ ui64 TCompartmentResidentCache::PinScratch(TStringRef bytes) {
     return offset;
 }
 
-ui64 TCompartmentResidentCache::GetUserData(const void* key) const {
+ui64 TCompartmentResidentCache::GetUserData(const TBridgeIdentity& key) const {
     const auto* state = UserStates_.FindPtr(key);
     return state ? state->Value : 0;
 }
 
 void TCompartmentResidentCache::SetUserData(
-    const void* key,
+    const TBridgeIdentity& key,
     const TUnboxedValue& owner,
     ui64 value)
 {
@@ -267,7 +278,7 @@ void TCompartmentResidentCache::SetUserData(
     }
 
     while (UserStates_.size() >= MaxUserStates && !UserStatesLru_.empty()) {
-        const void* victim = UserStatesLru_.front();
+        const TBridgeIdentity victim = UserStatesLru_.front();
         if (auto* state = UserStates_.FindPtr(victim); state && state->Value != 0) {
             ReleasedUserData_.push_back(state->Value);
         }

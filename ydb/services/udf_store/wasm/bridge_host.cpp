@@ -736,8 +736,10 @@ ui64 BridgeMakeOptionalHost(ui64 innerHandle) {
         innerType);
 }
 
-//! Read `n` handles from linear memory into their values.
-TVector<TUnboxedValue> ResolveHandleArray(ui64 handlesOff, i32 n, const char* what) {
+//! Read `n` handles from linear memory into their values. `n` is wider than
+//! the i32 the intrinsics take so a caller may scale it (dict pairs) without
+//! wrapping first.
+TVector<TUnboxedValue> ResolveHandleArray(ui64 handlesOff, i64 n, const char* what) {
     if (n < 0) {
         ythrow yexception() << "Bridge: " << what << " negative count";
     }
@@ -749,7 +751,7 @@ TVector<TUnboxedValue> ResolveHandleArray(ui64 handlesOff, i32 n, const char* wh
             std::bit_cast<ui64*>(static_cast<uintptr_t>(handlesOff)),
             sizeof(ui64) * static_cast<size_t>(n));
     TVector<TUnboxedValue> values(static_cast<size_t>(n));
-    for (i32 i = 0; i < n; ++i) {
+    for (i64 i = 0; i < n; ++i) {
         if (handles[i] != NullBridgeHandle) {
             values[i] = CurrentBridgeTable().Resolve(handles[i]).Value;
         }
@@ -868,11 +870,12 @@ ui64 BridgeMakeDictHost(ui64 typeHandle, ui64 pairsOff, i32 n) {
         ythrow yexception() << "Bridge: BridgeMakeDict negative count";
     }
 
-    auto values = ResolveHandleArray(pairsOff, 2 * n, "BridgeMakeDict");
+    auto values = ResolveHandleArray(pairsOff, static_cast<i64>(n) * 2, "BridgeMakeDict");
     auto* builder = CurrentValueBuilderOrThrow();
     auto dictBuilder = builder->NewDict(dictType, /*flags*/ 0);
     for (i32 i = 0; i < n; ++i) {
-        dictBuilder->Add(std::move(values[2 * i]), std::move(values[2 * i + 1]));
+        const size_t pair = static_cast<size_t>(i) * 2;
+        dictBuilder->Add(std::move(values[pair]), std::move(values[pair + 1]));
     }
     return RegisterOwned(EBridgeNodeKind::Dict, EBridgeValueKind::Dict, dictBuilder->Build());
 }
@@ -964,7 +967,7 @@ i64 BridgeCopyResourceTagHost(ui64 handle, ui64 dstOff, i64 cap) {
 
 ui64 BridgeGetUserDataHost(ui64 handle) {
     const auto& node = CurrentBridgeTable().Resolve(handle);
-    const void* key = BridgeIdentityKey(node.Value);
+    const TBridgeIdentity key = BridgeIdentityKey(node.Value);
     if (!key) {
         return 0;
     }
@@ -973,7 +976,7 @@ ui64 BridgeGetUserDataHost(ui64 handle) {
 
 void BridgeSetUserDataHost(ui64 handle, ui64 value) {
     const auto& node = CurrentBridgeTable().Resolve(handle);
-    const void* key = BridgeIdentityKey(node.Value);
+    const TBridgeIdentity key = BridgeIdentityKey(node.Value);
     if (!key) {
         ythrow yexception()
             << "Bridge: BridgeSetUserData needs a value with identity"

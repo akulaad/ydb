@@ -912,6 +912,47 @@ Y_UNIT_TEST(SubstringsOfOneBufferGetDistinctNodes) {
     UNIT_ASSERT_VALUES_EQUAL(table.TryReuse(tail), h2);
 }
 
+Y_UNIT_TEST(SubstringsOfOneBufferGetDistinctPins) {
+    TMiniKqlEnv mkql;
+
+    auto compartment = CreateEmptyImage();
+    compartment->AddSdk(MakeNamedLibrary("sdk", SdkStubWast).Bytecode);
+    TCompartmentResidentCache resident(compartment.get());
+
+    const TUnboxedValue whole = mkql.ValueBuilder.NewString(
+        TStringRef("AAAAAAAAAAAAAAAAAAAAAAAAbbbbbbbbbbbbbbbbbbbbbbbbbbbb", 52));
+    const TUnboxedValue head = mkql.ValueBuilder.SubString(whole, 0, 24);
+    const TUnboxedValue tail = mkql.ValueBuilder.SubString(whole, 24, 28);
+
+    const TBridgeIdentity headKey = BridgeIdentityKey(head);
+    const TBridgeIdentity tailKey = BridgeIdentityKey(tail);
+    UNIT_ASSERT(headKey);
+    UNIT_ASSERT(tailKey);
+    UNIT_ASSERT(!(headKey == tailKey));
+
+    const ui64 headOffset = resident.Pin(headKey, head, head.AsStringRef());
+    const ui64 tailOffset = resident.Pin(tailKey, tail, tail.AsStringRef());
+    UNIT_ASSERT_VALUES_UNEQUAL(headOffset, tailOffset);
+
+    // One pin for both views would hand the guest the head where it asked for
+    // the tail, so each view has to carry its own bytes.
+    const auto bytesAt = [&](ui64 offset, size_t size) {
+        return TStringBuf(
+            PtrFromVM(
+                compartment.get(),
+                std::bit_cast<char*>(static_cast<uintptr_t>(offset)),
+                size),
+            size);
+    };
+    UNIT_ASSERT_VALUES_EQUAL(bytesAt(headOffset, 24), TStringBuf("AAAAAAAAAAAAAAAAAAAAAAAA"));
+    UNIT_ASSERT_VALUES_EQUAL(bytesAt(tailOffset, 28), TStringBuf("bbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
+
+    // Guest state built for one view must not be served to the other.
+    resident.SetUserData(headKey, head, 0xC0FFEEull);
+    UNIT_ASSERT_VALUES_EQUAL(resident.GetUserData(headKey), 0xC0FFEEull);
+    UNIT_ASSERT_VALUES_EQUAL(resident.GetUserData(tailKey), 0u);
+}
+
 Y_UNIT_TEST(AliasingNodeKeepsIdentityOwner) {
     TMiniKqlEnv mkql;
 
@@ -1069,8 +1110,8 @@ Y_UNIT_TEST(ResidentCacheEvictsBeyondBudget) {
 
     for (const auto& blob : blobs) {
         resident.BeginRun();
-        const void* key = BridgeIdentityKey(blob);
-        UNIT_ASSERT(key != nullptr);
+        const TBridgeIdentity key = BridgeIdentityKey(blob);
+        UNIT_ASSERT(key);
         UNIT_ASSERT(resident.Pin(key, blob, blob.AsStringRef()) != 0);
     }
 
@@ -1096,8 +1137,8 @@ Y_UNIT_TEST(PinFencesTheGuestHeapAboveHostBytes) {
     TString blob(4u << 20, 'Z');
     const TUnboxedValue value = mkql.ValueBuilder.NewString(
         TStringRef(blob.data(), blob.size()));
-    const void* key = BridgeIdentityKey(value);
-    UNIT_ASSERT(key != nullptr);
+    const TBridgeIdentity key = BridgeIdentityKey(value);
+    UNIT_ASSERT(key);
 
     const ui64 offset = resident.Pin(key, value, value.AsStringRef());
     UNIT_ASSERT(offset != 0);
@@ -1138,8 +1179,8 @@ Y_UNIT_TEST(PinRefusesAGuestItCannotFenceOff) {
     TCompartmentResidentCache resident(compartment.get());
     const TUnboxedValue value = mkql.ValueBuilder.NewString(
         TStringRef("pin-me-if-you-can-but-you-cannot-fence-me", 41));
-    const void* key = BridgeIdentityKey(value);
-    UNIT_ASSERT(key != nullptr);
+    const TBridgeIdentity key = BridgeIdentityKey(value);
+    UNIT_ASSERT(key);
 
     UNIT_ASSERT_EXCEPTION_CONTAINS(
         resident.Pin(key, value, value.AsStringRef()),
@@ -1259,8 +1300,8 @@ Y_UNIT_TEST(UserDataSurvivesNodeDeath) {
         EBridgeValueKind::String,
         nullptr,
         TUnboxedValue(blob));
-    const void* key = BridgeIdentityKey(table.Resolve(firstRow).Value);
-    UNIT_ASSERT(key != nullptr);
+    const TBridgeIdentity key = BridgeIdentityKey(table.Resolve(firstRow).Value);
+    UNIT_ASSERT(key);
     UNIT_ASSERT_VALUES_EQUAL(resident.GetUserData(key), 0u);
     resident.SetUserData(key, table.Resolve(firstRow).Value, 0xC0FFEEull);
 
@@ -1371,8 +1412,8 @@ Y_UNIT_TEST(ResidentFreeRejectsPinnedOffsets) {
     const TString blob(4096, 'P');
     const TUnboxedValue value = mkql.ValueBuilder.NewString(
         TStringRef(blob.data(), blob.size()));
-    const void* key = BridgeIdentityKey(value);
-    UNIT_ASSERT(key != nullptr);
+    const TBridgeIdentity key = BridgeIdentityKey(value);
+    UNIT_ASSERT(key);
 
     // BridgeEnsureString hands this offset to the guest, so the guest knows it.
     const ui64 pinned = resident.Pin(key, value, value.AsStringRef());
@@ -1440,6 +1481,80 @@ Y_UNIT_TEST(PinScratchRespectsResidentBudget) {
         resident.PinScratch(TStringRef(blob.data(), blob.size())),
         yexception,
         "resident budget");
+}
+
+Y_UNIT_TEST(ResidentBudgetIsSharedBetweenGuestAndScratch) {
+    auto compartment = CreateEmptyImage();
+    compartment->AddSdk(MakeNamedLibrary("sdk", SdkStubWast).Bytecode);
+
+    constexpr ui64 kBudget = 1ull << 20;
+    TCompartmentResidentCache resident(compartment.get(), kBudget);
+    resident.BeginRun();
+
+    // Guest blocks and per-Run scratch draw on one budget: a guest that holds
+    // half of it must not be able to pin another whole budget of scratch.
+    const ui64 guestBlock = resident.AllocGuest(kBudget / 2);
+    UNIT_ASSERT(guestBlock != 0);
+
+    const TString half(kBudget / 2, 'S');
+    UNIT_ASSERT(resident.PinScratch(TStringRef(half.data(), half.size())) != 0);
+
+    const TString tail(64, 'T');
+    UNIT_ASSERT_EXCEPTION_CONTAINS(
+        resident.PinScratch(TStringRef(tail.data(), tail.size())),
+        yexception,
+        "resident budget");
+
+    // Scratch goes back at the next Run, and the budget with it.
+    resident.BeginRun();
+    UNIT_ASSERT(resident.PinScratch(TStringRef(tail.data(), tail.size())) != 0);
+    resident.FreeGuest(guestBlock);
+}
+
+Y_UNIT_TEST(ResidentRejectsOutOfRangeLengths) {
+    auto compartment = CreateEmptyImage();
+    compartment->AddSdk(MakeNamedLibrary("sdk", SdkStubWast).Bytecode);
+
+    TCompartmentResidentCache resident(compartment.get());
+
+    // Rounding such a length up to a size class wraps; the caller would get a
+    // block far smaller than it asked for instead of an error.
+    UNIT_ASSERT_EXCEPTION(resident.Alloc(Max<ui64>()), yexception);
+    UNIT_ASSERT_EXCEPTION(resident.AllocGuest(Max<ui64>()), yexception);
+    UNIT_ASSERT_VALUES_EQUAL(resident.GuestBytes(), 0u);
+}
+
+Y_UNIT_TEST(CollectWasmExportsReportsParamTypes) {
+    constexpr TStringBuf wast = R"(
+        (module
+            (func (export "udf_call") (param i64 i64 i64))
+            (func (export "wrong_types") (param i64 f64))
+            (func (export "wrong_results") (param i64) (result i64)
+                (local.get 0))
+        )
+    )";
+
+    const auto exports = CollectWasmExports(wast, EBytecodeFormat::HumanReadable);
+
+    const auto* call = exports.FindPtr("udf_call");
+    UNIT_ASSERT(call);
+    UNIT_ASSERT_VALUES_EQUAL(call->ParamCount, 3u);
+    UNIT_ASSERT_VALUES_EQUAL(call->ResultCount, 0u);
+    UNIT_ASSERT_VALUES_EQUAL(call->ParamTypes.size(), 3u);
+    for (const auto param : call->ParamTypes) {
+        UNIT_ASSERT(param == EWasmExportValueType::I64);
+    }
+
+    // Every UDF export is invoked as (i64...) -> (): these two would only fail
+    // inside WAVM on the first row, so registration has to refuse them.
+    const auto* wrongTypes = exports.FindPtr("wrong_types");
+    UNIT_ASSERT(wrongTypes);
+    UNIT_ASSERT_VALUES_EQUAL(wrongTypes->ParamTypes.size(), 2u);
+    UNIT_ASSERT(wrongTypes->ParamTypes[1] == EWasmExportValueType::F64);
+
+    const auto* wrongResults = exports.FindPtr("wrong_results");
+    UNIT_ASSERT(wrongResults);
+    UNIT_ASSERT_VALUES_EQUAL(wrongResults->ResultCount, 1u);
 }
 
 } // Y_UNIT_TEST_SUITE

@@ -223,19 +223,69 @@ void TWasmCompileActor::ValidateExports() {
         return signature;
     };
 
+    // Every export goes through InvokeUdfExport, which passes the context, the
+    // result pointer and each argument as UintPtr (i64 under the memory64
+    // layout the engine forces) and expects nothing back. A module built for
+    // another pointer width traps inside WAVM on the first row, so say so now.
+    auto requireAbiTypes = [&](const NWasm::TWasmExportSignature& signature, const TString& exportName) {
+        for (size_t i = 0; i < signature.ParamTypes.size(); ++i) {
+            if (signature.ParamTypes[i] != NWasm::EWasmExportValueType::I64) {
+                ythrow yexception()
+                    << "Wasm export '" << exportName << "' for UDF '" << Name_
+                    << "' takes " << NWasm::WasmExportValueTypeAsStr(signature.ParamTypes[i])
+                    << " as parameter " << i << ", but every UDF export parameter must be i64";
+            }
+        }
+        if (signature.ResultCount != 0) {
+            ythrow yexception()
+                << "Wasm export '" << exportName << "' for UDF '" << Name_
+                << "' returns " << signature.ResultCount
+                << " values, but a UDF export writes its result through the result pointer"
+                   " and must return none";
+        }
+    };
+
+    auto requireArity = [&](
+        const NWasm::TWasmExportSignature& signature,
+        const TString& exportName,
+        size_t expectedParams,
+        TStringBuf shape)
+    {
+        if (signature.ParamCount != expectedParams) {
+            ythrow yexception()
+                << "Wasm export '" << exportName << "' for UDF '" << Name_
+                << "' has " << signature.ParamCount << " parameters, but needs "
+                << expectedParams << " (" << shape << ")";
+        }
+    };
+
     for (const auto& descriptor : ParsedManifest_.Functions) {
         if (descriptor.Binding == NWasm::EWasmUdfBinding::TypeConfigCallable) {
-            requireExport(descriptor.CreateExport);
-            requireExport(descriptor.CallExport);
-            requireExport(descriptor.DestroyExport);
+            // create(ctx, result, typeConfig) and destroy(ctx, result, handle)
+            // have a fixed shape; the call export's arity follows the method.
+            if (const auto* createSignature = requireExport(descriptor.CreateExport)) {
+                requireAbiTypes(*createSignature, descriptor.CreateExport);
+                requireArity(*createSignature, descriptor.CreateExport, 3,
+                    "context, result pointer, type config");
+            }
+            if (const auto* callSignature = requireExport(descriptor.CallExport)) {
+                requireAbiTypes(*callSignature, descriptor.CallExport);
+            }
+            if (const auto* destroySignature = requireExport(descriptor.DestroyExport)) {
+                requireAbiTypes(*destroySignature, descriptor.DestroyExport);
+                requireArity(*destroySignature, descriptor.DestroyExport, 3,
+                    "context, result pointer, object handle");
+            }
             continue;
         }
 
         const TString exportName(NWasm::PlainWasmExport(descriptor));
         const auto* signature = requireExport(exportName);
-        if (!signature
-            || descriptor.CallingConvention != NWasm::EWasmCallingConvention::Bridge)
-        {
+        if (!signature) {
+            continue;
+        }
+        requireAbiTypes(*signature, exportName);
+        if (descriptor.CallingConvention != NWasm::EWasmCallingConvention::Bridge) {
             continue;
         }
         // A bridge export is called as (ctx, resultPtr, arg handles...) and

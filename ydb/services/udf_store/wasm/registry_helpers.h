@@ -77,12 +77,25 @@ void InvokeUdfExport(
     uintptr_t result,
     const TVector<uintptr_t>& args);
 
+enum class EWasmExportValueType: ui8 {
+    I32,
+    I64,
+    F32,
+    F64,
+    Other,
+};
+
+const char* WasmExportValueTypeAsStr(EWasmExportValueType type);
+
 //! Shape of an exported wasm function, enough to check that a manifest
-//! declaration and the module it describes agree on how many values move
-//! across the call.
+//! declaration and the module it describes agree on which values move across
+//! the call. Every UDF export is invoked as (i64...) -> (), because
+//! InvokeUdfExport passes context, result pointer and arguments as UintPtr
+//! and expects no result back.
 struct TWasmExportSignature {
     size_t ParamCount = 0;
     size_t ResultCount = 0;
+    TVector<EWasmExportValueType> ParamTypes;
 };
 
 THashMap<TString, TWasmExportSignature> CollectWasmExports(

@@ -14,10 +14,11 @@
 
 namespace NKikimr::NUdfStore::NWasm {
 
-//! Stable identity of a value for cross-row reuse: boxed object pointer or
-//! refcounted string buffer (TStringValue::TData*). Returns nullptr for values
-//! without identity (embedded strings, plain scalars, empty values).
-const void* BridgeIdentityKey(const NYql::NUdf::TUnboxedValuePod& value);
+//! Stable identity of a value for cross-row reuse: boxed object pointer, or
+//! one view (start and size) over a refcounted string buffer. Returns a false
+//! identity for values without one (embedded strings, plain scalars, empty
+//! values).
+TBridgeIdentity BridgeIdentityKey(const NYql::NUdf::TUnboxedValuePod& value);
 
 struct TBridgeKinds {
     EBridgeNodeKind Node = EBridgeNodeKind::Unknown;
@@ -146,8 +147,9 @@ private:
     const ui64 Generation_;
     ui64 NextIndex_ = 1; // 0 reserved (would collide with null when generation packs)
     THashMap<ui64, TNode> Nodes_;
-    //! Identity for IsBoxed() objects and IsString() buffers (TStringValue::TData*).
-    THashMap<const void*, ui64> Identity_;
+    //! Identity for IsBoxed() objects and for single views over IsString()
+    //! buffers, so two substrings of one buffer never share a node.
+    THashMap<TBridgeIdentity, ui64> Identity_;
     //! Handles owed an Unref, innermost Run scope last. Holding a handle per
     //! node created in a row costs one ui64 per node, but bounds the sweep to
     //! the nodes this row actually made instead of every live node.

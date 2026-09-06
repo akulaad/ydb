@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bridge_types.h"
+
 #include <ydb/library/wasm/api/compartment.h>
 
 #include <yql/essentials/public/udf/udf_value.h>
@@ -50,7 +52,7 @@ public:
     //! Copy `bytes` into linear memory once per key; repeat calls are lookups.
     //! `owner` keeps the source alive, so `key` stays valid while pinned.
     ui64 Pin(
-        const void* key,
+        const TBridgeIdentity& key,
         const NYql::NUdf::TUnboxedValue& owner,
         NYql::NUdf::TStringRef bytes);
 
@@ -73,8 +75,8 @@ public:
     //! keyed by value identity just like pins, so it survives node death and
     //! is found again on the next row without any BridgeRef discipline.
     //! 0 means "nothing cached yet".
-    ui64 GetUserData(const void* key) const;
-    void SetUserData(const void* key, const NYql::NUdf::TUnboxedValue& owner, ui64 value);
+    ui64 GetUserData(const TBridgeIdentity& key) const;
+    void SetUserData(const TBridgeIdentity& key, const NYql::NUdf::TUnboxedValue& owner, ui64 value);
 
     //! User-data of entries this cache dropped. The guest drains the queue and
     //! frees the values itself, because the host has no way to call the guest's
@@ -116,27 +118,33 @@ private:
         ui64 Length = 0;
         ui64 BlockSize = 0;
         ui64 LastRun = 0;
-        TList<const void*>::iterator LruIt;
+        TList<TBridgeIdentity>::iterator LruIt;
     };
 
     struct TUserState {
         NYql::NUdf::TUnboxedValue Owner;
         ui64 Value = 0;
-        TList<const void*>::iterator LruIt;
+        TList<TBridgeIdentity>::iterator LruIt;
     };
+
+    //! Everything the cache keeps in linear memory right now: pins, per-Run
+    //! scratch and guest-owned blocks all draw on the one budget.
+    ui64 ResidentBytes() const {
+        return PinnedBytes_ + ScratchBytes_ + GuestBytes_;
+    }
 
     ui64 AllocBlock(ui64 length);
     void GrowArena(ui64 length);
     void EvictFor(ui64 length);
-    void Touch(const void* key, TPin& pin);
+    void Touch(const TBridgeIdentity& key, TPin& pin);
     void WriteBytes(ui64 offset, NYql::NUdf::TStringRef bytes);
 
     NYdb::NWasm::IWebAssemblyCompartment* const Compartment_;
     const ui64 Budget_;
 
-    THashMap<const void*, TPin> Pins_;
+    THashMap<TBridgeIdentity, TPin> Pins_;
     //! Front is the least recently used pin.
-    TList<const void*> Lru_;
+    TList<TBridgeIdentity> Lru_;
     ui64 PinnedBytes_ = 0;
     ui64 Evictions_ = 0;
     ui64 CurrentRun_ = 1;
@@ -156,8 +164,8 @@ private:
 
     TVector<ui64> ScratchBlocks_;
 
-    THashMap<const void*, TUserState> UserStates_;
-    TList<const void*> UserStatesLru_;
+    THashMap<TBridgeIdentity, TUserState> UserStates_;
+    TList<TBridgeIdentity> UserStatesLru_;
     TList<ui64> ReleasedUserData_;
 };
 

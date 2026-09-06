@@ -273,7 +273,7 @@ void TWasmArtifactLoadActor::RegisterLoadedModule() {
         ALS_INFO(NKikimrServices::METADATA_PROVIDER)
             << "TWasmArtifactLoadActor: registered wasm UDF '" << Name_
             << "' with libraries=[" << JoinSeq(",", ParsedManifest_.RequiredLibraries) << "]";
-        Send(ReplyTo_, new TEvReadBodyResponse(true, Name_));
+        Send(ReplyTo_, new TEvReadBodyResponse(true, Name_, EUdfType::WASM));
         PassAway();
     } catch (const std::exception& ex) {
         ReplyError(ex.what());
@@ -283,7 +283,7 @@ void TWasmArtifactLoadActor::RegisterLoadedModule() {
 void TWasmArtifactLoadActor::ReplyError(const TString& message) {
     ALS_ERROR(NKikimrServices::METADATA_PROVIDER)
         << "TWasmArtifactLoadActor: " << message;
-    Send(ReplyTo_, new TEvReadBodyResponse(false, Name_, message));
+    Send(ReplyTo_, new TEvReadBodyResponse(false, Name_, EUdfType::WASM, message));
     PassAway();
 }
 

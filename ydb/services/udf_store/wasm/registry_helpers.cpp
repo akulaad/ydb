@@ -341,6 +341,21 @@ void InvokeUdfExport(
 
 namespace {
 
+EWasmExportValueType ConvertExportValueType(WAVM::IR::ValueType type) {
+    switch (type) {
+        case WAVM::IR::ValueType::i32:
+            return EWasmExportValueType::I32;
+        case WAVM::IR::ValueType::i64:
+            return EWasmExportValueType::I64;
+        case WAVM::IR::ValueType::f32:
+            return EWasmExportValueType::F32;
+        case WAVM::IR::ValueType::f64:
+            return EWasmExportValueType::F64;
+        default:
+            return EWasmExportValueType::Other;
+    }
+}
+
 void CollectFunctionExports(
     const WAVM::IR::Module& module,
     THashMap<TString, TWasmExportSignature>& exports)
@@ -352,14 +367,35 @@ void CollectFunctionExports(
         // Function exports index the joint import+definition space; the type
         // they name is an index into the module's type section.
         const auto& functionType = module.types[module.functions.getType(exportItem.index).index];
-        exports[TString(exportItem.name)] = TWasmExportSignature{
+        TWasmExportSignature signature{
             .ParamCount = functionType.params().size(),
             .ResultCount = functionType.results().size(),
         };
+        signature.ParamTypes.reserve(signature.ParamCount);
+        for (const auto param : functionType.params()) {
+            signature.ParamTypes.push_back(ConvertExportValueType(param));
+        }
+        exports[TString(exportItem.name)] = std::move(signature);
     }
 }
 
 } // namespace
+
+const char* WasmExportValueTypeAsStr(EWasmExportValueType type) {
+    switch (type) {
+        case EWasmExportValueType::I32:
+            return "i32";
+        case EWasmExportValueType::I64:
+            return "i64";
+        case EWasmExportValueType::F32:
+            return "f32";
+        case EWasmExportValueType::F64:
+            return "f64";
+        case EWasmExportValueType::Other:
+            return "<unsupported>";
+    }
+    return "<unsupported>";
+}
 
 THashMap<TString, TWasmExportSignature> CollectWasmExports(
     TStringBuf bytes,

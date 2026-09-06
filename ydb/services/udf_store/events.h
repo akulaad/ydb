@@ -1,5 +1,7 @@
 #pragma once
 
+#include "metadata_subscription/udf_module.h"
+
 #include <ydb/library/actors/core/event_local.h>
 #include <ydb/library/actors/core/events.h>
 
@@ -39,11 +41,16 @@ struct TEvStoreInitFailed : public NActors::TEventLocal<TEvStoreInitFailed, EvSt
 struct TEvReadBodyResponse : public NActors::TEventLocal<TEvReadBodyResponse, EvReadBodyResponse> {
     bool Success;
     TString Name;
+    //! Which pending queue the reply belongs to: one name may be a native UDF
+    //! and a WASM UDF at the same time, and the two are fetched by different
+    //! actors that both answer with this event.
+    EUdfType Type;
     TString ErrorMessage;
 
-    TEvReadBodyResponse(bool success, const TString& name, const TString& errorMessage = {})
+    TEvReadBodyResponse(bool success, const TString& name, EUdfType type, const TString& errorMessage = {})
         : Success(success)
         , Name(name)
+        , Type(type)
         , ErrorMessage(errorMessage)
     {}
 };

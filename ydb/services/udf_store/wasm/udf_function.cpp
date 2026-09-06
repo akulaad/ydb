@@ -617,7 +617,27 @@ TWasmBridgeFunction::TWasmBridgeFunction(
     , ArgTypes_(std::move(argTypes))
     , ResultType_(resultType)
     , TypeInfoHelper_(std::move(typeInfoHelper))
+    , ResultFamily_(BridgeKindFamily(
+        BridgeKindsFromType(ResultType_, TypeInfoHelper_.Get()).Value))
 {
+}
+
+void TWasmBridgeFunction::EnsureResultFamily(EBridgeValueKind kind) const {
+    // Optionality is transparent on both sides and says nothing about the
+    // payload: BridgeKindsFromType reports Optional for Optional<container>,
+    // and BridgeMakeOptional registers an Optional node whenever the payload
+    // has no identity of its own to reuse. Null means the declared type told
+    // us nothing to check against.
+    if (ResultFamily_ == EBridgeKindFamily::Optional || ResultFamily_ == EBridgeKindFamily::Null) {
+        return;
+    }
+    const auto family = BridgeKindFamily(kind);
+    if (family != EBridgeKindFamily::Optional && family != ResultFamily_) {
+        ythrow yexception()
+            << "Wasm UDF '" << Descriptor_.Name << "' returned a "
+            << BridgeKindFamilyAsStr(family) << " value, but its result type is "
+            << BridgeKindFamilyAsStr(ResultFamily_);
+    }
 }
 
 TUnboxedValue TWasmBridgeFunction::Run(
@@ -701,7 +721,9 @@ TUnboxedValue TWasmBridgeFunction::Run(
         if (resultHandle != NullBridgeHandle) {
             // Copying the value out takes a MiniKQL ref of its own, so the
             // node behind the result handle may die with the scope.
-            result = table.Resolve(resultHandle).Value;
+            const auto& resultNode = table.Resolve(resultHandle);
+            EnsureResultFamily(resultNode.ValueKind);
+            result = resultNode.Value;
         }
 
         return result;

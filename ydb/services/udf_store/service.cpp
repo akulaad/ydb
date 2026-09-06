@@ -623,8 +623,13 @@ void TUdfStoreService::Handle(TEvWasmCompileResponse::TPtr& ev) {
 }
 
 void TUdfStoreService::Handle(TEvReadBodyResponse::TPtr& ev) {
-    const bool fromNative = !PendingNativeUdfs.empty() && PendingNativeUdfs.front().Name == ev->Get()->Name;
-    const bool fromWasm = !PendingWasmLoad.empty() && PendingWasmLoad.front().Name == ev->Get()->Name;
+    // The same name may sit in both queues (a native UDF and a WASM UDF), so
+    // match the type too: taking the wrong queue would leave the other fetch
+    // marked in progress forever.
+    const bool fromNative = ev->Get()->Type != EUdfType::WASM
+        && !PendingNativeUdfs.empty() && PendingNativeUdfs.front().Name == ev->Get()->Name;
+    const bool fromWasm = ev->Get()->Type == EUdfType::WASM
+        && !PendingWasmLoad.empty() && PendingWasmLoad.front().Name == ev->Get()->Name;
 
     if (!fromNative && !fromWasm) {
         ALS_WARN(NKikimrServices::METADATA_PROVIDER)

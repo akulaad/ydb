@@ -44,7 +44,7 @@ UDF if `TextNative` is also present.
 ydb -e grpc://localhost:2146 -d /Root/test sql -f ydb/udfs/native/trie/query.sql
 ```
 
-Expected: `hit=10`, `miss=-1`, `label` non-null, `nores=NULL`.
+Expected: `hit=48`, `miss=-1`, `label='ok'`, `nores=NULL`.
 
 ## Demo integration
 
