@@ -1,0 +1,165 @@
+{
+  "module_name": "LogParsing",
+  "calling_convention": "bridge",
+  "module_extension": "wasm",
+  "required_libraries": ["sdk"],
+  "functions": [
+    {
+      "name": "LineBreak",
+      "export": "line_break",
+      "argument_types": [
+        {
+          "value": "optional",
+          "tag": "concrete_type",
+          "item": {"value": "string", "tag": "concrete_type"}
+        }
+      ],
+      "result_type": {
+        "value": "struct",
+        "tag": "concrete_type",
+        "members": [
+          {"name": "Successed", "type": {"value": "bool", "tag": "concrete_type"}},
+          {
+            "name": "SplitRecords",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {
+                "value": "list",
+                "tag": "concrete_type",
+                "item": {"value": "string", "tag": "concrete_type"}
+              }
+            }
+          },
+          {
+            "name": "Context",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {
+                "value": "dict",
+                "tag": "concrete_type",
+                "key": {"value": "string", "tag": "concrete_type"},
+                "payload": {"value": "string", "tag": "concrete_type"}
+              }
+            }
+          },
+          {
+            "name": "Error",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {"value": "string", "tag": "concrete_type"}
+            }
+          },
+          {
+            "name": "RawChunk",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {"value": "string", "tag": "concrete_type"}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Protoseq",
+      "export": "protoseq",
+      "argument_types": [
+        {
+          "value": "optional",
+          "tag": "concrete_type",
+          "item": {"value": "string", "tag": "concrete_type"}
+        }
+      ],
+      "result_type": {
+        "value": "struct",
+        "tag": "concrete_type",
+        "members": [
+          {"name": "Successed", "type": {"value": "bool", "tag": "concrete_type"}},
+          {
+            "name": "SplitRecords",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {
+                "value": "list",
+                "tag": "concrete_type",
+                "item": {"value": "string", "tag": "concrete_type"}
+              }
+            }
+          },
+          {
+            "name": "Context",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {
+                "value": "dict",
+                "tag": "concrete_type",
+                "key": {"value": "string", "tag": "concrete_type"},
+                "payload": {"value": "string", "tag": "concrete_type"}
+              }
+            }
+          },
+          {
+            "name": "Error",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {"value": "string", "tag": "concrete_type"}
+            }
+          },
+          {
+            "name": "RawChunk",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {"value": "string", "tag": "concrete_type"}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ParseTskv",
+      "export": "parse_tskv",
+      "argument_types": [
+        {"value": "string", "tag": "concrete_type"}
+      ],
+      "result_type": {
+        "value": "struct",
+        "tag": "concrete_type",
+        "members": [
+          {"name": "Successed", "type": {"value": "bool", "tag": "concrete_type"}},
+          {
+            "name": "Fields",
+            "type": {
+              "value": "dict",
+              "tag": "concrete_type",
+              "key": {"value": "string", "tag": "concrete_type"},
+              "payload": {"value": "string", "tag": "concrete_type"}
+            }
+          },
+          {
+            "name": "Error",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {"value": "string", "tag": "concrete_type"}
+            }
+          },
+          {
+            "name": "RawRecord",
+            "type": {
+              "value": "optional",
+              "tag": "concrete_type",
+              "item": {"value": "string", "tag": "concrete_type"}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
