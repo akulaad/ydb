@@ -626,8 +626,6 @@ def test_ydb_udf_cli_write_preconditions():
         cluster.remove_database(database)
         cluster.unregister_and_stop_slots(db_nodes)
         cluster.stop()
-
-
 def _pad_wat(path, size):
     # Whitespace keeps compilation cheap while exercising multi-page source
     # and wasm_data artifact reads with a payload above the 48 MiB limit.
@@ -644,7 +642,6 @@ def _pad_wat(path, size):
 
 @pytest.mark.parametrize("source_size", [0, 64 * 1024 * 1024, 75 * 1024 * 1024],
                          ids=["small", "full_pages", "partial_page"])
-
 def test_using_wasm_udf(source_size):
     """
     Upload a WASM UDF (.wat) with JSON manifest into modules(+chunks) tables,
