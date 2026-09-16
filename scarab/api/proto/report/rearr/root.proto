@@ -1,0 +1,426 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NRearr;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/rearr";
+
+// https://st.yandex-team.ru/ECOSYSTEM-270
+message TEcoClassData {
+    optional uint32 EcoClassNumber = 1 [(_compat_renamed_from) = "number"];
+    optional string EcoClassName = 2 [(_compat_renamed_from) = "name"];
+    optional float EcoClassConfidence = 3 [(_compat_renamed_from) = "confidence"];
+}
+
+// https://st.yandex-team.ru/PORTALYTICS-9803
+message TSpaSubClassData {
+    optional uint32 Number = 1 [(_compat_renamed_from) = "number"];
+    optional string Name = 2 [(_compat_renamed_from) = "name"];
+    optional float Confidence = 3 [(_compat_renamed_from) = "confidence"];
+}
+
+message TSpaClassification {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string MainVersion = 1 [(_compat_renamed_from) = "main_version", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+    optional TSpaSubClassData Main = 2 [(_compat_renamed_from) = "main", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+    optional TSpaSubClassData V2_4 = 3 [(_compat_renamed_from) = "v2_4", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+
+    // https://st.yandex-team.ru/PORTALYTICS-11391
+    optional TSpaSubClassData V2_5 = 4 [(_compat_renamed_from) = "v2_5", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+    // https://st.yandex-team.ru/PORTALYTICS-13613
+    optional TSpaSubClassData V2_6 = 5 [(_compat_renamed_from) = "v2_6", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+    // https://st.yandex-team.ru/PORTALYTICS-14372
+    optional TSpaSubClassData V2_6Currency = 6 [(_compat_renamed_from) = "v2_6_currency", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+}
+
+// https://st.yandex-team.ru/ECOSYSTEM-900
+message TEcoClusters1500Data {
+    optional string UsedModel = 1 [(_compat_renamed_from) = "used_model"];
+    optional uint32 Level1 = 2 [(_compat_renamed_from) = "cluster_level_1"];
+    optional uint32 Level2 = 3 [(_compat_renamed_from) = "cluster_level_2"];
+}
+
+// Source definition
+message TRearr {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 Ad = 1 [(_compat_renamed_from) = "ad", (_infinite_ttl) = true];
+    optional bool AdEnsBin = 2 [(_compat_renamed_from) = "ad_ens_bin", (_infinite_ttl) = true];
+    optional bool AdEnsBinOrig = 3 [(_compat_renamed_from) = "ad_ens_bin_orig"];
+    optional double AdEnsRegr = 4 [(_compat_renamed_from) = "ad_ens_regr", (_infinite_ttl) = true];
+    optional double AdEnsRegrOrig = 5 [(_compat_renamed_from) = "ad_ens_regr_orig"];
+    optional uint64 AdFiltr = 6 [(_compat_renamed_from) = "ad_filtr", (_infinite_ttl) = true];
+    optional string AdModelId = 7 [(_compat_renamed_from) = "ad_model_id", (_split_size_limit) = 10];
+    optional double AdModelValue = 8 [(_compat_renamed_from) = "ad_model_value"];
+    optional bool Af = 9 [(_compat_renamed_from) = "af", (_infinite_ttl) = true];
+    optional bool AfishaScheduleEntity = 10 [(_compat_renamed_from) = "afisha_schedule_entity"];
+    optional uint64 Ah = 11 [(_compat_renamed_from) = "ah"];
+    optional string AllRegions = 12 [(_compat_renamed_from) = "all_regions", (_split_size_limit) = 44, (_infinite_ttl) = true];
+    optional string ApplyAdsBlenderDbg = 13 [(_compat_renamed_from) = "ApplyAdsBlender_dbg"];//deprecated
+    optional bool BanImgWiz = 14 [(_compat_renamed_from) = "ban_img_wiz"];
+    optional bool BanVidWiz = 15 [(_compat_renamed_from) = "ban_vid_wiz", (_split_size_limit) = 10];
+    optional string BanWizard = 16 [(_compat_renamed_from) = "ban_wizard", (_split_size_limit) = 10];
+    optional string Bandt = 17 [(_compat_renamed_from) = "bandt", (_split_size_limit) = 10];
+    optional uint64 BaseRegion = 18 [(_compat_renamed_from) = "base_region"];
+    optional string BaseRegionChain = 19 [(_compat_renamed_from) = "base_region_chain", (_split_size_limit) = 30, (_infinite_ttl) = true];
+    optional bool BegemotFailed = 20 [(_compat_renamed_from) = "begemot_failed"];
+    optional string BlenderInformerCluster = 21 [(_compat_renamed_from) = "blender_informer_cluster", (_split_size_limit) = 10];
+    optional string BrowserName = 22 [(_compat_renamed_from) = "browser_name", (_split_size_limit) = 12];
+    optional string BrowserVersion = 23 [(_compat_renamed_from) = "browser_version", (_split_size_limit) = 13];
+    optional string CityName = 24 [(_compat_renamed_from) = "city_name", (_split_size_limit) = 26];
+    optional bool Cluster = 25 [(_compat_renamed_from) = "cluster"];
+    optional string CoordNorm = 26 [(_compat_renamed_from) = "coord_norm"];
+    optional uint64 CountryFromIp = 27 [(_compat_renamed_from) = "country_from_ip"];
+    optional bool Covid19 = 28 [(_compat_renamed_from) = "covid19"];
+    optional bool Cp = 29 [(_compat_renamed_from) = "cp", (_infinite_ttl) = true];
+    optional bool Crossroad = 30 [(_compat_renamed_from) = "crossroad"];
+    optional bool Dc = 31 [(_compat_renamed_from) = "dc"];
+    optional string DdOsfamily = 32 [(_compat_renamed_from) = "dd_osfamily", (_split_size_limit) = 8, (_infinite_ttl) = true, (_rt_required) = true];
+    optional string Device = 33 [(_compat_renamed_from) = "device", (_split_size_limit) = 8, (_infinite_ttl) = true];
+    optional string DeviceName = 34 [(_compat_renamed_from) = "deviceName", (_split_size_limit) = 10];
+    optional bool DiversityCategWorkedRuleMarker = 35;
+    optional uint64 Dl = 36 [(_compat_renamed_from) = "dl"];
+    optional uint64 DssmCtrCluster = 37 [(_compat_renamed_from) = "dssm_ctr_cluster", (_infinite_ttl) = true];
+    optional bool DssmCtrTop11WorstKernelClusters = 38 [(_compat_renamed_from) = "dssm_ctr_top11_worst_kernel_clusters"];
+    optional double DssmCtrWatchOnlineDistance = 39 [(_compat_renamed_from) = "dssm_ctr_watch_online_distance"];
+    optional string Dumpmodels = 40 [(_compat_renamed_from) = "dumpmodels", (_split_size_limit) = 5];
+    optional bool Dup = 41 [(_compat_renamed_from) = "dup"];
+    optional bool EnableNewCbrfMfo = 42;
+    optional string Entformula = 43 [(_compat_renamed_from) = "entformula", (_split_size_limit) = 5];
+    optional string EntityRecommenderListExperiment = 44 [(_compat_renamed_from) = "entity_recommender_list_experiment", (_split_size_limit) = 5];
+    optional string EntityRecommenderParameter = 45 [(_compat_renamed_from) = "entity_recommender_parameter", (_split_size_limit) = 5];
+    optional string EntityRecommenderSrcrwr = 46 [(_compat_renamed_from) = "entity_recommender_srcrwr", (_split_size_limit) = 5];
+    optional bool EntitySearchQueryHasFree = 47 [(_compat_renamed_from) = "entity_search_query_has_free"];
+    optional bool Ento = 48 [(_compat_renamed_from) = "ento"];
+    optional string EntsearchExperiment = 49 [(_compat_renamed_from) = "entsearch_experiment", (_split_size_limit) = 10];
+    optional string EsSaas = 50 [(_compat_renamed_from) = "es-saas", (_split_size_limit) = 5];
+    optional uint64 FavLang = 51 [(_compat_renamed_from) = "fav_lang"];
+    optional uint64 FfAgeLimit = 52 [(_compat_renamed_from) = "ff_age_limit"];
+    optional uint64 FfAgeLimitCat = 53 [(_compat_renamed_from) = "ff_age_limit_cat"];
+    optional uint64 FfCriminal = 54 [(_compat_renamed_from) = "ff_criminal"];
+    optional double FfCriminalModel = 55 [(_compat_renamed_from) = "ff_criminal_model"];
+    optional uint64 FfDrg = 56 [(_compat_renamed_from) = "ff_drg"];
+    optional double FfDrugsModel = 57 [(_compat_renamed_from) = "ff_drugs_model"];
+    optional uint64 FfScd = 58 [(_compat_renamed_from) = "ff_scd"];
+    optional uint64 FfSuggestive = 59 [(_compat_renamed_from) = "ff_suggestive"];
+    optional double FfSuicideModel = 60 [(_compat_renamed_from) = "ff_suicide_model"];
+    optional double FfGruesomeGothicModel = 173 [(_compat_renamed_from) = "ff_gruesome_gothic_model"];
+    optional string FfersSites = 61 [(_compat_renamed_from) = "ffers_sites", (_split_size_limit) = 10];
+    optional string Fon = 62 [(_compat_renamed_from) = "fon", (_split_size_limit) = 5];
+    optional uint64 FoundReqLang = 63;
+    optional bool FreeEntitySearchVideo = 64 [(_compat_renamed_from) = "free_entity_search_video"];
+    optional bool FreeEntitySearchVideoKubr = 65 [(_compat_renamed_from) = "free_entity_search_video_kubr"];
+    optional double FreshDetectorPredict = 66 [(_compat_renamed_from) = "fresh_detector_predict", (_infinite_ttl) = true, (_rt_required) = true];
+    optional double FreshNewsDetectorPredict = 67 [(_compat_renamed_from) = "fresh_news_detector_predict", (_infinite_ttl) = true];
+    optional bool FromYxnewsToSerp = 68 [(_compat_renamed_from) = "from_yxnews_to_serp"];
+    optional double Frp = 69 [(_compat_renamed_from) = "frp"];
+    optional string Geo1 = 70 [(_compat_renamed_from) = "geo1", (_split_size_limit) = 5];
+    optional string Geo2 = 71 [(_compat_renamed_from) = "geo2", (_split_size_limit) = 5];
+    optional uint64 Geooriginal = 72 [(_compat_renamed_from) = "geooriginal", (_infinite_ttl) = true];
+    optional double GmValue = 73 [(_compat_renamed_from) = "gm_value", (_infinite_ttl) = true];
+    optional bool GmValueBin = 74 [(_compat_renamed_from) = "gm_value_bin", (_infinite_ttl) = true];
+    optional bool Granny = 75 [(_compat_renamed_from) = "granny"];
+    optional string Gsmop = 76 [(_compat_renamed_from) = "gsmop", (_split_size_limit) = 10];
+    optional string Ipregions = 77 [(_compat_renamed_from) = "ipregions", (_split_size_limit) = 45, (_infinite_ttl) = true];
+    optional bool IsActualVideo = 78 [(_compat_renamed_from) = "is_actual_video"];
+    optional bool IsAliceWebMusicScenario = 79 [(_compat_renamed_from) = "is_alice_web_music_scenario"];
+    optional bool IsBropp = 80 [(_compat_renamed_from) = "is_bropp"];
+    optional bool IsDesktop = 81 [(_compat_renamed_from) = "is_desktop", (_infinite_ttl) = true];
+    optional bool IsIznanka = 82 [(_compat_renamed_from) = "is_iznanka"];
+    optional bool IsMobile = 83 [(_compat_renamed_from) = "is_mobile", (_infinite_ttl) = true];
+    optional bool IsQvoice = 84 [(_compat_renamed_from) = "is_qvoice"];
+    optional bool IsSa = 85 [(_compat_renamed_from) = "is_sa"];
+    optional bool IsTablet = 86 [(_compat_renamed_from) = "is_tablet", (_infinite_ttl) = true];
+    optional bool IsYabro = 87 [(_compat_renamed_from) = "is_yabro"];
+    optional bool IsYellow = 88 [(_compat_renamed_from) = "is_yellow"];
+    optional double Lat = 89 [(_compat_renamed_from) = "lat", (_infinite_ttl) = true];
+    optional string ListMachineShuffleRange = 90 [(_compat_renamed_from) = "list_machine_shuffle_range", (_split_size_limit) = 5];
+    optional double Lon = 91 [(_compat_renamed_from) = "lon", (_infinite_ttl) = true];
+    optional bool MarketEnableModelWizardRightIncut = 92 [(_compat_renamed_from) = "market_enable_model_wizard_right_incut"];
+    optional bool MarketImplicitModelSitelinkCategories = 93 [(_compat_renamed_from) = "market_implicit_model_sitelink_categories"];
+    optional bool MarketImplicitModelSitelinkCategoriesQa = 94 [(_compat_renamed_from) = "market_implicit_model_sitelink_categories_qa"];
+    optional bool MarketImplicitModelSitelinkMap = 95 [(_compat_renamed_from) = "market_implicit_model_sitelink_map"];
+    optional bool MarketImplicitModelSitelinkReviews = 96 [(_compat_renamed_from) = "market_implicit_model_sitelink_reviews"];
+    optional bool MarketImplicitWizWithoutOffersCategories = 97 [(_compat_renamed_from) = "market_implicit_wiz_without_offers_categories"];
+    optional bool MarketModelWizardShowParameters = 98 [(_compat_renamed_from) = "market_model_wizard_show_parameters"];
+    optional bool MarketParallelCalcQueryClassifierFactors = 99 [(_compat_renamed_from) = "market_parallel_calc_query_classifier_factors"];
+    optional bool MarketParallelImprovedWarningFiltering = 100 [(_compat_renamed_from) = "market_parallel_improved_warning_filtering"];
+    optional bool MarketParallelRegionInMarketUrls = 101 [(_compat_renamed_from) = "market_parallel_region_in_market_urls"];
+    optional bool Marketsource = 102 [(_compat_renamed_from) = "marketsource"];
+    optional bool MemorandumSlice = 103 [(_compat_renamed_from) = "memorandum_slice", (_infinite_ttl) = true];
+    optional bool MisspellNoans = 104;
+    optional string NoFresh = 105 [(_compat_renamed_from) = "no_fresh", (_split_size_limit) = 5];
+    optional string NoSamohodOnMiddle = 106 [(_compat_renamed_from) = "no_samohod_on_middle", (_split_size_limit) = 5];
+    optional string NoWebfreshOnMiddle = 107 [(_compat_renamed_from) = "no_webfresh_on_middle", (_split_size_limit) = 5];
+    optional bool Noperson = 108 [(_compat_renamed_from) = "noperson"];
+    optional string NormalizedTransit = 109 [(_compat_renamed_from) = "normalized_transit", (_split_size_limit) = 5];
+    optional string OblName = 110 [(_compat_renamed_from) = "obl_name", (_split_size_limit) = 55];
+    reserved 111; // Off moved to separate column
+    optional string OffersSites = 112 [(_compat_renamed_from) = "offers_sites", (_split_size_limit) = 5];
+    optional bool OnlineCinemaNav = 113 [(_compat_renamed_from) = "online_cinema_nav"];
+    optional string OsFamily = 114 [(_compat_renamed_from) = "os_family", (_split_size_limit) = 8, (_infinite_ttl) = true];
+    optional string OsVersion = 115 [(_compat_renamed_from) = "os_version", (_split_size_limit) = 8, (_infinite_ttl) = true];
+    optional bool Person = 116 [(_compat_renamed_from) = "person"];
+    optional string PersonalNewbuilding100 = 117 [(_compat_renamed_from) = "personal_newbuilding_100", (_split_size_limit) = 5];
+    optional string PersonalNewbuilding20 = 118 [(_compat_renamed_from) = "personal_newbuilding_20", (_split_size_limit) = 5];
+    optional string PersonalNewbuilding30 = 119 [(_compat_renamed_from) = "personal_newbuilding_30", (_split_size_limit) = 5];
+    optional string PersonalNewbuilding50 = 120 [(_compat_renamed_from) = "personal_newbuilding_50", (_split_size_limit) = 5];
+    optional string PersonalizationOn = 121 [(_compat_renamed_from) = "Personalization_on", (_split_size_limit) = 5];
+    optional bool Personalizeproduction = 122 [(_compat_renamed_from) = "personalizeproduction"];
+    optional uint64 Pfl = 123 [(_compat_renamed_from) = "pfl", (_infinite_ttl) = true];
+    optional string Proto = 124 [(_compat_renamed_from) = "proto" ,(_split_size_limit) = 7];
+    optional bool ProximByAveFreqWorkedRuleMarker = 125;
+    optional string Qlang = 126 [(_compat_renamed_from) = "qlang", (_split_size_limit) = 8];
+    optional uint64 Qlangcnt = 127 [(_compat_renamed_from) = "qlangcnt"];
+    optional bool Qlangruspure = 128 [(_compat_renamed_from) = "qlangruspure"];
+    optional string Query2hosts = 129 [(_compat_renamed_from) = "query2hosts", (_split_size_limit) = 30];
+    optional uint64 QueryAfishaMarkersCnt = 130 [(_compat_renamed_from) = "query_afisha_markers_cnt"];
+    optional string QueryObject = 131 [(_compat_renamed_from) = "query_object", (_split_size_limit) = 20];
+    optional string QueryRtFactors = 132 [(_compat_renamed_from) = "query_rt_factors", (_split_size_limit) = 380];
+    optional double QueryYanswerWeight = 133 [(_compat_renamed_from) = "query_yanswer_weight"];
+    optional bool RabotaWizardParams = 134 [(_compat_renamed_from) = "rabota_wizard_params"];
+    optional string Rearr = 135 [(_compat_renamed_from) = "rearr", (_split_size_limit) = 15];
+    optional string RearrWebL3ModelsApplyResults = 136 [(_split_size_limit) = 200];
+    optional uint64 ReducedRegion = 137 [(_compat_renamed_from) = "reduced_region", (_infinite_ttl) = true];
+    optional string Ref = 138 [(_compat_renamed_from) = "ref", (_split_size_limit) = 5];
+    map<string, bool> ReportMap = 139 [(_compat_renamed_prefix) = "report_", (_split_size_limit) = 77];
+    optional string RewriteRequestWorkedRuleMarker = 140 [(_split_size_limit) = 5];
+    optional bool Rgm = 141 [(_compat_renamed_from) = "rgm"];
+    optional uint64 SaVersion = 142 [(_compat_renamed_from) = "sa_version"];
+    optional string SchemeLocal = 143 [(_compat_renamed_from) = "scheme_Local", (_split_size_limit) = 5];
+    optional string SchemeRuleParamsForKuka = 144 [(_compat_renamed_from) = "scheme_RuleParamsForKuka", (_split_size_limit) = 5];
+    optional bool ScrapeForDefectRate = 145 [(_compat_renamed_from) = "scrape_for_defect_rate"];
+    optional uint64 SearchRegion = 146 [(_compat_renamed_from) = "search_region", (_infinite_ttl) = true, (_rt_required) = true];
+    optional string SendPlatformtypeAsRelevParam = 147 [(_compat_renamed_from) = "send_platformtype_as_relev_param", (_split_size_limit) = 5];
+    optional bool ShowcaseUniversalModel = 148 [(_compat_renamed_from) = "showcase_universal_model"];
+    optional string Skipstop = 149 [(_compat_renamed_from) = "skipstop", (_split_size_limit) = 90];
+    optional string Social = 150 [(_compat_renamed_from) = "social", (_split_size_limit) = 5];
+    optional double SzmRatio = 151 [(_compat_renamed_from) = "szm_ratio", (_infinite_ttl) = true];
+    optional string SzmScreen = 152 [(_compat_renamed_from) = "szm_screen", (_split_size_limit) = 8, (_infinite_ttl) = true];
+    optional string SzmViewport = 153 [(_compat_renamed_from) = "szm_viewport", (_split_size_limit) = 8, (_infinite_ttl) = true];
+    optional bool Tf = 154 [(_compat_renamed_from) = "tf"];
+    optional bool TrailerQueryEntitySearch = 155 [(_compat_renamed_from) = "trailer_query_entity_search"];
+    optional bool TvDetected = 156 [(_compat_renamed_from) = "tv_detected"];
+    optional uint64 TzOffset = 157 [(_compat_renamed_from) = "tz_offset"];
+    optional string UpperGroupings = 158 [(_compat_renamed_from) = "upper_groupings", (_split_size_limit) = 42];
+    optional string Urcntr = 159 [(_compat_renamed_from) = "urcntr", (_split_size_limit) = 20];
+    optional bool VfiThreshold = 160 [(_compat_renamed_from) = "vfi_threshold"];
+    optional double Vfreshboost = 161 [(_compat_renamed_from) = "vfreshboost"];
+    optional bool Vhard = 162 [(_compat_renamed_from) = "vhard"];
+    optional bool VideoComtr = 163 [(_compat_renamed_from) = "video_comtr"];
+    optional string WebDynamicBundleFactors = 164 [(_compat_renamed_from) = "web_dynamic_bundle_factors", (_split_size_limit) = 5];
+    optional bool Yandexcom = 165 [(_compat_renamed_from) = "yandexcom"];
+    optional bool Yaplus = 166 [(_compat_renamed_from) = "yaplus"];
+    optional string YaplusType = 167 [(_compat_renamed_from) = "yaplus_type", (_split_size_limit) = 5];
+    optional string Report = 168 [(_compat_renamed_from) = "report", (_split_size_limit) = 5];
+    optional uint32 QfcId1 = 169;
+    map<string, string> RapidClicksTuners = 170 [(_compat_renamed_prefix) = "rapid_clicks_", (_split_size_limit) = 100];
+
+    // https://a.yandex-team.ru/arc/trunk/arcadia/search/begemot/rules/dssm/query_frankenstein_clustering/proto/rule_result.proto?blame=true&rev=r8172199#L5
+    map<string, float> QFClustering = 171 [(_compat_renamed_prefix) = "qfc_", (_split_size_limit) = 100, (_infinite_ttl) = true];
+
+    // https://a.yandex-team.ru/arc/trunk/arcadia/search/begemot/rules/rearr_spellchecker/proto/rearr_spellchecker.proto?blame=true&rev=r8172199#L6
+    optional string HasMisspell = 172 [(_compat_renamed_from) = "has_misspell", (_split_size_limit) = 5];
+
+    optional float IsSosQuery = 174 [(_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional float IsNavigationalQuery = 175 [(_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional float IsMedicalQuery = 176 [(_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional float IsLawQuery = 177 [(_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional float IsFinancialQuery = 178 [(_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional float IsExpectedSafeAnswerQuery = 179 [(_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+
+    map<string, float> WebQueryClassifiers = 180 [(_compat_renamed_prefix) = "class_query_is_", (_rt_required) = true, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    map<string, string> WebExperimentals = 181 [(_compat_renamed_prefix) = "web_experimental_", ( _split_size_limit) = 5];
+
+    map<string, string> WizDetection = 182 [(_compat_renamed_prefix) = "wizdetection_", (_split_size_limit) = 1570, (_ttl) = 90];
+    optional bool DiacritWorkedRuleMarker = 183;
+    optional float IsCSQuery = 184 [(_compat_renamed_from) = "class_query_is_cs", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", ( _split_size_limit) = 0];
+    optional float IsMobileStoreQuery = 185 [(_compat_renamed_from) = "class_query_is_mobile_store", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", ( _split_size_limit) = 0];
+    optional bool ReportStocksExpMain = 186 [(_compat_renamed_from) = "report_stocks_exp_main"];
+    optional bool ReportBiathlonShowTeamSport = 187 [(_compat_renamed_from) = "report_biathlon_show_team_sport"];
+    optional float IsMobileStoreQueryV1 = 188 [(_compat_renamed_from) = "class_query_is_mobile_store_v1", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", ( _split_size_limit) = 0];
+    optional float IsMobileStoreQueryV2 = 189 [(_compat_renamed_from) = "class_query_is_mobile_store_v2", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", ( _split_size_limit) = 0];
+    optional string ImagesDirectBetweenDynamicIds = 190 [(_compat_renamed_from) = "images_direct_between_dynamic_ids"];
+    optional string ImagesTouchDirectBetweenAdultId = 191 [(_compat_renamed_from) = "images_touch_direct_between_adult_id"];
+    optional string ImagesTouchDirectBetweenId = 192 [(_compat_renamed_from) = "images_touch_direct_between_id"];
+    optional string ImagesTouchVerticalDirectBetweenAdultId = 193 [(_compat_renamed_from) = "images_touch_vertical_direct_between_adult_id"];
+    optional string ImagesTouchVerticalDirectBetweenId = 194 [(_compat_renamed_from) = "images_touch_vertical_direct_between_id"];
+    optional string ImagesTouchViewer2BehavioralDirectAdultPageId = 195 [(_compat_renamed_from) = "images_touch_viewer2_behavioral_direct_adult_page_id"];
+    optional string ImagesTouchViewer2BehavioralDirectPageId = 196 [(_compat_renamed_from) = "images_touch_viewer2_behavioral_direct_page_id"];
+    optional bool MarketAdultWord = 197 [(_compat_renamed_from) = "market_adult_word"];
+    optional bool MarketBuyStopWord = 198 [(_compat_renamed_from) = "market_buy_stop_word"];
+    optional bool MarketFamilyStopWord = 199 [(_compat_renamed_from) = "market_family_stop_word"];
+    optional bool MarketFinalStopWord = 200 [(_compat_renamed_from) = "market_final_stop_word"];
+    optional bool MarketParallelBlockQueryWord = 201 [(_compat_renamed_from) = "market_parallel_block_query_word"];
+    optional bool MarketParallelBlockWordWord = 202 [(_compat_renamed_from) = "market_parallel_block_word_word"];
+    optional bool MarketParallelOffersStopWord = 203 [(_compat_renamed_from) = "market_parallel_offers_stop_word"];
+    optional bool MarketRedirectBlackWord = 204 [(_compat_renamed_from) = "market_redirect_black_word"];
+    optional bool MarketRequestRegionMinusWord = 205 [(_compat_renamed_from) = "market_request_region_minus_word"];
+    optional bool MarketStopWord = 206 [(_compat_renamed_from) = "market_stop_word"];
+    optional bool MarketWizCenaCatPlus = 207 [(_compat_renamed_from) = "market_wiz__cena_cat__plus"];
+    optional bool MarketWizCenaVcatPlus = 208 [(_compat_renamed_from) = "market_wiz__cena_vcat__plus"];
+    optional bool MarketWizOtziviPlus = 209 [(_compat_renamed_from) = "market_wiz__otzivi__plus"];
+    optional bool MarketWizViborCatPlus = 210 [(_compat_renamed_from) = "market_wiz__vibor_cat__plus"];
+    optional bool MarketWizViborVcatPlus = 211 [(_compat_renamed_from) = "market_wiz__vibor_vcat__plus"];
+    optional bool ImageDump = 212  [(_compat_renamed_from) = "Image_dump"];
+    optional bool ForceEmptySerp = 213  [(_compat_renamed_from) = "force_empty_serp"];
+    optional bool Imptch2srch = 214  [(_compat_renamed_from) = "imptch2srch"];
+    optional string Imptchpesw = 215  [(_compat_renamed_from) = "imptchpesw"];
+    optional bool Tiermask = 216  [(_compat_renamed_from) = "tiermask"];
+    optional bool GoodsCategoryFilterWorkedRuleMarker = 217;
+
+    optional bool UnisearchEducationPreciseQuery = 218 [(_compat_renamed_from) = "unisearch_education_precise_query"];
+    optional bool UnisearchEducationHasExperimentalWord = 219 [(_compat_renamed_from) = "unisearch_education_has_experimental_word"];
+    optional bool UnisearchMedicinePreciseQuery = 220 [(_compat_renamed_from) = "unisearch_medicine_precise_query"];
+    optional bool UnisearchMedicineHasExperimentalWord = 221 [(_compat_renamed_from) = "unisearch_medicine_has_experimental_word", (_ttl) = 720];
+    optional bool UnisearchVacanciesPreciseQuery = 222 [(_compat_renamed_from) = "unisearch_vacancies_precise_query"];
+    optional bool UnisearchVacanciesHasExperimentalWord = 223 [(_compat_renamed_from) = "unisearch_vacancies_has_experimental_word"];
+    optional bool UnisearchApplicationsMobileStore = 224 [(_compat_renamed_from) = "unisearch_applications_mobile_store"];
+    optional bool UnisearchMedicineHasClinicId = 225 [(_compat_renamed_from) = "unisearch_medicine_has_clinic_id"];
+
+    optional bool GoodsShopFilterWorkedRuleMarker = 226 [(_owner_fld) = "abc:goods"];
+    optional bool GoodsShopFilterPureNavigationalQuery = 227 [(_owner_fld) = "abc:goods"];
+    optional bool GoodsShopFilterMixedNavigationalQuery = 228 [(_owner_fld) = "abc:goods"];
+
+    optional string IpCountry = 229 [(_compat_renamed_from) = "ip_country", (_infinite_ttl) = true, (_rt_required) = true, (_owner_fld) = "abc:buki"];
+    optional float IsNotTruCntrQuery = 230 [(_compat_renamed_from) = "class_query_is_notrucntr", (_infinite_ttl) = true, (_rt_required) = true, (_owner_fld) = "abc:searchquality"];
+    optional float IsEngQuery = 231 [(_compat_renamed_from) = "class_query_is_eng", (_infinite_ttl) = true, (_rt_required) = true, (_owner_fld) = "abc:blndr"];
+    optional float IsEngMixQuery = 232 [(_compat_renamed_from) = "class_query_is_eng_mx", (_infinite_ttl) = true, (_rt_required) = true, (_owner_fld) = "abc:blndr"];
+
+    optional bool UnisearchMedicineExclusive = 233 [(_compat_renamed_from) = "unisearch_medicine_exclusive", (_owner_fld) = "abc:unisearch"];
+
+    optional float HowtoClassifierResultProb = 234 [(_compat_renamed_from) = "howto_dssm_classifier_prob", (_owner_fld) = "abc:videosearchquality"];
+    optional float NeedActualityClassifierResultProb = 235 [(_compat_renamed_from) = "need_actuality_classifier_prob", (_owner_fld) = "abc:videosearchquality"];
+
+    optional bool UnisearchMedicineSpecialization = 236 [(_compat_renamed_from) = "unisearch_medicine_specialization", (_owner_fld) = "abc:unisearch"];
+
+    optional bool IsSearchGptQuery = 237 [(_compat_renamed_from) = "is_search_gpt_query", (_rt_required) = true, (_owner_fld) = "abc:facts"];
+
+    optional string LingboostEmbeddingResult = 238 [(_compat_renamed_from) = "lingboost_embedding_result", (_rt_required) = true, (_owner_fld) = "abc:surplusteam"];
+
+    optional float SearchGptQueryClassifierPredict = 239 [(_compat_renamed_from) = "search_gpt_query_classifier_predict", (_rt_required) = true, (_owner_fld) = "abc:facts"];
+
+    optional bool AntifraudIsUserInExperiment = 240 [(_compat_renamed_from) = "antifraud_is_user_in_experiment", (_rt_required) = true, (_owner_fld) = "abc:afraud"];
+
+    optional string RereEmbeddingResult = 241 [(_compat_renamed_from) = "rere_embedding_result", (_rt_required) = true, (_owner_fld) = "abc:surplusteam"];
+
+    optional float IsDiyPredict = 242 [(_compat_renamed_from) = "class_query_is_diy_predict", (_infinite_ttl) = true, (_rt_required) = true];
+
+    optional float RereEmbeddingScale = 243 [(_compat_renamed_from) = "rere_embedding_scale", (_infinite_ttl) = true, (_rt_required) = true, (_owner_fld) = "abc:surplusteam"];
+
+    optional string UnisearchMedicineMarks = 244 [(_compat_renamed_from) = "unisearch_medicine_marks", (_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:unisearch"];
+
+    optional TEcoClassData EcoClass = 245 [(_compat_renamed_from) = "eco_class", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoClassMain = 246 [(_compat_renamed_from) = "eco_class_main", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoClassV1 = 247 [(_compat_renamed_from) = "eco_class_v1", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoClassV2 = 248 [(_compat_renamed_from) = "eco_class_v2", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoSubClassMain = 249 [(_compat_renamed_from) = "eco_subclass_main", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoSubClassV1 = 250 [(_compat_renamed_from) = "eco_subclass_v1", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoSubClassV2 = 251 [(_compat_renamed_from) = "eco_subclass_v2", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    map<string, float> VideoQueryClassifiers = 252 [(_compat_renamed_prefix) = "video_class_query_is_", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:videosearchquality"];
+    optional float FreshTrV0DetectorPredict = 253 [(_compat_renamed_from) = "class_query_is_fresh_tr_v0_detector_predict", (_owner_fld) = "abc:trfresh", (_rt_required) = true, (_ttl) = 180];
+
+    optional string YabsSetupsOff = 254 [(_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc::endtoendproductproperties"];
+
+    optional TEcoClassData EcoClassV2_1 = 255 [(_compat_renamed_from) = "eco_class_v2_1", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoClassV2_2 = 256 [(_compat_renamed_from) = "eco_class_v2_2", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoSubClassV2_1 = 257 [(_compat_renamed_from) = "eco_subclass_v2_1", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoSubClassV2_2 = 258 [(_compat_renamed_from) = "eco_subclass_v2_2", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    optional string EcoClassMainVersion = 259 [(_compat_renamed_from) = "eco_class_main_version", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional string EcoSubClassMainVersion = 260 [(_compat_renamed_from) = "eco_subclass_main_version", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    optional string ProblemHosts = 261 [(_compat_renamed_from) = "problem_hosts", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:videoquality"];
+
+    optional bool WizdetectionImagesDssmKnn = 262 [(_compat_renamed_from) = "wizdetection_images_dssm_knn_4", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:images"];
+
+    optional TEcoClassData EcoClassV2_3_1 = 263 [(_compat_renamed_from) = "eco_class_v2_3_1", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+    optional TEcoClassData EcoSubClassV2_3_1 = 264 [(_compat_renamed_from) = "eco_subclass_v2_3_1", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    optional string TrCarpetsQuery = 265 [(_compat_renamed_from) = "tr_carpets_query", (_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:ranking_tr"];
+    optional string InternationalLang = 266 [(_compat_renamed_from) = "class_query_is_international_", (_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:ranking_tr"];
+    optional string TrLangQuery = 267 [(_compat_renamed_from) = "class_query_is_tr_lang_predict", (_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:ranking_tr"];
+
+    optional float TragedyDetectorPredict = 268 [(_compat_renamed_from) = "tragedy_detector_predict"];
+
+    optional TSpaClassification SpaSubClass = 269 [(_compat_renamed_from) = "spa_subclass", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:search_slices_analytics"];
+
+    optional bool ReportFinanceHasBank = 270 [(_compat_renamed_from) = "report_finance_has_bank", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:unisearch"];
+
+    optional float SmartNarrowingQualityScore = 271 [(_compat_renamed_from) = "class_query_smart_narrowing_quality_score", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:futuris"];
+    optional float SmartNarrowingQualityThreshold = 272 [(_compat_renamed_from) = "class_query_smart_narrowing_quality_threshold", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:futuris"];
+    optional bool SmartNarrowingQualityPredict = 273 [(_compat_renamed_from) = "class_query_smart_narrowing_quality_predict", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:futuris"];
+
+    optional string TrNavSeminavClass = 274 [(_compat_renamed_from) = "tr_nav_seminav_class", (_infinite_ttl) = true, (_split_size_limit) = 0, (_owner_fld) = "abc:ranking_tr"];
+
+    optional TEcoClusters1500Data EcoClusters1500 = 275 [(_compat_renamed_from) = "query_kmeans_global_clustering", (_compat_path_separator)="_", (_infinite_ttl) = true,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    optional string FinsearchTriggeredTab = 276 [(_compat_renamed_from) = "finsearch_triggered_tab", (_ttl) = 365,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional bool ReportFinanceAllBanks = 277 [(_compat_renamed_from) = "report_finance_all_banks", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional string FinsearchBankId = 278 [(_compat_renamed_from) = "finsearch_bank_id", (_ttl) = 365,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional string FinsearchBankTab = 279 [(_compat_renamed_from) = "finsearch_bank_tab", (_ttl) = 365,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional string HasRealtySiteName = 280 [(_compat_renamed_from) = "has_realty_site_name", (_ttl) = 365,  (_split_size_limit) = 0, (_owner_fld) = "abc:metarealty"];
+
+    optional bool ReportFinanceDividends = 281 [(_compat_renamed_from) = "report_finance_dividends", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional bool ReportFinanceForecasts = 282 [(_compat_renamed_from) = "report_finance_forecasts", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional bool ReportFinanceExchange = 283 [(_compat_renamed_from) = "report_finance_exchange", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional bool ReportFinanceExchangeSpec = 284 [(_compat_renamed_from) = "report_finance_exchange_spec", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional bool ReportStocksQueryMain = 285 [(_compat_renamed_from) = "report_stocks_query_main", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportStocksQueryMainAll = 286 [(_compat_renamed_from) = "report_stocks_query_main_all", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportStocksQueryDividends = 287 [(_compat_renamed_from) = "report_stocks_query_dividends", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportStocksQueryForecasts = 288 [(_compat_renamed_from) = "report_stocks_query_forecasts", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportStocksQueryDividendsForecasts = 289 [(_compat_renamed_from) = "report_stocks_query_dividends_forecasts", (_compat_path_separator)="_", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional TEcoClassData EcoClassV3_4 = 290 [(_compat_renamed_from) = "eco_class_v3_4", (_compat_path_separator)="_", (_ttl) = 1095,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    optional TEcoClassData EcoSubClassV3_4 = 291 [(_compat_renamed_from) = "eco_subclass_v3_4", (_compat_path_separator)="_", (_ttl) = 1095,  (_split_size_limit) = 0, (_owner_fld) = "abc:ecosystem"];
+
+    optional bool ReportBondsMain = 292 [(_compat_renamed_from) = "report_bonds_main", (_ttl) = 90,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional float ClassQueryAntispamVpnClassifierPredict = 293 [(_compat_renamed_from) = "class_query_antispam_vpn_classifier_predict", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:searchspam"];
+
+    optional string FinsearchBankName = 294 [(_compat_renamed_from) = "finsearch_bank_name", (_ttl) = 365,  (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+
+    optional bool IsPromoQueryForMovieAgent = 295 [(_compat_renamed_from) = "IsPromoQueryForMovieAgent", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:int_entitysearch"];
+
+    optional float WizdetectionImagesDssmKnnProb = 296 [(_compat_renamed_from) = "wizdetection_images_dssm_knn_4_prob", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:images"];
+
+    optional string GoodsHostFromQuery = 297 [(_compat_renamed_from) = "goods_host_from_query", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:commercial_quality"];
+
+    optional string GoodsHostIdFromQuery = 298 [(_compat_renamed_from) = "goods_host_id_from_query", (_ttl) = 365, (_split_size_limit) = 0, (_owner_fld) = "abc:commercial_quality"];
+
+    optional bool ReportFinanceCredCardHighCtrQuery = 299 [(_compat_renamed_from) = "report_finance_cred_card_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceCredCardHighFreqQuery = 300 [(_compat_renamed_from) = "report_finance_cred_card_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceCreditHighCtrQuery = 301 [(_compat_renamed_from) = "report_finance_credit_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceCreditHighFreqQuery = 302 [(_compat_renamed_from) = "report_finance_credit_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceDebtCardHighCtrQuery = 303 [(_compat_renamed_from) = "report_finance_debt_card_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceDebtCardHighFreqQuery = 304 [(_compat_renamed_from) = "report_finance_debt_card_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceDepositHighCtrQuery = 305 [(_compat_renamed_from) = "report_finance_deposit_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceDepositHighFreqQuery = 306 [(_compat_renamed_from) = "report_finance_deposit_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceMortgageHighCtrQuery = 307 [(_compat_renamed_from) = "report_finance_mortgage_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceMortgageHighFreqQuery = 308 [(_compat_renamed_from) = "report_finance_mortgage_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceBanksHighCtrQuery = 309 [(_compat_renamed_from) = "report_finance_banks_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceBanksHighFreqQuery = 310 [(_compat_renamed_from) = "report_finance_banks_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceBondsListingHighCtrQuery = 311 [(_compat_renamed_from) = "report_finance_bonds_listing_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceBondsListingHighFreqQuery = 312 [(_compat_renamed_from) = "report_finance_bonds_listing_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceMfoHighCtrQuery = 313 [(_compat_renamed_from) = "report_finance_mfo_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceMfoHighFreqQuery = 314 [(_compat_renamed_from) = "report_finance_mfo_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceOsagoHighCtrQuery = 315 [(_compat_renamed_from) = "report_finance_osago_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceOsagoHighFreqQuery = 316 [(_compat_renamed_from) = "report_finance_osago_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceStocksListingHighCtrQuery = 317 [(_compat_renamed_from) = "report_finance_stocks_listing_high_ctr_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    optional bool ReportFinanceStocksListingHighFreqQuery = 318 [(_compat_renamed_from) = "report_finance_stocks_listing_high_freq_query", (_ttl) = 90, (_split_size_limit) = 0, (_owner_fld) = "abc:finance_search"];
+    // NEXTID: 319
+}

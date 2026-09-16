@@ -1,0 +1,55 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NREPORT;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/REPORT";
+// Props definitions
+
+message TPropVideoFetcher {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 HasMasthead = 1;
+    optional uint64 HasDocWithSummarization = 2;
+    optional uint64 HasGoodsData = 3;
+    optional bool IsFeedRequest = 4;
+    optional bool IsMordaRequest = 5;
+    optional bool IsPornoRequest = 6;
+    optional uint64 DocsToBlureCount = 7;
+    optional bool IsSensitivePage = 8;
+    optional bool HasPornoDocsByThumbs = 9;
+    optional bool HasPornoDocsByFullClassifier = 10;
+    optional bool IsRelatedRequest = 11;
+    optional bool IsUserSemanticIdsRequest = 12;
+}
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 AliasJsonVersionForAbt = 1 [(_compat_renamed_from) = "alias_json_version_for_abt", (_infinite_ttl) = true];
+    optional string AppHostConfig = 2 [(_infinite_ttl) = true];
+    optional uint64 BsCount = 3 [(_compat_renamed_from) = "bs_count", (_infinite_ttl) = true];
+    optional string ClientHttpVersion = 4 [(_compat_renamed_from) = "client_http_version", (_infinite_ttl) = true];
+    optional uint64 DistributionWizardRemovedBecauseOfAFirstPositionWizard = 5 [(_compat_renamed_from) = "distribution_wizard_removed_because_of_a_first_position_wizard"];
+    optional bool IsNavRequest = 6 [(_compat_renamed_from) = "is_nav_request", (_infinite_ttl) = true];
+    optional string NoHilitedUrl = 7 [(_infinite_ttl) = true];
+    optional bool RegIsManual = 8 [(_compat_renamed_from) = "reg_is_manual", (_infinite_ttl) = true];
+    optional uint64 SpecialDates = 9;
+    optional string Template = 10 [(_compat_renamed_from) = "template", (_infinite_ttl) = true];
+    repeated string TestIds = 11 [(_compat_renamed_from) = "test-ids", (_infinite_ttl) = true];
+    optional string UcBandwidth = 12 [(_infinite_ttl) = true];
+    optional uint64 UcRtt = 13 [(_compat_renamed_from) = "uc_rtt", (_infinite_ttl) = true];
+    optional bool UcSaveData = 14 [(_compat_renamed_from) = "uc_save_data", (_infinite_ttl) = true];
+    optional bool UcSlowConnection = 15 [(_compat_renamed_from) = "uc_slow_connection"];
+    optional string UserSubscription = 16 [(_compat_renamed_from) = "user_subscription"];
+    optional bool YaPlus = 17 [(_compat_renamed_from) = "ya_plus", (_infinite_ttl) = true];
+    optional uint32 ReaskOrigDocCount = 18 [(_compat_renamed_from) = "reask_orig_doc_count"];
+    optional string WinnerTypes = 19 [(_compat_renamed_from) = "winner_types"];
+    optional string Entity = 20 [(_compat_renamed_from) = "entity"];
+    optional uint32 SuggestTagsCount = 21 [(_compat_renamed_from) = "suggest_tags_count"];
+    optional TPropVideoFetcher VideoFetcher = 22 [(_owner_fld) = "abc:videoquality", (_split_size_limit) = 0, (_rt_required) = true, (_ttl) = 365];
+}

@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NFASTRES2;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/FASTRES2";
+
+// Props definitions
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> CanInsert = 1 [(_compat_renamed_prefix) = "CanInsert/", (_split_size_limit) = 40];
+    optional string FastResApplicable = 2 [(_split_size_limit) = 50];
+    optional string HostName = 3 [(_split_size_limit) = 40];
+    optional uint64 Ig = 4;
+    map<string, bool> Insert = 5 [(_compat_renamed_prefix) = "Insert/", (_split_size_limit) = 55];
+    map<string, bool> Match = 6 [(_compat_renamed_prefix) = "Match_", (_split_size_limit) = 120];
+    optional string BlenderCommands = 7 [(_split_size_limit) = 970];
+}

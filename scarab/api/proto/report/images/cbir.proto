@@ -1,0 +1,37 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/report/images/images_document.proto";
+
+package NScarabProto.NReport.NCbir;
+
+message TCbirImageFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:cvsearch";
+
+    optional string FeaturesName = 1001;
+    repeated double Features = 1002;
+}
+
+message TCbirPostData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:cvsearch";
+
+    optional string Name = 1001;
+    optional bytes Data = 1002;
+    optional bool Truncated = 1003;
+}
+
+message TCbirSerchByCropResult {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:cvsearch";
+
+    repeated NScarabProto.NReport.TImagesDocument Documents = 1001;
+    repeated NScarabProto.NReport.TCommercialDocument GoodsDocuments = 1002;
+    repeated string CbirTags = 1003;
+}

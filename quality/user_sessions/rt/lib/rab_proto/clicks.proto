@@ -1,0 +1,34 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/extension.proto";
+import "quality/user_sessions/rt/lib/rab_proto/direct.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="ClicksDataForRAB";
+
+message TClickSimple {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 Cts = 8 [(NUserSessions.tskv_name) = "cts"];
+    optional bytes Events = 10 [(NUserSessions.tskv_name) = "events"];
+    optional bytes EventsFormat = 11 [(NUserSessions.tskv_name) = "events-format"];
+    optional double Mc = 18 [(NUserSessions.tskv_name) = "mc"];
+    optional bytes Url = 40 [(NUserSessions.tskv_name) = "url"];
+    reserved 46; // IsInSerializedMode
+    reserved 47; // IsWritten
+    optional TDirectClickData DirectData = 48;
+    optional bytes EventId = 49;
+    optional uint64 ServerTime = 50;
+    optional bytes Referer = 51;
+    optional bool UseAlternativeReqids = 52;
+    optional bytes YsClid = 53;
+    optional bytes Path = 54;
+    optional bytes Vars = 55;
+}
+
+message TClicksPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    repeated TClickSimple Clicks = 1;
+}

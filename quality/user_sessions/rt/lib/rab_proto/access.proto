@@ -1,0 +1,77 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/antiadblock_cookies.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/extension.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="AccessDataForRAB";
+
+message TXRegionCookies {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional bytes XRegionAffectedExps = 1 [(NUserSessions.tskv_name) = "x-region-affected-exps"];
+    optional int32 XRegionByIp = 2 [(NUserSessions.tskv_name) = "x-region-by-ip"];
+    optional int32 XRegionCityId = 3 [(NUserSessions.tskv_name) = "x-region-city-id"];
+    optional int32 XRegionId = 4 [(NUserSessions.tskv_name) = "x-region-id"];
+    optional bytes XRegionInterest = 5 [(NUserSessions.tskv_name) = "x-region-interest"];
+    optional bool XRegionIsUserChoice = 6 [(NUserSessions.tskv_name) = "x-region-is-user-choice"];
+    optional int32 XRegionLocationAccuracy = 7 [(NUserSessions.tskv_name) = "x-region-location-accuracy"];
+    optional double XRegionLocationLat = 8 [(NUserSessions.tskv_name) = "x-region-location-lat"];
+    optional double XRegionLocationLen = 9 [(NUserSessions.tskv_name) = "x-region-location-len"];
+    optional uint64 XRegionLocationTime = 10 [(NUserSessions.tskv_name) = "x-region-location-time"];
+    optional int32 XRegionPrecision = 11 [(NUserSessions.tskv_name) = "x-region-precision"];
+    optional bool XRegionShouldUpdateCookie = 12 [(NUserSessions.tskv_name) = "x-region-should-update-cookie"];
+    optional int32 XRegionSuspected = 13 [(NUserSessions.tskv_name) = "x-region-suspected"];
+    optional int32 XRegionSuspectedCity = 14 [(NUserSessions.tskv_name) = "x-region-suspected-city"];
+    optional bytes XYandexICookieInfo = 15 [(NUserSessions.tskv_name) = "x-yandex-icookie-info"];
+    optional bytes XRegionSuspectedSource = 16 [(NUserSessions.tskv_name) = "x-regions-suspected-source"];
+}
+
+message TOverridableCookies {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional TXRegionCookies XRegionCookies = 1 [(NUserSessions.unfoldable_field) = true];
+    optional bytes ICookie = 2 [(NUserSessions.tskv_name) = "i-cookie"];
+    optional bytes LCookie = 3 [(NUserSessions.tskv_name) = "L"];
+    optional bytes YandexAssessorTolokerCookie = 4 [(NUserSessions.tskv_name) = "ytol"];
+    optional bytes YandexClientsideCookie = 5 [(NUserSessions.tskv_name) = "yc-cookie"];
+    optional bytes YandexLogin = 6 [(NUserSessions.tskv_name) = "yandex-login"];
+    optional bytes YandexLoginHash = 7 [(NUserSessions.tskv_name) = "ylogin-hash"];
+    optional bytes YandexPermanentCookie = 8 [(NUserSessions.tskv_name) = "yp-cookie"];
+    optional bytes YandexSessionCookie = 9 [(NUserSessions.tskv_name) = "ys-cookie"];
+    optional bytes XYandexP0F = 10 [(NUserSessions.tskv_name) = "x-yandex-p0f"];
+    optional bytes PurposeInfo = 11 [(NUserSessions.tskv_name) = "purpose-info"];
+    optional bytes YUserAgent = 12;
+    optional bytes SAECookie = 13;
+}
+
+message TOverridableIfNotExistCookies {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional bytes SuggestRequestIdCookie = 1 [(NUserSessions.tskv_name) = "sug_reqid"];
+    optional bytes YandexPreload = 2 [(NUserSessions.tskv_name) = "yandex-preload"];
+}
+
+message TAccessOverridableCookiesForProfile {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional uint64 ProcessingMicrotime = 1 [(NUserSessions.tskv_name) = "processing-microtime"];
+    optional bool SdchAccept = 2 [(NUserSessions.tskv_name) = "sdch-accept"];
+    optional bool SdchEncoding = 3 [(NUserSessions.tskv_name) = "sdch-encoding"];
+    optional uint64 Size = 4 [(NUserSessions.tskv_name) = "size"];
+}
+
+message TExtraOverridableAccessCookies {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional TOverridableIfNotExistCookies AccessCookiesForReqans = 1 [(NUserSessions.unfoldable_field) = true];
+    optional TAccessOverridableCookiesForProfile AccessCookiesForProfile = 2 [(NUserSessions.unfoldable_field) = true];
+}
+
+message TAccessPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional bytes DomainRegion = 1 [(NUserSessions.tskv_name) = "dom-region"];
+    optional uint64 PassportUID = 2 [(NUserSessions.tskv_name) = "puid"];
+    optional bytes Request = 3 [(NUserSessions.tskv_name) = "request"];
+    optional int32 ResponseCode = 4 [(NUserSessions.tskv_name) = "resp-code"];
+    reserved 5; // PassportUIDHash
+    optional TOverridableCookies OverridableCookies = 6 [(NUserSessions.unfoldable_field) = true];
+    reserved 7; // IsDirty
+    optional TAntiAdBlockCookies AntiAdBlockCookies = 8;
+}

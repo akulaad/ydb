@@ -1,0 +1,122 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/common/generic.proto";
+import "scarab/api/proto/report/search_props/common/conf_rearr.proto";
+
+package NScarabProto.NReport.NSearchProps.NIMAGESQUICKP;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/IMAGESQUICKP";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgruesome/imgruesome.cpp
+message TPropImgGruesome {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double ApproxGl = 1 [(_compat_renamed_from) = "approx_gl"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgporno/imgporno.cpp
+message TPropImgPorno {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double ApproxCpl = 1 [(_compat_renamed_from) = "approx_cpl"];
+    optional string ApproxPl = 2 [(_compat_renamed_from) = "approx_pl"];
+    optional bool Cpl = 3 [(_compat_renamed_from) = "cpl"];
+    optional bool Pl = 4 [(_compat_renamed_from) = "pl"];
+    optional uint64 PornoThreshold = 5;
+    optional string RestrictedSearchDetails = 6 [(_compat_renamed_from) = "restricted_search_details"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgqueryfactors/imgqueryfactors.cpp
+message TPropImgQueryFactors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double GreenUrlCtr = 1;
+    optional double QActuality = 2;
+    optional double QCommercialProb = 3;
+    optional double QCommercialProbV2 = 4;
+    optional double QRefromulationProb = 5;
+    optional double QWideness12vs3 = 6;
+    optional double QWideness1vs23 = 7;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgqueryurlban/imgqueryurlban.cpp
+message TPropImgQueryUrlBan {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 BanListLength = 1;
+    optional uint64 NumDocsRemoved = 2;
+    optional string QueryUrlBanned = 3;
+    optional string QueryUsedForBan = 4;
+    optional uint64 TrieAllDocs = 5;
+    optional uint64 TrieAllQueries = 6;
+    optional string TrieIndexState = 7;
+    optional string TrieTimestamp = 8;
+    optional uint64 TrieUniqueDocs = 9;
+    optional uint64 TrieVersion = 10;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgsemidupsglueing/imgsemidupsglueing.cpp
+message TPropImgSemidupsGlueing {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DuplicatesPairs = 1;
+}
+
+message TPropRoot {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+
+    optional double Acc = 1;
+    map<string, string> AllFactorsUnanswer = 2 [(_compat_renamed_prefix) = "AllFactorsUnanswer_"];
+    optional string BaseRankingMn = 3;
+    optional string BaseRankingModel = 4;
+    optional string BaseRankingWords = 5;
+    optional bool BsTouched = 6;
+    optional bool Cached = 7;
+    optional uint64 CalcMetaRelevanceMcs = 8;
+    map<uint64, uint64> ClientGroup = 9 [(_compat_renamed_prefix) = "ClientGroup_"];
+    optional uint64 CommercialUnansweredCount = 10;
+    map<string, string> ConfigInfo = 11 [(_compat_renamed_prefix) = "ConfigInfo_"];
+    optional bool EnableCommercialFilter = 12;
+    optional string ExtensionsRankModel = 13;
+    optional string HostName = 14;
+    optional uint64 Ig = 15;
+    optional uint64 MetaRankDocs = 16;
+    optional uint64 MetaRankGroups = 17;
+    optional double MetaRankSuperMindMult = 18;
+    optional uint64 Nctx = 19;
+    map<string, NScarabProto.NCommon.TListOfDouble> NumDocs = 20 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_numdocs"];
+    optional string RankingIntMn = 21;
+    optional string RankingMn = 22;
+    optional string RankingModel = 23;
+    optional bool RankingTopHandJobBoosts = 24;
+    optional string RankingWords = 25;
+    map<string, string> RemovedDoc = 26 [(_compat_renamed_prefix) = "RemovedDoc_"];
+    optional string RequestedRankingModel = 27;
+    map<string, string> SnippetUnanswer = 28 [(_compat_renamed_prefix) = "SnippetUnanswer_"];
+    optional uint64 SourceTimestamp = 29;
+    optional double SuperMindMult = 30;
+    map<string, string> Unanswer = 31 [(_compat_renamed_prefix) = "Unanswer_"];
+    optional string ImagesModelsInputs = 32 [(_compat_renamed_from) = "ImagesModelsQueryInputs", (_owner_fld) = "abc:images", (_infinite_ttl) = true, (_split_size_limit) = 0];
+}
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropImgGruesome ImgGruesome = 1;
+    optional TPropImgPorno ImgPorno = 2;
+    optional TPropImgQueryFactors ImgQueryFactors = 3;
+    optional TPropImgQueryUrlBan ImgQueryUrlBan = 4;
+    optional TPropImgSemidupsGlueing ImgSemidupsGlueing = 5;
+    optional TPropRoot Root = 6 [(_compat_renamed_from) = ""];
+
+    optional NScarabProto.NReport.NSearchProps.NCommon.TPropConfigurableRearrangeApplier ImgConfigurableRearrangeApplier = 7 [
+        (_owner_fld) = "abc:relev_tools",
+        (_split_size_limit) = 470
+    ];
+} // bext: 8

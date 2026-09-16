@@ -1,0 +1,32 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/common/generic.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/stateful/stateful.cpp
+message TPropStateful {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string StatefulThemes = 1 [(_owner_fld) = "abc:stateful_search", (_compat_renamed_from) = "add_to_blend"];
+    optional string StatefulStages = 2 [(_owner_fld) = "abc:stateful_search"];
+    optional string StatefulTrigger = 3 [(_owner_fld) = "abc:stateful_search", (_compat_renamed_from) = "trigger"];
+    map<string, double> StatefulThemesV2 = 4 [(_owner_fld) = "abc:stateful_search", (_compat_renamed_prefix) = "add_to_blend_v2_"];
+    optional string StatefulParentTheme = 5 [(_owner_fld) = "abc:stateful_search"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/stateful/stateful_recs.cpp
+message TPropStatefulRecs {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string StatefulRecsAddToBlend = 1 [(_owner_fld) = "abc:stateful_search", (_compat_renamed_from) = "AddToBlend"];
+    optional string StatefulRecsTheme = 2 [(_owner_fld) = "abc:stateful_search", (_compat_renamed_from) = "Theme"];
+    optional string StatefulRecsHasVideo = 3 [(_owner_fld) = "abc:stateful_search", (_compat_renamed_from) = "HasVideo"];
+}

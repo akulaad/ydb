@@ -1,0 +1,11 @@
+package NUserSessions.NProto;
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/createlib/qb3/proto/util;user_sessions_qb3_util";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+
+message TAntiAdBlockCookies {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    map<string, string> Cookies = 1;
+}

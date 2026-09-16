@@ -1,0 +1,9 @@
+PROTO_LIBRARY()
+
+EXCLUDE_TAGS(GO_PROTO JAVA_PROTO)
+
+SRCS(
+    feeds_profile.proto
+)
+
+END()

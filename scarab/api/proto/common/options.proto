@@ -1,0 +1,32 @@
+syntax = "proto2";
+import "google/protobuf/descriptor.proto";
+option go_package = "a.yandex-team.ru/scarab/api/proto/common;scarab_proto";
+option java_package = "NScarabProto.NCommon";
+extend google.protobuf.FieldOptions {
+    optional string _description_fld = 500010;
+    optional string _owner_fld = 500020;
+    optional uint32 _version_fld = 500030;
+    optional bool _deprecated_fld = 500040;
+    optional bool _required = 501010;
+    optional string _default = 501020;
+    optional string _fixed = 501030;
+    optional string _regex = 501040;
+    optional uint64 _split_size_limit = 501050;
+    optional bool _rt_required = 501060;
+    optional bool _key_field = 501070;
+    optional uint32 _ttl = 501080;
+    optional bool _infinite_ttl = 501090;
+    optional uint32 _ttl_tier = 501100;
+}
+
+extend google.protobuf.MessageOptions {
+    optional string _description_msg = 510010;
+    optional string _owner_msg = 510020;
+    optional uint32 _version_msg = 510030;
+    optional bool _deprecated_msg = 510040;
+}
+
+extend google.protobuf.EnumOptions {
+    optional string _description_enum = 520010;
+    optional string _owner_enum = 520020;
+}

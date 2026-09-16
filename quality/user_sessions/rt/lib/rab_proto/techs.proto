@@ -1,0 +1,88 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="TechsDataForRAB";
+
+message TTechSimple {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 Cts = 1;
+    optional bytes Events = 2;
+    optional bytes EventsFormat = 3;
+    optional uint64 ServerTime = 4;
+    optional bytes Path = 5;
+    optional bytes Vars = 6;
+}
+
+message TPlayVideoEventSimple {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 Cts = 1;
+    optional uint64 ServerTime = 2;
+    optional bytes Path = 3;
+    optional bytes Vars = 4;
+    optional uint32 Ticks = 5;
+    optional uint32 Duration = 6;
+    optional uint32 Serial = 7;
+    optional uint32 Season = 8;
+    optional uint32 Episode = 9;
+    optional uint32 HeartbeatPeriod = 10;
+    optional uint32 PlaybackTime = 11;
+    optional bytes SourceUrl = 12;
+    optional double VideoPlayerTime = 13;
+    optional double VideoPlayerPreviousTime = 14;
+    optional uint32 PlayerErrorcode = 15;
+    optional bytes Url = 16;
+    optional bytes Type = 17; // for heartbeat/duration/play_video detection
+}
+
+message TTvOnlinePlayerEventSimple {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 Cts = 1;
+    optional uint64 ServerTime = 2;
+    optional bytes Path = 3;
+    optional bytes Vars = 4;
+    optional bytes ContentId = 5;
+    optional bytes Source = 6;
+    optional uint32 Duration = 7;
+    optional bytes ChannelId = 8;
+    optional bytes EmojiType = 9;
+    optional uint32 PlayerErrorcode = 10;
+    optional bytes VSID = 11;
+    optional uint32 WatchedTime = 12;
+    optional bytes StreamBlock = 13;
+    optional bool FullScreen = 14;
+    optional bytes FromBlock = 15;
+    optional bytes ContentType = 16;
+    optional bytes Licence = 17;
+    optional bytes Svod = 18;
+    optional bool Mute = 19;
+}
+
+message TImageShowSimple {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional TTechSimple BaseTech = 1;
+    optional bytes Url = 2;
+}
+
+message TImageNavigSimple {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional TTechSimple BaseTech = 1;
+    optional bytes Url = 2;
+}
+
+message TTechsPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    repeated TTechSimple Techs = 1;
+    repeated TPlayVideoEventSimple PlayVideoEvents = 2;
+    repeated TTvOnlinePlayerEventSimple TvOnlinePlayerEvents = 3;
+    repeated TImageShowSimple ImageShows = 4;
+    repeated TImageNavigSimple ImageNavigs = 5;
+}

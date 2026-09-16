@@ -1,0 +1,14 @@
+import "google/protobuf/descriptor.proto";
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/createlib/qb3/proto/util;user_sessions_qb3_util";
+
+package NUserSessions;
+
+extend google.protobuf.FieldOptions
+{
+    optional string tskv_name = 65860;
+    optional bool fake_field = 65861;
+    optional bool unfoldable_field = 65862;
+    optional uint32 _transform_ttl = 65863;
+    optional bool skip_in_total_event = 65864;
+}

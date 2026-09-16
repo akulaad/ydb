@@ -1,0 +1,13 @@
+package NUserSessions.NRT;
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos/common";
+
+
+message TSlot {
+    optional string TestID = 1;
+}
+
+message TExternalId {
+    optional string Entity = 1;
+    optional string Id = 2;
+}

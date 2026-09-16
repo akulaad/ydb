@@ -1,0 +1,331 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/relev";
+package NScarabProto.NReport.NRelev;
+
+// Props definitions
+
+// Source definition
+message TRelev {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AdCat = 1 [(_compat_renamed_from) = "ad_cat", (_split_size_limit) = 5, (_infinite_ttl) = true];
+    optional string AdCatPb = 2 [(_compat_renamed_from) = "ad_cat_pb", (_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional uint64 AdFiltr = 3 [(_compat_renamed_from) = "ad_filtr", (_infinite_ttl) = true];
+    optional string Attrs = 4 [(_compat_renamed_from) = "attrs", (_split_size_limit) = 500];
+    optional double AverageDistanceNormed = 5;
+    optional double Avgl = 6 [(_compat_renamed_from) = "avgl"];
+    optional bool BaseFilter = 7 [(_compat_renamed_from) = "base_filter"];
+    optional string Bgfactors = 8 [(_compat_renamed_from) = "bgfactors", (_rt_required) = true, (_infinite_ttl) = true];
+    optional string Bgrtfactors = 9 [(_compat_renamed_from) = "bgrtfactors", (_rt_required) = true, (_infinite_ttl) = true];
+    optional bool Bl = 10 [(_compat_renamed_from) = "bl"];
+    optional double Cavgl = 11;
+    optional double Cdi = 12;
+    optional double Cdi2 = 13;
+    optional uint64 Cho = 14;
+    optional double Chodi = 15;
+    optional string Cl = 16 [(_compat_renamed_from) = "cl", (_split_size_limit) = 5];
+    optional string Cm = 17 [(_compat_renamed_from) = "cm", (_split_size_limit) = 5];
+    optional double Cm2 = 18 [(_compat_renamed_from) = "cm2", (_infinite_ttl) = true, (_rt_required)=true];
+    optional double Cm2Alt = 19 [(_compat_renamed_from) = "cm2_alt", (_infinite_ttl) = true];
+    optional double Cm2st = 20 [(_compat_renamed_from) = "cm2st"];
+    optional double CntryR = 21 [(_compat_renamed_from) = "cntry_r", (_infinite_ttl) = true];
+    optional double Complexity = 22 [(_compat_renamed_from) = "complexity", (_infinite_ttl) = true];
+    optional string CompressedDssmRandomLogFactors = 23 [(_split_size_limit) = 0, (_ttl) = 30]; //TODO: logging is not required (duplicated in bgfactors)
+    optional string CompressedRandomLogFactors = 24 [(_split_size_limit) = 0, (_ttl) = 30]; //TODO: logging is not required (duplicated in bgfactors)
+    optional string Country = 25 [(_compat_renamed_from) = "country", (_split_size_limit) = 10];
+    optional uint64 Cpo = 26 [(_infinite_ttl) = true];
+    optional bool Cre = 27 [(_infinite_ttl) = true];
+    optional string Ct = 28 [(_compat_renamed_from) = "ct", (_rt_required) = true, (_infinite_ttl) = true];
+    optional double DcPornL2Pow = 29 [(_compat_renamed_from) = "dc_porn_l2_pow"];
+    optional string DcPornName = 30 [(_compat_renamed_from) = "dc_porn_name", (_split_size_limit) = 5];
+    optional double Di = 31 [(_compat_renamed_from) = "di", (_infinite_ttl) = true];
+    optional double Di2 = 32 [(_compat_renamed_from) = "di2", (_infinite_ttl) = true];
+    optional string DisableVideofmlFormula = 33 [(_compat_renamed_from) = "disable_videofml_formula", (_split_size_limit) = 5];
+    optional string DiversityCateg = 34 [(_compat_renamed_from) = "diversity_categ", (_split_size_limit) = 10];
+    optional string DmozTh = 35 [(_compat_renamed_from) = "dmoz_th", (_split_size_limit) = 10];
+    optional string Dnorm = 36 [(_compat_renamed_from) = "dnorm", (_split_size_limit) = 100, (_infinite_ttl) = true];
+    optional string DnormGeo = 37 [(_compat_renamed_from) = "dnorm_geo", (_split_size_limit) = 90];
+    optional string DnormNav = 38 [(_compat_renamed_from) = "dnorm_nav", (_split_size_limit) = 110];
+    optional string DnormOld = 39 [(_compat_renamed_from) = "dnorm_old", (_split_size_limit) = 110, (_infinite_ttl) = true];
+    optional string DnormW = 40 [(_compat_renamed_from) = "dnorm_w", (_split_size_limit) = 70];
+    optional string DssmWordWeights = 41 [(_compat_renamed_from) = "dssm_word_weights", (_split_size_limit) = 400];
+    optional double ExpertcenPopularity = 42;
+    optional string Filtierf = 43 [(_compat_renamed_from) = "filtierf", (_split_size_limit) = 20, (_infinite_ttl) = true];
+    optional double Fir = 44 [(_compat_renamed_from) = "fir"];
+    optional bool ForceQuorum = 45 [(_compat_renamed_from) = "force_quorum"];
+    optional double Forum = 46 [(_compat_renamed_from) = "forum"];
+    optional double Fqwg = 47 [(_compat_renamed_from) = "fqwg"];
+    optional double FreshDetectorPredict = 48 [(_compat_renamed_from) = "fresh_detector_predict", (_infinite_ttl) = true, (_rt_required) = true];
+    optional bool FreshFlow = 49 [(_compat_renamed_from) = "fresh_flow", (_infinite_ttl) = true, (_rt_required) = true];
+    optional double FreshNewsDetectorPredict = 50 [(_compat_renamed_from) = "fresh_news_detector_predict", (_infinite_ttl) = true];
+    optional uint64 FreshQueryCluster = 51 [(_compat_renamed_from) = "fresh_query_cluster", (_infinite_ttl) = true, (_rt_required) = true];
+    optional uint64 FreshTtlGroup = 52 [(_compat_renamed_from) = "fresh_ttl_group", (_infinite_ttl) = true];
+    optional string Frqcls = 53 [(_compat_renamed_from) = "frqcls", (_split_size_limit) = 20, (_infinite_ttl) = true];
+    optional double Gaddr = 54 [(_compat_renamed_from) = "gaddr"];
+    optional uint64 Gc = 55 [(_compat_renamed_from) = "gc", (_infinite_ttl) = true, (_rt_required) = true];
+    optional uint64 Gcntry = 56 [(_compat_renamed_from) = "gcntry", (_infinite_ttl) = true];
+    optional double Geov = 57 [(_compat_renamed_from) = "geov"];
+    optional string GoName = 58 [(_compat_renamed_from) = "go_name", (_split_size_limit) = 30];
+    optional bool Hasfio = 59 [(_compat_renamed_from) = "hasfio"];
+    optional uint64 Ho = 60 [(_compat_renamed_from) = "ho", (_infinite_ttl) = true];
+    optional double Hodi = 61 [(_compat_renamed_from) = "hodi", (_infinite_ttl) = true];
+    optional bool HowRequest = 62 [(_compat_renamed_from) = "how_request"];
+    optional bool Hpq = 63 [(_compat_renamed_from) = "hpq"];
+    optional uint64 Iad = 64 [(_compat_renamed_from) = "iad"];
+    optional double IadModelValue = 65 [(_compat_renamed_from) = "iad_model_value"];
+    optional double IadVw = 66 [(_compat_renamed_from) = "iad_vw", (_infinite_ttl) = true];
+    optional double IadVwOrig = 67 [(_compat_renamed_from) = "iad_vw_orig"];
+    optional bool Icp = 68 [(_compat_renamed_from) = "icp"];
+    optional uint64 Idl = 69 [(_compat_renamed_from) = "idl"];
+    optional bool Ihl = 70 [(_compat_renamed_from) = "ihl"];
+    optional bool Il = 71 [(_compat_renamed_from) = "il", (_infinite_ttl) = true];
+    optional bool Ilg = 72 [(_compat_renamed_from) = "ilg"];
+    optional double Ilp = 73 [(_compat_renamed_from) = "ilp"];
+    optional double IlpRr5 = 74 [(_compat_renamed_from) = "ilp_rr5"];
+    optional uint64 Im = 75 [(_compat_renamed_from) = "im"];
+    optional bool ImageIpq = 76 [(_compat_renamed_from) = "image_ipq"];
+    optional double ImageIpqConf = 77 [(_compat_renamed_from) = "image_ipq_conf"];
+    optional double Imgintent = 78 [(_compat_renamed_from) = "imgintent"];
+    optional bool Ipq = 79 [(_compat_renamed_from) = "ipq", (_infinite_ttl) = true];
+    optional double IpqConf = 80 [(_compat_renamed_from) = "ipq_conf"];
+    optional bool Ipr = 81 [(_compat_renamed_from) = "ipr", (_infinite_ttl) = true];
+    optional bool Iq = 82 [(_compat_renamed_from) = "iq", (_infinite_ttl) = true];
+    optional bool IsAliceWebMusicScenario = 83 [(_compat_renamed_from) = "is_alice_web_music_scenario", (_infinite_ttl) = true];
+    optional bool IsMemorandumQuery = 84 [(_compat_renamed_from) = "is_memorandum_query", (_infinite_ttl) = true];
+    optional double IsMusicExt = 85 [(_compat_renamed_from) = "is_music_ext", (_infinite_ttl) = true];
+    optional bool IsNav = 86 [(_compat_renamed_from) = "is_nav", (_infinite_ttl) = true];
+    optional double IsNavmx = 87 [(_compat_renamed_from) = "is_navmx", (_infinite_ttl) = true];
+    optional bool IsPol = 88 [(_compat_renamed_from) = "is_pol"];
+    optional double IsVcomm = 89 [(_compat_renamed_from) = "is_vcomm"];
+    optional double Isband = 90 [(_compat_renamed_from) = "isband"];
+    optional double Isfilm = 91 [(_compat_renamed_from) = "isfilm", (_infinite_ttl) = true];
+    optional double Isgeo = 92 [(_compat_renamed_from) = "isgeo", (_infinite_ttl) = true];
+    optional double Ishum = 93 [(_compat_renamed_from) = "ishum", (_infinite_ttl) = true];
+    optional double Ismusic = 94 [(_compat_renamed_from) = "ismusic", (_infinite_ttl) = true];
+    optional double Isorg = 95 [(_compat_renamed_from) = "isorg", (_infinite_ttl) = true];
+    optional double Ispicture = 96 [(_compat_renamed_from) = "ispicture"];
+    optional double Issite = 97 [(_compat_renamed_from) = "issite"];
+    optional double Issoft = 98 [(_compat_renamed_from) = "issoft"];
+    optional double Istext = 99 [(_compat_renamed_from) = "istext"];
+    optional string Isurl = 100 [(_compat_renamed_from) = "isurl", (_split_size_limit) = 5, (_infinite_ttl) = true];
+    reserved 101; // lbqbundle
+    optional uint64 Ldatopicru = 102 [(_compat_renamed_from) = "ldatopicru"];
+    optional uint64 Ldatopictr = 103 [(_compat_renamed_from) = "ldatopictr"];
+    optional uint64 LogDtBigramsQueryCluster = 104 [(_compat_renamed_from) = "log_dt_bigrams_query_cluster", (_infinite_ttl) = true, (_rt_required) = true];
+    optional double Lpr = 105 [(_compat_renamed_from) = "lpr", (_infinite_ttl) = true];
+    optional uint64 MainLmScore = 106;
+    optional string Mbu = 107 [(_compat_renamed_from) = "mbu", (_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional string Ms = 108 [(_compat_renamed_from) = "ms"];
+    optional bool Mu = 109 [(_compat_renamed_from) = "mu", (_infinite_ttl) = true];
+    optional uint64 Mum = 110 [(_compat_renamed_from) = "mum"];
+    optional uint64 Mut = 111 [(_compat_renamed_from) = "mut", (_infinite_ttl) = true];
+    optional uint64 Muvt = 112 [(_compat_renamed_from) = "muvt", (_infinite_ttl) = true];
+    optional double Navmx = 113 [(_compat_renamed_from) = "navmx", (_infinite_ttl) = true];
+    optional bool NeutralHum = 114 [(_compat_renamed_from) = "neutral_hum", (_infinite_ttl) = true];
+    optional string Norm = 115 [(_compat_renamed_from) = "norm", (_rt_required) = true, (_infinite_ttl) = true];
+    optional string Null = 116 [(_compat_renamed_from) = "null", (_split_size_limit) = 5];
+    optional double OnlinerPopularity = 117;
+    optional bool Os = 118 [(_compat_renamed_from) = "os"];
+    optional double PayAppDetectorPredict = 119 [(_compat_renamed_from) = "pay_app_detector_predict", (_infinite_ttl) = true];
+    optional double PayDetectorPredict = 120 [(_compat_renamed_from) = "pay_detector_predict", (_infinite_ttl) = true];
+    optional string Pf = 121 [(_compat_renamed_from) = "pf", (_split_size_limit) = 10];
+    optional double PiracyDetectorPredict = 122 [(_compat_renamed_from) = "piracy_detector_predict", (_infinite_ttl) = true];
+    optional uint64 Po = 123 [(_compat_renamed_from) = "po", (_infinite_ttl) = true];
+    optional bool Pornotop = 124 [(_compat_renamed_from) = "pornotop"];
+    optional double Pr = 125 [(_compat_renamed_from) = "pr", (_infinite_ttl) = true];
+    optional string Prel = 126 [(_compat_renamed_from) = "prel", (_rt_required) = true, (_infinite_ttl) = true];
+    optional bool Psi = 127 [(_compat_renamed_from) = "psi"];
+    optional bool Psv = 128 [(_compat_renamed_from) = "psv", (_infinite_ttl) = true];
+    optional uint64 Qc = 129 [(_compat_renamed_from) = "qc", (_infinite_ttl) = true];
+    optional string Qlang = 130 [(_compat_renamed_from) = "qlang", (_split_size_limit) = 10];
+    optional bool Qlu = 131 [(_compat_renamed_from) = "qlu"];
+    optional string Qmpl = 132 [(_compat_renamed_from) = "qmpl", (_rt_required) = true, (_infinite_ttl) = true];
+    optional double Qr2r = 133 [(_compat_renamed_from) = "qr2r"];
+    optional double Qr2u = 134 [(_compat_renamed_from) = "qr2u"];
+    optional double Qr2v = 135 [(_compat_renamed_from) = "qr2v"];
+    optional uint64 Qradm = 136 [(_compat_renamed_from) = "qradm"];
+    optional uint64 Qrcty = 137 [(_compat_renamed_from) = "qrcty"];
+    optional uint64 Qrnb = 138 [(_compat_renamed_from) = "qrnb"];
+    optional double Qrr = 139 [(_compat_renamed_from) = "qrr"];
+    optional double Qru = 140 [(_compat_renamed_from) = "qru"];
+    optional double Qrv = 141 [(_compat_renamed_from) = "qrv"];
+    optional string Qsegments = 142 [(_compat_renamed_from) = "qsegments", (_split_size_limit) = 10];
+    optional string Qt = 143 [(_compat_renamed_from) = "qt", (_split_size_limit) = 10];
+    optional double QueryDssmEmbeddingPca0 = 144;
+    optional double QueryDssmEmbeddingPca1 = 145;
+    optional double QueryDssmEmbeddingPca2 = 146;
+    optional double QueryDssmEmbeddingPca3 = 147;
+    optional double QueryDssmEmbeddingPca4 = 148;
+    optional double QueryDssmEmbeddingPca5 = 149;
+    optional string QueryEmbeddingBoostingCtr = 150 [(_compat_renamed_from) = "query_embedding_boosting_ctr", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0];
+    optional string QueryEmbeddingBoostingCtrExpansion = 151 [(_compat_renamed_from) = "query_embedding_boosting_ctr_expansion", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0];
+    optional string QueryEmbeddingBoostingSerpSimilarityHard = 152 [(_compat_renamed_from) = "query_embedding_boosting_serp_similarity_hard", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0];
+    optional string QueryEmbeddingBoostingXfOne = 153 [(_compat_renamed_from) = "query_embedding_boosting_xf_one", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingBoostingXfOneExpansion = 154 [(_compat_renamed_from) = "query_embedding_boosting_xf_one_expansion", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingBoostingXfOneSe = 155 [(_compat_renamed_from) = "query_embedding_boosting_xf_one_se", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingBoostingXfOneSeAmSsHard = 156 [(_compat_renamed_from) = "query_embedding_boosting_xf_one_se_am_ss_hard", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingBoostingXfWtd = 157 [(_compat_renamed_from) = "query_embedding_boosting_xf_wtd", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingBoostingXfWtdExpansion = 158 [(_compat_renamed_from) = "query_embedding_boosting_xf_wtd_expansion", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0];
+    optional string QueryEmbeddingCtrEngSsHard = 159 [(_compat_renamed_from) = "query_embedding_ctr_eng_ss_hard", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingLogDtBigrams = 160 [(_compat_renamed_from) = "query_embedding_log_dt_bigrams", (_rt_required) = true, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingLogDtBigramsAmHardQueriesNoClicks = 161 [(_compat_renamed_from) = "query_embedding_log_dt_bigrams_am_hard_queries_no_clicks", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingLogDtBigramsAmHardQueriesNoClicksMixed = 162 [(_compat_renamed_from) = "query_embedding_log_dt_bigrams_am_hard_queries_no_clicks_mixed", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingMainContentKeywords = 163 [(_compat_renamed_from) = "query_embedding_main_content_keywords", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryEmbeddingMulticlick = 164 [(_compat_renamed_from) = "query_embedding_multiclick", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0]; //TODO: not required in logs
+    optional string QueryHostnameIds = 165 [(_compat_renamed_from) = "query_hostname_ids", (_split_size_limit) = 20];
+    optional double RamblerPopularity = 166;
+    optional string Re = 167 [(_compat_renamed_from) = "re", (_split_size_limit) = 5];
+    optional string RelevLocale = 168 [(_compat_renamed_from) = "relev_locale", (_rt_required) = true, (_infinite_ttl) = true];
+    optional double Rnq = 169 [(_compat_renamed_from) = "rnq"];
+    optional string Sa = 170 [(_compat_renamed_from) = "sa", (_split_size_limit) = 5];
+    optional bool Softporno = 171 [(_compat_renamed_from) = "softporno"];
+    optional double SunhomePopularity = 172;
+    optional string Synnorm = 173 [(_compat_renamed_from) = "synnorm", (_split_size_limit) = 65, (_infinite_ttl) = true];
+    optional double Syq = 174 [(_compat_renamed_from) = "syq"];
+    optional double Tc = 175 [(_compat_renamed_from) = "tc"];
+    optional bool Tel = 176 [(_compat_renamed_from) = "tel"];
+    optional string Text = 177 [(_compat_renamed_from) = "text", (_split_size_limit) = 10];
+    optional double Th3561 = 178 [(_compat_renamed_from) = "th3561"];
+    optional double Th3973 = 179 [(_compat_renamed_from) = "th3973"];
+    reserved 180;
+    optional string Titranges = 181 [(_compat_renamed_from) = "titranges", (_split_size_limit) = 5];
+    optional double Topicality = 182 [(_compat_renamed_from) = "topicality"];
+    optional double TurQr = 183 [(_compat_renamed_from) = "tur_qr"];
+    optional double TurQrm = 184 [(_compat_renamed_from) = "tur_qrm"];
+    optional double Tv = 185 [(_compat_renamed_from) = "tv"];
+    optional double Tvm = 186 [(_compat_renamed_from) = "tvm"];
+    optional string U = 187 [(_compat_renamed_from) = "u", (_split_size_limit) = 10];
+    optional string Uil = 188 [(_compat_renamed_from) = "uil", (_split_size_limit) = 5];
+    optional string Url = 189 [(_compat_renamed_from) = "url", (_split_size_limit) = 5];
+    optional string Ust = 190 [(_compat_renamed_from) = "ust" , (_split_size_limit) = 5];
+    optional string Utq = 191 [(_compat_renamed_from) = "utq", (_split_size_limit) = 190];
+    optional double Vcomm = 192 [(_compat_renamed_from) = "vcomm"];
+    optional uint64 Vepisode = 193 [(_compat_renamed_from) = "vepisode"];
+    optional string Vfilmontoids = 194 [(_compat_renamed_from) = "vfilmontoids", (_split_size_limit) = 50];
+    optional uint64 VideoBoostedHosts = 195 [(_compat_renamed_from) = "video_boosted_hosts"];
+    optional uint64 VideoBoostedHostsValue = 196 [(_compat_renamed_from) = "video_boosted_hosts_value"];
+    optional bool VideoIpq = 197 [(_compat_renamed_from) = "video_ipq"];
+    optional double VideoIpqConf = 198 [(_compat_renamed_from) = "video_ipq_conf"];
+    optional double Vintent = 199 [(_compat_renamed_from) = "vintent"];
+    optional string VitalQueryUrl = 200 [(_compat_renamed_from) = "vital_query_url", (_split_size_limit) = 17];
+    optional double VkPopularity = 201;
+    optional uint64 Vm = 202 [(_compat_renamed_from) = "vm", (_infinite_ttl) = true];
+    optional string Vnorm = 203 [(_compat_renamed_from) = "vnorm", (_split_size_limit) = 95, (_infinite_ttl) = true];
+    optional string VnormDopp = 204 [(_compat_renamed_from) = "vnorm_dopp", (_split_size_limit) = 90, (_infinite_ttl) = true];
+    optional string VnormSyn = 205 [(_compat_renamed_from) = "vnorm_syn", (_split_size_limit) = 65, (_infinite_ttl) = true];
+    optional bool Vorig = 206 [(_compat_renamed_from) = "vorig"];
+    optional bool Vq = 207 [(_compat_renamed_from) = "vq", (_infinite_ttl) = true];
+    optional bool Vqnarrow = 208 [(_compat_renamed_from) = "vqnarrow"];
+    optional string Vquerysubjectdates = 209 [(_compat_renamed_from) = "vquerysubjectdates", (_split_size_limit) = 10];
+    optional bool Vqultrawide = 210 [(_compat_renamed_from) = "vqultrawide"];
+    optional bool Vqwide = 211 [(_compat_renamed_from) = "vqwide"];
+    optional bool Vrmkids = 212 [(_compat_renamed_from) = "vrmkids"];
+    optional uint64 Vseason = 213 [(_compat_renamed_from) = "vseason", (_infinite_ttl) = true];
+    optional uint64 Vserial = 214 [(_compat_renamed_from) = "vserial", (_infinite_ttl) = true];
+    optional double Vserials = 215 [(_compat_renamed_from) = "vserials"];
+    optional uint64 Vseriesid = 216 [(_compat_renamed_from) = "vseriesid"];
+    optional string Vseriestop = 217 [(_compat_renamed_from) = "vseriestop", (_split_size_limit) = 5];
+    optional string Vsertitle = 218 [(_compat_renamed_from) = "vsertitle", (_split_size_limit) = 12];
+    optional bool Vsexact = 219 [(_compat_renamed_from) = "vsexact"];
+    optional uint64 Vstype = 220 [(_compat_renamed_from) = "vstype"];
+    reserved 221;
+    optional double WebMtLmScore = 222;
+    reserved 223;
+    optional double Wmaxone = 224 [(_compat_renamed_from) = "wmaxone"];
+    optional double Wminone = 225 [(_compat_renamed_from) = "wminone"];
+    optional double YandexDirectLmScore = 226;
+    optional double YdngdMean = 227 [(_compat_renamed_from) = "ydngd_mean"];
+    optional double Ydngi = 228 [(_compat_renamed_from) = "ydngi"];
+    optional double YnhgMean = 229 [(_compat_renamed_from) = "ynhg_mean"];
+
+    optional string WebL2ModelsApplyResults = 230 [(_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:mmeta_model_calcers"]; //TODO: not required in logs
+
+    //FreshDetector from begemot begin
+    // FreshDetectorPredict, FreshNewsDetectorPredict, PayAppDetectorPredict, PayDetectorPredict,PiracyDetectorPredict earlier
+
+    optional double SerpSummarySurplusPredict = 231 [(_compat_renamed_from) = "serp_summary_surplus_predict", (_infinite_ttl) = true];
+    optional double HalfEcomPredict = 232 [(_compat_renamed_from) = "half_ecom_predict", (_infinite_ttl) = true];
+    optional double RequestWith120D3ClickPartPredict = 233 [(_compat_renamed_from) = "request_with_120_d3_click_part_predict", (_infinite_ttl) = true];
+    optional bool IsPiracyFlow           = 234 [(_compat_renamed_from) = "piracy_flow", (_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+    optional bool IsPayFlow           = 235 [(_compat_renamed_from) = "pay_flow", (_owner_fld) = "abc:buki", (_infinite_ttl) = true];
+    optional float HpDetectorPredict = 236 [(_compat_renamed_from) = "hp_detector_predict", (_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+    optional bool IsHpFlow           = 237 [(_compat_renamed_from) = "hp_flow", (_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+    optional float PurchaseTotalPredict    = 238 [(_compat_renamed_from) = "purchase_total_predict", (_infinite_ttl) = true];
+
+
+    optional float QueryConversionDetectorPredict = 239 [(_compat_renamed_from) = "query_conversion_detector_predict", (_infinite_ttl) = true];
+    optional float WideVideoDetectorPredict     = 240 [(_compat_renamed_from) = "wide_video_detector_predict"];
+    optional float WideImagesDetectorPredict    = 241 [(_compat_renamed_from) = "wide_images_detector_predict"];
+    optional float QueryNavParasitesDetectorPredict     = 242 [(_compat_renamed_from) = "q_nav_parasites", (_infinite_ttl) = true, (_owner_fld) = "abc:searchspam"];
+    optional float QueryAboutOneProductPredict      = 243 [(_compat_renamed_from) = "query_about_one_product", (_infinite_ttl) = true];
+    optional float QueryAboutManyProductsPredict    = 244 [(_compat_renamed_from) = "query_about_many_products", (_infinite_ttl) = true];
+    optional float ProximaQueryDcg5Predict      = 245 [(_compat_renamed_from) = "proxima_query_dcg5_predict", (_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+
+    //slot 249 is usable
+
+    optional string BgModelFactors = 250 [(_compat_renamed_from) = "bgmodelfactors", (_split_size_limit) = 210, (_infinite_ttl) = true]; //NOTE: it contains a lot of fields from above fields
+    //FreshDetector from begemot end
+
+    //https://a.yandex-team.ru/arc/trunk/arcadia/search/begemot/rules/geo_query_classifier/proto/geo_query_classifier.proto
+    optional float SerpRubric = 251 [(_compat_renamed_from) = "gqc_serp_rubric", (_infinite_ttl) = true];
+    optional float SerpRubricFood = 252 [(_compat_renamed_from) = "gqc_serp_rubric_food", (_infinite_ttl) = true];
+
+    map<string, float> WebQueryClassifiers = 253 [(_compat_renamed_prefix) = "class_query_is_", (_split_size_limit) = 20, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+
+    optional float GoodsFashionDetectorPredict  = 254 [(_compat_renamed_from) = "goods_fashion_detector_predict"];
+    optional float GoodsCehacDetectorPredict    = 255 [(_compat_renamed_from) = "goods_cehac_detector_predict"];
+    optional float GoodsHomeDetectorPredict     = 256 [(_compat_renamed_from) = "goods_home_detector_predict"];
+    optional float GoodsDiyDetectorPredict      = 257 [(_compat_renamed_from) = "goods_diy_detector_predict"];
+    optional float GoodsBeautyDetectorPredict   = 258 [(_compat_renamed_from) = "goods_beauty_detector_predict"];
+    optional float GoodsKidsDetectorPredict     = 259 [(_compat_renamed_from) = "goods_kids_detector_predict"];
+
+    // Unisearch classifiers
+    optional float MedicineCommonDetectorPredict         = 260 [(_owner_fld) = "abc:unisearch", (_compat_renamed_from) = "medicine_common_detector_predict"];
+    optional float MedicineSpecialityCityDetectorPredict = 261 [(_owner_fld) = "abc:unisearch", (_compat_renamed_from) = "medicine_speciality_city_detector_predict"];
+    optional float MedicineSpecialityFioDetectorPredict  = 262 [(_owner_fld) = "abc:unisearch", (_compat_renamed_from) = "medicine_speciality_fio_detector_predict"];
+    optional float EducationOnlineDetectorPredict        = 263 [(_owner_fld) = "abc:unisearch", (_compat_renamed_from) = "education_online_detector_predict"];
+    optional float EducationOfflineDetectorPredict       = 264 [(_compat_renamed_from) = "education_offline_detector_predict"];
+
+    // Images-reqans fields
+    optional float Cbircopiesthreshold = 265 [(_compat_renamed_from) = "cbirCopiesThreshold"];
+    optional float ClassQueryIsCp = 266 [(_compat_renamed_from) = "class_query_is_cp", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional float ClassQueryIsExpertProGoogle = 267 [(_compat_renamed_from) = "class_query_is_expert_pro_google", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional bool ClassQueryIsExpertProGoogleFlow = 268 [(_compat_renamed_from) = "class_query_is_expert_pro_google_flow", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional bool ClassQueryIsLatinistic = 269 [(_compat_renamed_from) = "class_query_is_latinistic", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional float ClassQueryIsPorno = 270 [(_compat_renamed_from) = "class_query_is_porno", (_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    repeated uint64 CommercialCategory = 271;
+    optional bool ImagesWizGoodsScenarioEnabled = 272 [(_compat_renamed_from) = "images_wiz_goods_scenario_enabled"];
+    optional float ImgtextBoost = 273 [(_compat_renamed_from) = "imgtext_boost"];
+    optional string Lbqbundle = 274 [(_compat_renamed_from) = "lbqbundle", (_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:boostingwizard"]; //TODO: not required in logs
+    optional bool PornRndPermWeight = 275 [(_compat_renamed_from) = "porn_rnd_perm_weight"];
+    optional float ServicesDealDetectorPredict = 276 [(_compat_renamed_from) = "services_deal_detector_predict"];
+    optional float Tlkcopiesthreshold = 277 [(_compat_renamed_from) = "tlkCopiesThreshold"];
+    optional string Webl3ModelsApplyResults = 278 [(_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:mmeta_model_calcers"]; //TODO: not required in logs
+    optional string Wizqbundle = 279 [(_compat_renamed_from) = "wizqbundle", (_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:boostingwizard"]; //TODO: not required in logs
+    optional string S = 280 [(_compat_renamed_from) = "s", (_split_size_limit) = 5];
+    optional string Source = 281 [(_compat_renamed_from) = "source", (_split_size_limit) = 5];
+    optional bool Suggest = 282 [(_compat_renamed_from) = "suggest"];
+    optional string UtmSource = 283 [(_compat_renamed_from) = "utm_source", (_split_size_limit) = 5];
+    optional float ChildClfThreshold = 284 [(_compat_renamed_from) = "child_clf_thres"];
+    optional float ChildClfThresholdQuery = 285 [(_compat_renamed_from) = "child_clf_thres_query"];
+
+    optional string BloggerToBoost = 286 [(_compat_renamed_from) = "blogger_to_boost"];
+    optional string ShowToBoost = 287 [(_compat_renamed_from) = "show_to_boost"];
+    optional bool YarecResponse = 288 [(_owner_fld) = "abc:images"];
+
+    optional float TragedyDetectorPredict = 289 [(_compat_renamed_from) = "tragedy_detector_predict"];
+    optional bool HasYarecClassifier = 290 [(_owner_fld) = "abc:images"];
+
+    message TThreeClassViewTypeScores {
+        optional float ChainViewTypeScore = 1 [(_compat_renamed_from) = "chain_view_type_score"];
+        optional float ManyOrgViewTypeScore = 2 [(_compat_renamed_from) = "many_org_view_type_score"];
+        optional float OneOrgViewTypeScore = 3 [(_compat_renamed_from) = "one_org_view_type_score"];
+    }
+    optional TThreeClassViewTypeScores ThreeClassViewTypeScores = 291 [(_compat_renamed_from)="three_class", (_compat_path_separator)="_"];
+}

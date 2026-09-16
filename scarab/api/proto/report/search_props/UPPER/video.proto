@@ -1,0 +1,207 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video/video.cpp
+message TPropVideo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string ReqType = 1 [(_split_size_limit) = 10];
+    optional bool Skip = 2 [(_compat_renamed_from) = "skip"];
+    optional string Texts = 3 [(_compat_renamed_from) = "texts", (_split_size_limit) = 455];
+    optional bool Vwiz = 4 [(_compat_renamed_from) = "vwiz"];
+    optional uint64 WizPos = 5;
+    optional bool XLWizDocAlreadyInTop = 6;
+    optional uint64 XLWizDocCanMoveToTopFrom = 7;
+    optional bool XLWizDocMovedToTop = 8;
+    optional uint64 MaxDocsInWizard = 9;
+    optional uint64 FirstDocIsAvoid = 10;
+    optional uint64 SubtypeGrid = 11;
+    optional uint64 TopVhIndexFrom10 = 12;
+    optional bool InsertedTranslations = 13;
+    optional uint64 DocHasS2t = 14;
+    map<string, string> AttrValue = 15 [(_compat_renamed_prefix) = "AttrValue_", (_split_size_limit) = 0, (_owner_fld) = "abc:videoquality"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_antidup_final/video_antidup_final.cpp
+message TPropVideoAntidupFinal {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string VideoAntidupFinal = 1 [(_compat_renamed_from) = "video_antidup_final", (_split_size_limit) = 30];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_antiobject/video_antiobject.cpp
+message TPropVideoAntiobject {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Detected = 1 [(_split_size_limit) = 5];
+    optional string FilmNotMatched = 2 [(_compat_renamed_from) = "Film_notMatched", (_split_size_limit) = 5];
+    optional bool IsMultQuery = 3 [(_compat_renamed_from) = "is_mult_query"];
+    optional string MainOntoidScore = 4 [(_split_size_limit) = 5];
+    optional string SerialsNotMatched = 5 [(_compat_renamed_from) = "Serials_notMatched", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_cheat_urls/video_cheat_urls.cpp
+message TPropVideoCheatUrls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Cheated = 1 [(_compat_renamed_from) = "cheated"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videodups/videodups.cpp
+message TPropVideoDupsMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string IndicesOfRearrangedGroups = 1 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videofastdelivery/upper/videofastdelivery_upper.cpp
+message TPropVideoFastDeliveryUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string DocsWithoutRelevanceOrShowsInfo = 1 [(_compat_renamed_from) = "docs_without_relevance_or_shows_info", (_split_size_limit) = 5];
+    optional bool FreshGaussianDeviation = 2 [(_compat_renamed_from) = "Fresh|GaussianDeviation"];
+    optional bool GaussianDeviation = 3;
+    optional string GeneratedPositions = 4 [(_compat_renamed_from) = "generated_positions", (_split_size_limit) = 5];
+    optional string MatchedDocuments = 5 [(_compat_renamed_from) = "matched_documents", (_split_size_limit) = 5];
+    repeated double NewPositions = 6 [(_compat_renamed_from) = "new_positions"];
+    optional string ShiftingDocs = 7 [(_compat_renamed_from) = "shifting_docs", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_recommender/upper/recommend_video.cpp
+message TPropVideoRecommender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 VRRvbSize = 1;
+    optional bool RequestDocHasPlaylist = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_recommender/upper/recommend_video.cpp
+message TPropVideoRecommenderRvb {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool VideoIsRelatedPornoQuery = 1;
+    optional bool PornoDocWithoutQuery = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videoserial/upper/videoserial_upper.cpp
+message TPropVideoSerialUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool FreshnessMarkInQuery = 1;
+    optional bool HasFavouriteHost = 2;
+    optional bool IsKidsCartoon = 3;
+    optional bool IsRearrangeNeeded = 4;
+    optional bool IsTvShow = 5;
+    optional string Skipped = 6 [(_compat_renamed_from) = "skipped", (_split_size_limit) = 5];
+    optional uint64 FreshDocsInRearranging = 7;
+    optional bool HasFreshEpisodes = 8;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videoserpdata/videoserpdata.cpp
+message TPropVideoSerpdata {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool BlurThumbnails = 1;
+    optional bool WasDocWithFragment = 2 [(_compat_renamed_from) = "wasDocWithFragment"];
+    map<uint64, uint64> VerticalCountInTop = 3 [(_compat_renamed_prefix) = "verticalCountInTop", (_split_size_limit) = 5];
+    map<string, uint64> KeyPoints = 4 [(_compat_renamed_prefix) = "KeyPoints", (_split_size_limit) = 5];
+    optional bool WasDocWithKeypoints = 5 [(_compat_renamed_from) = "wasDocWithKeypoints"];
+    optional bool DocWithSummarization = 6;
+    optional bool DocWithSummarizationTop5 = 7;
+    optional string PersclickprefStats = 8 [(_split_size_limit) = 0, (_owner_fld) = "abc:videoquality"];
+    optional uint64 BlurredDocCountInWizard = 9 [(_owner_fld) = "abc:videoquality", (_ttl) = 183];
+    optional bool BlurEntireWizard = 10 [(_owner_fld) = "abc:videoquality", (_ttl) = 183];
+    optional bool DocWithViewedTo = 11 [(_owner_fld) = "abc:videoquality", (_ttl) = 183];
+}
+
+message TPropFilmLists {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool FilmListSingleGenre = 1;
+    optional bool FilmListOnlyHardTagsRequest = 2;
+    optional bool FilmClassifierResult = 3;
+    reserved 4;
+    optional double FilmClassifierValue = 5;
+    optional bool FilmList = 6;
+}
+
+message TPropVideoTranslations {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint32 InsertionPos = 1;
+    optional uint32 InsertedDocCnt = 2;
+    optional double SkipTransSearchBecauseOfClassifier = 3;
+    optional uint32 NumTransDocsInserted = 4;
+}
+
+message TPropVideoUniversalIncut {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint32 NumVideosFromSaas = 1;
+    optional string SaasVideoType = 2 [(_split_size_limit) = 30];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videosvod/upper/videosvod_upper.cpp
+message TPropVideoSvodUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated double MovedGroups = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videohosting_wizard/videohosting_wizard.cpp
+message TPropVideohostingWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> AllFactors = 1 [(_compat_renamed_prefix) = "all_factors_", (_split_size_limit) = 5];
+    optional bool NotEnoughDocuments = 2 [(_compat_renamed_from) = "not_enough_documents"];
+    optional string ShownClips = 3 [(_compat_renamed_from) = "shown_clips", (_split_size_limit) =5];
+    optional uint64 Top5 = 4 [(_compat_renamed_from) = "top_5"];
+    repeated double TopDocs = 5 [(_compat_renamed_from) = "top_docs"];
+}
+
+message TPropVideoExtraItems {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string ObjectType = 1 [(_compat_renamed_from) = "object_type", (_split_size_limit) = 5];
+    optional string ObjectSubtype = 2 [(_compat_renamed_from) = "object_subtype", (_split_size_limit) = 5];
+    optional string ObjectsEntitySearchProjects = 3 [(_compat_renamed_from) = "Objects_entity_search_projects", (_split_size_limit) = 5];
+    optional string WinnerTypes = 4 [(_compat_renamed_from) = "winner_types", (_split_size_limit) = 5];
+    optional string Entity = 5 [(_compat_renamed_from) = "entity", (_split_size_limit) = 5];
+}
+
+message TPropVideoInsightsUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, bool> WasInsightInTop = 1 [(_compat_renamed_prefix) = "WasInsightInTop", (_split_size_limit) = 15];
+}
+
+message TPropVideoDelayedView {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 FilmDelayedViews = 1 [(_compat_renamed_from) = "film_delayed_views"];
+    optional uint64 SerialDelayedViews = 2 [(_compat_renamed_from) = "serial_delayed_views"];
+}
+
+message TPropVideoChatsData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool ChatAdded = 1 [(_compat_renamed_from) = "chat_added"];
+}

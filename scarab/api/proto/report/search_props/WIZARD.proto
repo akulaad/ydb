@@ -1,0 +1,187 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NWIZARD;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/WIZARD";
+// Props definitions
+
+message TPropEntityFinder {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> Winner = 1 [(_compat_default_value_wo_underscore) = true];
+}
+
+message TPropFreshFactors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 CacheTimeout = 1;
+    optional string Factors = 2;
+    optional uint64 Timestamp = 3;
+    optional string FactorsBigRt = 4;
+}
+
+message TPropFreshQueryDetector {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional double FreshDetectorBorder = 1;
+    optional double FreshDetectorPredict = 2 [(_infinite_ttl) = true];
+    optional double FreshDetectorPredictRelev = 3;
+    optional double FreshNewsDetectorPredict = 4;
+    optional double FreshNewsDetectorPredictRelev = 5;
+    optional string ModelName = 6;
+    optional string NewsModelName = 7;
+    repeated double QueryFactors = 8;
+    repeated double QueryRtFactors = 9;
+    optional double PayDetectorPredict = 10;
+    optional string PayModelName = 11;
+    optional double PiracyDetectorPredict = 12;
+    optional string PiracyModelName = 13;
+
+    map<string, string> UnmatchedInfo = 20 [(_compat_is_default_container) = true];
+}
+
+message TPropGeoAddr {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, uint64> BestGeo = 1 [(_compat_default_value_wo_underscore) = true];
+    optional string LowestGeoLevel = 2;
+    optional string NonGeoQuery = 3 [(_infinite_ttl) = true];
+}
+
+message TPropGeoAddrRoute {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 AviaCompany = 1;
+    optional string Date = 2;
+    optional bool DirectFlight = 3;
+    optional uint64 FromId = 4;
+    optional string FromOrganicAviaId = 5;
+    optional uint64 ToId = 6;
+    optional string ToOrganicAviaId = 7;
+    optional string Transport = 8;
+    optional string TransportNumber = 9;
+    optional string Type = 10;
+}
+
+message TPropGeoRelev {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 GeoCity = 1;
+    optional bool StreetInUsersCity = 2 [(_infinite_ttl) = true];
+}
+
+message TPropIsFilmList {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double Predict = 1 [(_compat_renamed_from) = "predict", (_infinite_ttl) = true];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/misspell/misspell.cpp
+message TPropMisspell {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string GARouteCorrected = 1;
+}
+
+message TPropPhoneNumber {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Normalized = 1;
+}
+
+message TPropQueryRtFactors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 FreshTtlGroup = 1;
+    optional uint64 FreshTtlModule = 2;
+    optional string LogFactors = 3;
+    repeated double QueryRtFactors = 4;
+    repeated double QueryBigRtFactors = 5;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video/video.cpp
+message TPropVideo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 LastAirdate = 1 [(_compat_renamed_from) = "lastAirdate"];
+    optional bool LastAirdateProb = 2 [(_compat_renamed_from) = "lastAirdateProb"];
+    optional uint64 LastEpisode = 3 [(_compat_renamed_from) = "lastEpisode"];
+    optional uint64 LastSeason = 4 [(_compat_renamed_from) = "lastSeason"];
+    optional uint64 RecentlyReleasedEpisodes = 5 [(_compat_renamed_from) = "recentlyReleasedEpisodes"];
+}
+
+message TPropWebFreshPostSetup {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string FullVanillaNewsDocContrastFactors = 1;
+    map<uint64, string> NGrams = 2 [(_compat_default_value_wo_underscore) = true];
+    optional uint64 QueryTimestamp = 3;
+    map<string, double> TitleNewsCounters = 4;
+    map<uint64, double> UserSessionsBigramsShowsDecaysAvg = 5 [(_compat_default_value_wo_underscore) = true];
+    map<uint64, double> UserSessionsBigramsShowsDecaysQ90 = 6 [(_compat_default_value_wo_underscore) = true];
+    map<uint64, double> UserSessionsBigramsShowsDecaysQ95 = 7 [(_compat_default_value_wo_underscore) = true];
+    map<uint64, double> UserSessionsCounters = 8 [(_compat_default_value_wo_underscore) = true];
+    optional string VanillaNewsDocContrastFactors = 9;
+    map<uint64, double> ClusterizationCounters = 10 [(_compat_default_value_wo_underscore) = true];
+    optional uint64 QueryCluster = 11;
+}
+
+message TPropWebFreshWordFactors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> WebFreshSingleWord = 1 [(_compat_default_value_wo_underscore) = true];
+}
+
+// TODO Remove all fields except CuttedRequest after YDO-40886
+message TPropYdo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string CuttedRequest = 1;
+    optional bool IsRubricQuery = 2;
+    map<uint64, string> RubricsInQuery = 3 [(_compat_default_value_wo_underscore) = true];
+}
+
+message TPropSrcSetupYdoDetectors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double Prediction = 1;
+}
+
+message TPropBertInference {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string SerializedEmbedding = 1;
+}
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropEntityFinder EntityFinder = 1 [(_split_size_limit) = 150];
+    optional TPropFreshFactors FreshFactors = 2 [(_owner_fld) = "abc:webfresh", (_split_size_limit) = 2540, (_ttl) = 365];
+    optional TPropFreshQueryDetector FreshQueryDetector = 3 [(_split_size_limit) = 5290];
+    optional TPropGeoAddr GeoAddr = 4 [(_split_size_limit) = 50];
+    optional TPropGeoAddrRoute GeoAddrRoute = 5 [(_split_size_limit) = 20];
+    optional TPropGeoRelev GeoRelev = 6 [(_split_size_limit) = 5];
+    optional TPropIsFilmList IsFilmList = 7 [(_split_size_limit) = 10];
+    optional TPropMisspell Misspell = 8 [(_split_size_limit) = 20];
+    optional TPropPhoneNumber PhoneNumber = 9 [(_split_size_limit) = 10];
+    optional TPropQueryRtFactors QueryRtFactors = 10 [(_split_size_limit) = 2830];
+    optional TPropVideo Video = 11 [(_split_size_limit) = 15];
+    optional TPropWebFreshPostSetup WebFreshPostSetup = 12 [(_split_size_limit) = 2050];
+    optional TPropWebFreshWordFactors WebFreshWordFactors = 13 [(_split_size_limit) = 2435];
+    optional TPropYdo Ydo = 14 [(_split_size_limit) = 90];
+    optional TPropBertInference BertInference = 15 [(_split_size_limit) = 740];
+    optional TPropSrcSetupYdoDetectors SrcSetupYdoDetectors = 16 [(_split_size_limit) = 5];
+}

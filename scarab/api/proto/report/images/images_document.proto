@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/report/images/doc_markers.proto";
+
+package NScarabProto.NReport;
+
+message TImagesDocument {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO";
+
+    optional string ImageUrl = 1001 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional string HtmlUrl = 1002 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    optional uint32 Position = 1003 [(_required) = true];
+    optional string ImageId = 1004;
+    optional uint32 SeriesCount = 1005;
+    optional string SeriesUrl = 1006 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    reserved 1007; // Markers
+    optional string Crc = 1008 [(_required) = true];
+    optional string Source = 1009;
+    optional string Basehost = 1010;
+    repeated string Metahosts = 1011;
+    optional uint64 MTime = 1012;
+    optional string DocumentId = 1013;
+    optional NScarabProto.NReport.NImagesDocMarkers.TDocMarkers Markers = 1014;
+    optional string I2Tv15Embedding = 1015      [(_ttl) = 244];
+    optional string HtmlTitle = 1016            [(_ttl) = 244];
+    optional string NearestDupHtmlTitle = 1017  [(_ttl) = 244];
+    optional string NearestDupImageUrl = 1018   [(_ttl) = 244];
+    optional string NearestDupHtmlUrl = 1019    [(_ttl) = 244];
+}
+
+message TCommercialDocument {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:cvsearch";
+
+    optional string ImageUrl = 1001;
+    optional int32 ModelId = 1002;
+    optional int32 SKU = 1003;
+    optional string Type = 1004;
+    optional string Offer = 1005;
+    optional string ShopDomain = 1006;
+    optional string RawCommercialData = 1007;
+    optional float Relevance = 1008;
+    optional uint32 Position = 1009;
+    optional string DocumentId = 1010;
+    optional bool IsSame = 1011;
+    optional string FactorsL4 = 1012;
+    optional double IsSameRelev = 1013;
+    optional double GradationsPredictionL4 = 1014;
+    optional double ConversionsPredictionL4 = 1015;
+}

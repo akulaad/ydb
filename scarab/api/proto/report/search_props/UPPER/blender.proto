@@ -1,0 +1,336 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+import "kernel/blender/factor_storage/protos/storage.proto";
+import "kernel/blender/online_learning/protos/request_data.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/apply_blender/apply_blender.cpp
+message TPropApplyBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> AfterCalculateIntentWeightRestrictFeaturedSnippet = 1 [(_compat_renamed_prefix) = "after_calculate_intent_weight_restrict_featured_snippet_", (_split_size_limit) = 5];
+    optional string AllowZnatoki = 2 [(_compat_renamed_from) = "allow_znatoki", (_split_size_limit) = 5];
+    // Put ApplyVideoBlender\d.error here too
+    map<uint64, string> ApplyBlenderError = 3 [(_compat_renamed_prefix) = "ApplyBlender", (_compat_renamed_suffix) = ".error", (_split_size_limit) = 5];
+    optional bool AviaFlightWizardOnTop = 4;
+    map<string, uint64> Ban = 5 [(_compat_renamed_prefix) = "ban_", (_split_size_limit) = 20];
+    optional bool BanDistrictNoHL = 6;
+    optional bool BanEdadealNoHL = 7;
+    map<string, bool> BanFact = 8 [(_compat_renamed_prefix) = "ban_fact_", (_split_size_limit) = 20];
+    optional bool BanQNoHL = 9;
+    optional bool BanRLS = 10;
+    optional bool BanTutorNoHL = 11;
+    optional bool BanTutorPdfNoHL = 12;
+    optional bool BanWIZLYRICS = 13;
+    optional bool BanWizRasp = 14;
+    optional bool BiathlonSportNeocortex = 15 [(_compat_renamed_from) = "biathlon_sport_neocortex"];
+    optional bool BoostEDA = 16 [(_compat_renamed_from) = "boostEDA"];
+    optional string BoostEvacuator = 17 [(_compat_renamed_from) = "boost_evacuator", (_split_size_limit) = 5];
+    optional bool BoostFreshness = 18;
+    optional bool ChangeImagesViewTypeCommand = 19;
+    optional bool ChangeMusicViewTypeEs = 20;
+    optional string ChangeViewTypeCommand = 21;
+    map<string, bool> Clear = 22 [(_compat_renamed_prefix) = "clear_", (_split_size_limit) = 5];
+    optional string Cmban = 23 [(_compat_renamed_from) = "cmban", (_split_size_limit) = 10];
+    reserved 24;
+    map<string, uint64> Del = 25 [(_compat_renamed_prefix) = "del_", (_split_size_limit) = 40];
+    optional bool DelDistrictGeo = 26;
+    optional bool DelGamesOrg = 27;
+    optional bool DelWizRasp = 28;
+    optional bool DelYDistrictGeo = 29;
+    optional bool DelYTutorIfNoTutor = 30;
+    map<string, bool> Delete = 31 [(_compat_renamed_prefix) = "delete_", (_split_size_limit) = 10];
+    optional double Downl = 32 [(_compat_renamed_from) = "downl"];
+    // TODO BLNDR-3728
+    optional string DynamicFactors = 33 [(_compat_renamed_from) = "dynamic_factors", (_split_size_limit) = 10];
+    map<uint64, string> EdaError = 34 [(_compat_renamed_prefix) = "Eda", (_compat_renamed_suffix) = ".error", (_split_size_limit) = 5];
+    optional bool EntitySearchStickyPosition = 35 [(_compat_renamed_from) = "entity_search_sticky_position"];
+    optional uint64 ErasedDups = 36 [(_compat_renamed_from) = "erased_dups"];
+    optional bool ExpMoveAviaTo0 = 37 [(_compat_renamed_from) = "ExpMoveAvia_to0"];
+    optional bool ExpMoveAviaTo1 = 38 [(_compat_renamed_from) = "ExpMoveAvia_to1"];
+    optional bool ExpMoveAviaTo7 = 39 [(_compat_renamed_from) = "ExpMoveAvia_to7"];
+    optional bool ExpMoveTraffic = 40;
+    optional string FCONSOLE_TEST = 41 [(_split_size_limit) = 5];
+    optional string FConsoleRules = 42 [(_split_size_limit) = 5];
+    repeated double Factors = 43 [(_compat_renamed_from) = "factors", (_infinite_ttl) = true]; // TODO @kkhamitov need negotiations, it shouldn't be infinite
+    map<string, uint64> FconsoleNailPosition = 44 [(_compat_renamed_prefix) = "fconsole_nail_position_"];
+    optional bool FilterEDA = 45 [(_compat_renamed_from) = "filterEDA"];
+    optional bool FilterEDAonGranny = 46 [(_compat_renamed_from) = "filterEDAonGranny"];
+    optional string Fmls = 47 [(_compat_renamed_from) = "fmls", (_infinite_ttl) = true, (_split_size_limit) = 300]; // TODO @kkhamitov need negotiations it shouldn't be infinite
+    optional bool ForceTransportOnReask = 48 [(_compat_renamed_from) = "force_transport_on_reask"];
+    optional bool FreshLimitLottery = 49;
+    optional bool FreshLimitRecipe = 50;
+    optional bool FreshLimitVideo2Override = 51;
+    optional bool FreshLimitVideoOverride = 52;
+    optional bool FreshRemoveMedical = 53;
+    optional bool GEOVEdadeal8 = 54 [(_compat_renamed_from) = "GEOV_edadeal_8"];
+    optional bool HasXlVideo = 55 [(_compat_renamed_from) = "has_xl_video"];
+    optional uint64 Hili = 56 [(_compat_renamed_from) = "hili"];
+    optional double ImagesXlClf0 = 57 [(_compat_renamed_from) = "images_xl_clf_0"];
+    optional bool ImgXLViewType = 58;
+    optional uint64 Ins = 59 [(_compat_renamed_from) = "ins"];
+    optional bool InsertNotMainInTop = 60 [(_compat_renamed_from) = "#insert_not_main_in_top"];
+    map<string, bool> InsertRequest = 61 [(_compat_renamed_prefix) = "insert_request_", (_split_size_limit) = 5];
+    map<string, bool> IntentBoost = 62 [(_compat_renamed_prefix) = "IntentBoost/", (_split_size_limit) = 5];
+    map<string, uint64> IntentPos = 63 [(_compat_renamed_prefix) = "IntentPos/", (_split_size_limit) = 50];
+    map<string, double> IntentWeight = 64 [(_compat_renamed_prefix) = "IntentWeight/", (_infinite_ttl) = true, (_split_size_limit) = 10];
+    optional bool InvalidBlenderFactors = 65;
+    optional bool LiftedVideoToTop3 = 66 [(_compat_renamed_from) = "lifted_video_to_top3"];
+    optional double LotteryFresh = 67 [(_compat_renamed_from) = "lottery_fresh"];
+    optional double MedicalFresh = 68 [(_compat_renamed_from) = "medical_fresh"];
+    map<string, string> Move = 69 [(_compat_renamed_prefix) = "move_", (_split_size_limit) = 10];
+    optional bool MoveDistrictGeo = 70;
+    optional bool MoveTrendingUp = 71;
+    optional string MushroomOff = 72;
+    optional string MushroomOffExp = 73;
+    optional uint64 MushroomsPol = 74 [(_compat_renamed_from) = "mushrooms_pol"];
+    map<string, bool> Nail = 75 [(_compat_renamed_prefix) = "nail_", (_split_size_limit) =5];
+    optional bool NailAviaAirline = 76;
+    optional uint64 NewsLimitRecipe = 77;
+    optional bool NewsWizardContrastUp5 = 78 [(_compat_renamed_from) = "news_wizard_contrast_up_5"];
+    optional bool NewsWizardFilmLimit3 = 79 [(_compat_renamed_from) = "news_wizard_film_limit_3"];
+    optional bool NewsWizardViewType = 80;
+    optional uint64 NoGroupingBlenderTime = 81 [(_infinite_ttl) = true];
+    optional string NoNumbersMask = 82 [(_split_size_limit) = 25];
+    optional string NoVwizAttrs = 83 [(_compat_renamed_from) = "no_vwiz_attrs", (_split_size_limit) = 5];
+    optional bool NoWizweather = 84 [(_compat_renamed_from) = "no_wizweather"];
+    optional bool PersCryptaFactorsExist = 85 [(_compat_renamed_from) = "PersCryptaFactors_exist"];
+    optional bool PersRtFactorsExist = 86 [(_compat_renamed_from) = "PersRtFactors_exist"];
+    optional string PersRtFactorsIntents = 87 [(_compat_renamed_from) = "PersRtFactors_intents", (_split_size_limit) = 110];
+    optional bool PersSaaSFactorsExist = 88 [(_compat_renamed_from) = "PersSaaSFactors_exist"];
+    optional string PersSaaSFactorsIntents = 89 [(_compat_renamed_from) = "PersSaaSFactors_intents", (_split_size_limit) = 205];
+    map<string, bool> Pessimize = 90 [(_compat_renamed_prefix) = "pessimize_"];
+    optional bool PriemkaNewsWizard = 91 [(_compat_renamed_from) = "#PriemkaNewsWizard"];
+    optional bool PriemkaNewsWizardRemoveWizard = 92 [(_compat_renamed_from) = "#PriemkaNewsWizardRemoveWizard"];
+    optional bool ProtectTopNavQuery = 93 [(_compat_renamed_from) = "protect_top_nav_query"];
+    optional bool ProtectTopNavQueryTest = 94 [(_compat_renamed_from) = "protect_top_nav_query_test"];
+    optional double PrsIiOcr0 = 95 [(_compat_renamed_from) = "prs_ii_ocr_0"];
+    optional double PrsIiOcr1 = 96 [(_compat_renamed_from) = "prs_ii_ocr_1"];
+    optional double PrsIiOcr2 = 97 [(_compat_renamed_from) = "prs_ii_ocr_2"];
+    optional double PrsIiOcr3 = 98 [(_compat_renamed_from) = "prs_ii_ocr_3"];
+    optional double PrsIiOcr4 = 99 [(_compat_renamed_from) = "prs_ii_ocr_4"];
+    optional uint64 PureGroupingTime = 100 [(_infinite_ttl) = true];
+    optional bool PutTextMarker = 101 [(_compat_renamed_from) = "put_text_marker"];
+    optional string RandomFmlContext = 102 [(_compat_renamed_from) = "random_fml_context", (_split_size_limit) = 80];
+    optional string RandomizedIntents = 103 [(_infinite_ttl) = true, (_split_size_limit) = 5];
+    optional bool RealtyFromAddressSnippetTo7 = 104 [(_compat_renamed_from) = "realty_from_address_snippet_to_7"];
+    optional bool RearrInTop = 105 [(_compat_renamed_from) = "#rearr_in_top"];
+    optional double Recipe = 106 [(_compat_renamed_from) = "recipe"];
+    optional bool ReducePosQ = 107;
+    map<string, bool> Remove = 108 [(_compat_renamed_prefix) = "remove", (_split_size_limit) = 65];
+    optional bool RestrictWizardParade = 109 [(_compat_renamed_from) = "restrict_wizard_parade"];
+    map<string, uint64> RightIntentPos = 110 [(_compat_renamed_prefix) = "RightIntentPos/", (_split_size_limit) = 15];
+    optional bool RubricRuleGeov = 111 [(_compat_renamed_from) = "rubric_rule_geov"];
+    map<string, bool> SR = 112 [(_compat_renamed_prefix) = "SR_", (_split_size_limit) = 5];
+    optional string SerpResolverFulfilledRequests = 113;
+    optional string SerpResolverFulfilledRequestsB64 = 114;
+    optional bool SetPos0 = 115 [(_compat_renamed_from) = "set_pos_0"];
+    optional bool SetThreeRowsImagesByXlClassifier = 116 [(_compat_renamed_from) = "set_three_rows_images_by_xl_classifier"];
+    optional bool SetVideoViewtype = 117 [(_compat_renamed_from) = "set_video_viewtype"];
+    optional bool SetWebQ = 118 [(_compat_renamed_from) = "set_web_q"];
+    optional bool SetXlViewtypeToVideo = 119 [(_compat_renamed_from) = "set_xl_viewtype_to_video"];
+    optional string Slices = 120 [(_compat_renamed_from) = "slices", (_split_size_limit) = 100];
+    optional uint64 SportClassifier = 121 [(_compat_renamed_from) = "sport_classifier"];
+    optional uint64 Subs = 122 [(_compat_renamed_from) = "subs"];
+    optional bool SwapAutoAndMarket = 123;
+    optional string TEST = 124 [(_split_size_limit) = 5];
+    optional bool TextGEOVWithMaps = 125;
+    optional bool TextWIZMAPSWithMaps = 126;
+    optional bool TvWizardBan = 127 [(_compat_renamed_from) = "tv_wizard_ban"];
+    optional uint64 UngroupedDocsCount = 128;
+    optional string UsedFastModels = 129 [(_compat_renamed_from) = "used_fast_models"];
+    map<string, uint64> VertFctrsErrOn = 130 [(_compat_renamed_prefix) = "vert_fctrs_err_on_", (_split_size_limit) = 50];
+    map<uint64, string> VerticalError = 131 [(_compat_renamed_prefix) = "Vertical", (_compat_renamed_suffix) = ".error", (_split_size_limit) = 5];
+    optional double VideoCpuClf0 = 132 [(_compat_renamed_from) = "video_cpu_clf_0"];
+    optional bool VideoSbsBoost = 133 [(_compat_renamed_from) = "video_sbs_boost"];
+    optional bool VideoXlOnTop = 134 [(_compat_renamed_from) = "video_xl_on_top"];
+    optional bool VideoxlOnMusic = 135 [(_compat_renamed_from) = "videoxl_on_music"];
+    optional bool ViewTypeBigBeauty = 136 [(_compat_renamed_from) = "ViewType_BigBeauty"];
+    optional uint64 VwizAttrsMissing = 137 [(_compat_renamed_from) = "vwiz_attrs_missing"];
+    optional double WatchVideoFresh = 138 [(_compat_renamed_from) = "watch_video_fresh"];
+    optional bool WizLimitOnGranny = 139 [(_compat_renamed_from) = "wiz_limit_on_granny"];
+    optional bool WizYabsMoveUnderBna = 140 [(_compat_renamed_from) = "wiz_yabs_move_under_bna"];
+    map<string, uint64> WizplaceIntentPos = 141 [(_compat_renamed_prefix) = "WizplaceIntentPos/", (_split_size_limit) = 25];
+    optional bool YEdaCompetitorFiltered = 142 [(_compat_renamed_from) = "y_eda_competitor_filtered"];
+    optional string YEdadealCompetitorFiltered = 143 [(_compat_renamed_from) = "y_edadeal_competitor_filtered", (_split_size_limit) =5];
+    optional string YEdadealRegionFiltered = 144 [(_compat_renamed_from) = "y_edadeal_region_filtered", (_split_size_limit) =5];
+    optional bool YaHealthMedQueryPassed = 145 [(_compat_renamed_from) = "ya_health_med_query_passed"];
+    optional bool YmusicV1Passed = 146 [(_compat_renamed_from) = "ymusic_v1_passed"];
+    optional bool YoutubeTouchVIDEOWIZPos1 = 147 [(_compat_renamed_from) = "youtube_touch_VIDEOWIZ_pos_1"];
+
+    optional NBlender.NProto.TFactorStorages FactorStorages = 148 [(_compat_disabled) = true];
+    optional double GeoVCpuClf0 = 149 [(_compat_renamed_from) = "geov_cpu_clf_0"];
+    optional double GeoVCpuClfCtrl0 = 150 [(_compat_renamed_from) = "geov_cpu_clf_ctrl_0"];
+    optional uint64 ExpMoveImages = 151;
+    map<string, uint64> MoveToRight = 152 [(_compat_renamed_prefix) = "MoveToRight_", (_split_size_limit) =5];
+    optional float FreshNoWebL3 = 153 [(_compat_renamed_from) = "fresh_no_web_l3"];
+    map<string, float> ImagesConveyorCpu = 154 [(_compat_renamed_prefix) = "images_conveyor_cpu_", (_split_size_limit) = 5];
+    map<string, float> VideoConveyorCpu = 155 [(_compat_renamed_prefix) = "video_conveyor_cpu_", (_split_size_limit) = 5];
+    optional float VideoVital = 156 [(_compat_renamed_from) = "video_vital"];
+    optional bool ProtectTopNavQueryRearr = 157 [(_compat_renamed_from) = "protect_top_nav_query_rearr"];
+    optional bool ProtectTopNavBert = 158 [(_compat_renamed_from) = "protect_top_nav_bert"];
+    optional float UslugiDocDoc = 159 [(_compat_renamed_from) = "uslugi_docdoc"];
+    optional string CompressedFactors = 160 [(_compat_renamed_from) = "compressed_factors", (_split_size_limit) = 40000];
+    optional string SearchPersBigRTProfileUpper = 161 [(_compat_renamed_from) = "SearchPersBigRTProfileUpper.nodump", (_owner_fld) = "abc:searchpers", (_ttl) = 720, (_split_size_limit) = 0]; // deprecated
+    map<string, string> Unmatched = 200 [(_compat_is_default_container) = true, (_split_size_limit) = 250];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/blender_dssm_features/blender_dssm_features.cpp
+message TPropBlenderDssmFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string EmbedsTimestamps = 1 [(_compat_renamed_from) = "embeds_timestamps", (_split_size_limit) = 60];
+    optional string SerpModelFeatures = 2 [(_compat_renamed_from) = "serp_model_features"];
+    optional bool SerpModelHasError = 3 [(_compat_renamed_from) = "serp_model_has_error"];
+    map<string, string> Text = 4 [(_compat_renamed_prefix) = "Text/", (_split_size_limit) = 5];
+    optional float EcomBlenderProductsIntent = 5 [(_compat_renamed_from) = "ecom_blender_products_intent", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderEsIntent = 6 [(_compat_renamed_from) = "ecom_blender_es_intent", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderOrgIntent = 7 [(_compat_renamed_from) = "ecom_blender_org_intent", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderImagesIntent = 8 [(_compat_renamed_from) = "ecom_blender_images_intent", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderVideosIntent = 9 [(_compat_renamed_from) = "ecom_blender_videos_intent", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderInfoIntent = 10 [(_compat_renamed_from) = "ecom_blender_info_intent", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderBsaIntent = 11 [(_compat_renamed_from) = "ecom_bsa_intent_v1", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderBsaClassification = 12 [(_compat_renamed_from) = "ecom_bsa_classification_v1", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderProductsIntentV2 = 13 [(_compat_renamed_from) = "ecom_blender_products_intent_v2", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderImagesIntentV2 = 14 [(_compat_renamed_from) = "ecom_blender_images_intent_v2", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderVideoIntentV2 = 15 [(_compat_renamed_from) = "ecom_blender_video_intent_v2", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderGeovOneOrgIntentV2 = 16 [(_compat_renamed_from) = "ecom_blender_geov_one_org_intent_v2", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderGeovManyOrgIntentV2 = 17 [(_compat_renamed_from) = "ecom_blender_geov_many_org_intent_v2", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderBsaIntentV2 = 18 [(_compat_renamed_from) = "ecom_bsa_intent_v2", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+    optional float EcomBlenderBsaIntentV3 = 19 [(_compat_renamed_from) = "ecom_bsa_intent_v3", (_ttl) = 180, (_split_size_limit) = 0, (_owner_fld) = "abc:ecom_blender"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/blender_fmls/blender_fmls.cpp
+message TPropBlenderFmls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool BeakWorked = 1 [(_compat_renamed_from) = "beak_worked"];
+    map<string, string> ERROR_CONTEXT = 2 [(_compat_renamed_prefix) = "ERROR-CONTEXT-", (_split_size_limit) = 5];
+    map<string, string> ERROR_GLOBAL = 3 [(_compat_renamed_prefix) = "ERROR-GLOBAL-", (_split_size_limit) = 5];
+    optional bool HasErrors = 4;
+    optional bool Done = 5;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/blender_meta_features/blender_meta_features.cpp
+message TPropBlenderMetaFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string FailedKeys = 1 [(_compat_renamed_from) = "failed_keys", (_split_size_limit) = 175];
+    map<string, double> TriggeredClassifiers = 2 [(_owner_fld) = "abc:verticalsonserp", (_compat_renamed_prefix) = "TriggeredClassifier_", (_split_size_limit) = 0];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/blender_neocortex_features/blender_neocortex_features.cpp
+message TPropBlenderNeocortexFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> CLFCollectionsBinaryClassifiers = 1 [(_compat_renamed_prefix) = "CLF_collections_binary_classifiers_", (_split_size_limit) = 15];
+    map<string, uint64> CLFZnatokiBinaryClassifiers = 2 [(_compat_renamed_prefix) = "CLF_znatoki_binary_classifiers_", (_split_size_limit) = 15];
+    map<string, uint64> CLFZnatokiSosBinaryClassifiers = 3 [(_compat_renamed_prefix) = "CLF_znatoki_sos_binary_classifiers_", (_split_size_limit) = 15];
+    map<string, bool> CLFZnatokiSosShowsBinaryClassifiers = 4 [(_compat_renamed_prefix) = "CLF_znatoki_sos_shows_binary_classifiers_", (_split_size_limit) = 15];
+    optional bool Worked = 5 [(_compat_renamed_from) = "worked"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/blender_online_learning/blender_online_learning.cpp
+message TPropBlenderOnlineLearning {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string CalculatedModels = 1 [(_compat_renamed_from) = "calculated_models", (_split_size_limit) = 5];
+    optional bool HasErrors = 2 [(_compat_renamed_from) = "has_errors"];
+    optional string RandomizedModels = 3 [(_compat_renamed_from) = "randomized_models", (_split_size_limit) = 5];
+    optional NBlenderOnlineLearning.NProto.TRequestData RequestData = 4 [(_compat_disabled) = true, (_infinite_ttl) = true, (_split_size_limit) = 5]; // TODO @kkhamitov need negotiations, it shouldn't be infinite by default
+    optional string TraineeModels = 5 [(_compat_renamed_from) = "trainee_models", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/blender_snippet_features/blender_snippet_features.cpp
+message TPropBlenderSnippetFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> WEB_Q = 1 [(_compat_renamed_prefix) = "WEB_Q_", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/blender_upper_cache/blender_upper_cache.cpp
+message TPropBlenderUpperCache {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AddToCache = 1 [(_compat_renamed_from) = "add_to_cache", (_infinite_ttl) = true, (_split_size_limit) = 3000];
+    optional string Errors = 2 [(_split_size_limit) =5];
+    optional bool HasErrors = 3;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/blender_web_features/blender_web_features.cpp
+message TPropBlenderWebFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool CalcFeaturesHasError = 1 [(_compat_renamed_from) = "CalcFeatures/HasError"];
+    optional string CalcFeaturesStat = 2 [(_compat_renamed_from) = "CalcFeatures/Stat", (_split_size_limit) = 5];
+    optional bool JoinFeaturesHasError = 3 [(_compat_renamed_from) = "JoinFeatures/HasError"];
+    map<string, string> JoinFeaturesStat = 4 [(_compat_renamed_prefix) = "JoinFeatures/Stat_", (_split_size_limit) = 5];
+    optional string JoinFeaturesStatJoined = 5 [(_compat_renamed_from) = "JoinFeatures/Stat_Joined", (_split_size_limit) = 5];
+    optional string JoinFeaturesStatSkippedOnAttrDuplicate = 6 [(_compat_renamed_from) = "JoinFeatures/Stat_SkippedOnAttrDuplicate", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/doc2group/doc2group.cpp
+message TPropDoc2Group {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Collections = 1 [(_compat_renamed_from) = "collections", (_split_size_limit) = 5];
+    optional string DetectOrganicNews = 2 [(_compat_renamed_from) = "detect_organic_news", (_split_size_limit) = 15];
+    optional string Weather = 3 [(_compat_renamed_from) = "weather", (_split_size_limit) = 5];
+    map<string, string> Y = 4 [(_compat_renamed_prefix) = "y_", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/fconsole/fconsole.cpp
+message TPropFConsole {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 ManualSnips = 1;
+}
+
+message TPropSnippetBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool SwitchOffMaps = 1 [(_compat_renamed_from) = "switch_off_maps"];
+    optional bool SwitchOffMapsSimulate = 2 [(_compat_renamed_from) = "switch_off_maps_simulate"];
+}
+
+// TODO get rid now
+message TPropFastres2DataMerge {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool KeyWithoutData = 1 [(_compat_renamed_from) = "key_without_data"];
+    optional bool ErrorWithUpdatePlaceholders = 2 [(_compat_renamed_from) = "error_with_update_placeholders"];
+    optional bool BrokenResponse = 3 [(_compat_renamed_from) = "broken_response"];
+    optional bool PatchedWizards = 4 [(_compat_renamed_from) = "patched_wizards"];
+}
+
+message TPropFastres2DataMergeV2 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string KeyWithoutData = 1 [(_compat_renamed_from) = "key_without_data", (_split_size_limit) = 5];
+    optional string ErrorWithUpdatePlaceholders = 2 [(_compat_renamed_from) = "error_with_update_placeholders", (_split_size_limit) = 5];
+    optional string BrokenResponse = 3 [(_compat_renamed_from) = "broken_response", (_split_size_limit) = 5];
+    optional string PatchedWizards = 4 [(_compat_renamed_from) = "patched_wizards", (_split_size_limit) = 5];
+}
+
+message TPropLogIntentSerpDataUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string IntentDump = 1 [(_compat_renamed_from) = "IntentDump"];
+    optional string SearchPersBigRTProfileUpper = 2 [(_owner_fld) = "abc:searchpers", (_ttl) = 720, (_split_size_limit) = 0];
+}

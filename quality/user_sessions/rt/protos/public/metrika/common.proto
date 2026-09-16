@@ -1,0 +1,11 @@
+package NUserSessions.NRT;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos/public/metrika";
+
+message TMetrikaTestInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    repeated int64 TestIDs = 1;
+    optional bool DisableNativeMetrikaGoals = 2;
+}

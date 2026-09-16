@@ -1,0 +1,124 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+message TBannerJobsMoveGuaranteeOrMirror {
+    optional bool RsyaFound = 1 [(_compat_renamed_from) = "rsya_found"];
+    optional bool RsyaRemoved = 2 [(_compat_renamed_from) = "rsya_removed"];
+    optional bool GuaranteeMoved = 3 [(_compat_renamed_from) = "guarantee_moved"];
+    optional bool MirrorsMoved = 4 [(_compat_renamed_from) = "mirrors_moved"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/banner/banner.cpp
+message TPropBanner {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AchievementUserConfig = 1 [(_split_size_limit) = 25];
+    map<string, bool> AddedOfficialRepresentative = 2 [(_compat_renamed_prefix) = "AddedOfficialRepresentative_", (_split_size_limit) = 5];
+    optional bool AdvHasOwnSearchPrefsBno = 3;
+    optional bool BannerBadFormat = 4 [(_compat_renamed_from) = "banner_bad_format"];
+    optional bool BannerDirectDynamic = 5 [(_compat_renamed_from) = "banner_direct_dynamic"];
+    optional bool BannerDirectGallery = 6 [(_compat_renamed_from) = "banner_direct_gallery"];
+    optional bool BannerDirectGuarantee = 7 [(_compat_renamed_from) = "banner_direct_guarantee"];
+    optional bool BannerDirectHalfpremium = 8 [(_compat_renamed_from) = "banner_direct_halfpremium"];
+    optional bool BannerDirectMedia = 9 [(_compat_renamed_from) = "banner_direct_media"];
+    optional bool BannerDirectPremium = 10 [(_compat_renamed_from) = "banner_direct_premium"];
+    optional bool BannerDistrBadFormat = 11 [(_compat_renamed_from) = "banner_distr_bad_format"];
+    optional bool BannerDistrDirectHalfpremium = 12 [(_compat_renamed_from) = "banner_distr_direct_halfpremium"];
+    optional bool BannerDistrDirectPremium = 13 [(_compat_renamed_from) = "banner_distr_direct_premium"];
+    optional bool BannerDistrDistribution = 14 [(_compat_renamed_from) = "banner_distr_distribution"];
+    optional bool BannerDistrStat = 15 [(_compat_renamed_from) = "banner_distr_stat"];
+    optional bool BannerGallery2MarketSmartCenter = 16 [(_compat_renamed_from) = "bannergallery2_market_smart_center"];
+    optional bool BannerGallery2MarketStatExp = 17 [(_compat_renamed_from) = "bannergallery2_market_stat_exp"];
+    optional bool BannerGalleryMarketBadFormat = 18 [(_compat_renamed_from) = "bannergallery_market_bad_format"];
+    optional bool BannerGalleryMarketDirectHalfpremium = 19 [(_compat_renamed_from) = "bannergallery_market_direct_halfpremium"];
+    optional bool BannerGalleryMarketSmartCenter = 20 [(_compat_renamed_from) = "bannergallery_market_smart_center"];
+    optional bool BannerGalleryMarketStat = 21 [(_compat_renamed_from) = "bannergallery_market_stat"];
+    optional bool BannerGalleryMarketStatExp = 22 [(_compat_renamed_from) = "bannergallery_market_stat_exp"];
+    optional bool BannerQ = 23 [(_compat_renamed_from) = "banner_q"];
+    optional bool BannerStat = 24 [(_compat_renamed_from) = "banner_stat"];
+    optional uint64 DirectHalfpremiumCount = 25 [(_compat_renamed_from) = "direct_halfpremium_count", (_ttl) = 720];
+    optional uint64 DirectPremiumCount = 26 [(_compat_renamed_from) = "direct_premium_count"];
+    optional bool DistributionWizardRemoved = 27 [(_compat_renamed_from) = "distribution_wizard_removed"];
+    optional bool HasDirectDynamic = 28 [(_compat_renamed_from) = "has_direct_dynamic"];
+    optional bool HasDirectGuarantee = 29 [(_compat_renamed_from) = "has_direct_guarantee"];
+    optional bool HasDirectHalfpremium = 30 [(_compat_renamed_from) = "has_direct_halfpremium"];
+    optional bool HasDirectMedia = 31 [(_compat_renamed_from) = "has_direct_media"];
+    optional bool HasDirectPremium = 32 [(_compat_renamed_from) = "has_direct_premium", (_ttl) = 720];
+    optional string ImgComThemeElectronicValue = 33 [(_compat_renamed_from) = "img_com_theme_electronic_value", (_split_size_limit) =5];
+    optional double ImgQueryClothesProbabilityV1 = 34 [(_compat_renamed_from) = "img_query_clothes_prob_v1"];
+    optional double ImgQueryCommercialProbabilityV4 = 35 [(_compat_renamed_from) = "img_query_commercial_prob_v4_value"];
+    optional string VideoBannerAdded = 36 [(_compat_renamed_from) = "video_banner_added", (_split_size_limit) = 5];
+    optional bool PassWizplaceFromSmartCenter = 37 [(_ttl) = 720];
+    optional uint64 BkoOffersWithDiscount = 38 [(_compat_renamed_from) = "bko_offers_with_discount"];
+    optional uint64 BkoOffersWithNotValidDiscount = 39 [(_compat_renamed_from) = "bko_offers_with_not_valid_discount"];
+    optional double ImgQueryCommercialProbabilityV4Threshold = 41 [(_compat_renamed_from) = "img_query_commercial_prob_v4_threshold"];
+    optional double ImgQueryClothesProbabilityV1WithValue = 42 [(_compat_renamed_from) = "img_query_clothes_prob_v1_value"]; // not the same as img_query_clothes_prob_v1
+    optional double ImgQueryClothesProbabilityV1Threshold = 43 [(_compat_renamed_from) = "img_query_clothes_prob_v1_threshold"];
+    optional bool HasPremiumDisclaimers = 44 [(_compat_renamed_from) = "has_premium_disclaimers", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool PremiumDisclaimersLegalRestricted = 45 [(_compat_renamed_from) = "premium_disclaimers_legal_restricted", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool PremiumDisclaimersOther = 46 [(_compat_renamed_from) = "premium_disclaimers_other", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool HasTGDisclaimers = 47 [(_compat_renamed_from) = "has_tg_disclaimers", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool TGDisclaimersLegalRestricted = 48 [(_compat_renamed_from) = "tg_disclaimers_legal_restricted", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool TGDisclaimersOther = 49 [(_compat_renamed_from) = "tg_disclaimers_other", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional uint64 TGMarketDataCount = 50 [(_compat_renamed_from) = "tg_market_data_count", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional string BannerDump = 51 [(_compat_renamed_from) = "banner_dump", (_owner_fld) = "abc:endtoendproductproperties", (_split_size_limit) =5];
+    optional uint64 TGPromoExtensionCount = 52 [(_compat_renamed_from) = "tg_promo_extension_count", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerUniformat = 53 [(_compat_renamed_from) = "banner_uniformat"];
+    optional bool BannerDistrUniformat = 54 [(_compat_renamed_from) = "banner_direct_uniformat"];
+    optional bool BannerTGUniformat = 55 [(_compat_renamed_from) = "bannergallery_market_uniformat"];
+    optional bool BanPremiumMarket = 56 [(_compat_renamed_from) = "ban_premium_market"];
+    optional bool TgAdditionalImages = 57 [(_compat_renamed_from) = "tg_additional_images"];
+    map<string, bool> BannerJobs = 58 [(_compat_renamed_prefix) = "BannerJobs_", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    map<string, string> BannerJobsHeavy = 59 [(_compat_renamed_prefix) = "BannerJobsHeavy_", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    map<string, bool> BannerDoctor = 60 [(_compat_renamed_prefix) = "banner_doctor", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool HasServiceCenter = 61 [(_owner_fld) = "abc:geoadv"];
+    optional TBannerJobsMoveGuaranteeOrMirror BannerJobsMoveGuaranteeOrMirror = 62 [(_compat_path_separator) = "_", (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABDrawerSearchSliceFinance = 63 [(_compat_renamed_from) = "BannerJobs_AB_drawer_search_slice_finance", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABHalfNavQuery = 64 [(_compat_renamed_from) = "BannerJobs_AB_half_nav_query", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABHasRmpWithImpression = 65 [(_compat_renamed_from) = "BannerJobs_AB_has_rmp_with_impression", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABIsIndPornoBlock = 66 [(_compat_renamed_from) = "BannerJobs_AB_is_ind_porno_block", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABNavQuery = 67 [(_compat_renamed_from) = "BannerJobs_AB_nav_query", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABPmRemoveAllAbout = 68 [(_compat_renamed_from) = "BannerJobs_AB_pm_remove_all_about", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABRemoveGalleryIfNoWiz = 69 [(_compat_renamed_from) = "BannerJobs_AB_remove_gallery_if_no_wiz", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABRemoveHalfpremiumIfPm = 70 [(_compat_renamed_from) = "BannerJobs_AB_remove_halfpremium_if_pm", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsABRemoveMkbIfPm = 71 [(_compat_renamed_from) = "BannerJobs_AB_remove_mkb_if_pm", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsDCJCycadaCookieNotFoundInUserHeadersJson = 72 [(_compat_renamed_from) = "BannerJobs_DCJ_cycada_cookie_not_found_in_UserHeadersJson", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsDCJCycadaCookieValueDecrypted = 73 [(_compat_renamed_from) = "BannerJobs_DCJ_cycada_cookie_value_decrypted", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsHasNaverPayCashback = 74 [(_compat_renamed_from) = "BannerJobs_HasNaverPayCashback", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsHasNaverPayData = 75 [(_compat_renamed_from) = "BannerJobs_HasNaverPayData", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsHasNaverPaySplit = 76 [(_compat_renamed_from) = "BannerJobs_HasNaverPaySplit", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional string BannerJobsHeavyLJYabsUrl = 77 [(_compat_renamed_from) = "BannerJobsHeavy_LJ_yabs_url", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional string BannerJobsHeavyRMJMirrorAtPosMinus1 = 78 [(_compat_renamed_from) = "BannerJobsHeavy_RMJ_mirror_at_pos_-1", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+    optional bool BannerJobsDCJCycadaCookieEndPosNotFoundInUserHeadersJson = 79 [(_compat_renamed_from) = "BannerJobs_DCJ_cycada_cookie_end_pos_not_found_in_UserHeadersJson", (_split_size_limit) = 50, (_owner_fld) = "abc:endtoendproductproperties"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/banner_turbo/banner_turbo.cpp
+message TPropBannerTurbo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 FastDataSize = 1 [(_compat_renamed_from) = "fast_data_size"];
+    optional string MatchedUrls = 2 [(_compat_renamed_from) = "matched_urls", (_split_size_limit) =5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/banner_turbo_feedback/banner_turbo_feedback.cpp
+message TPropBannerTurboFeedback {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 EnrichedBannerCnt = 1 [(_compat_renamed_from) = "enriched_banner_cnt"];
+    optional uint64 FastDataSize = 2 [(_compat_renamed_from) = "fast_data_size"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/mushroom_media_banner/mushroom_media_banner.cpp
+message TPropMushroomMediaBanner {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string InsertedBanner = 1 [(_split_size_limit) = 5];
+}

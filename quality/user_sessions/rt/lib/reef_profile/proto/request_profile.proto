@@ -1,0 +1,42 @@
+package NUserSessions.NRT;
+
+import "bigrt/lib/serializable_profile/proto/options.proto";
+
+import "quality/user_sessions/rt/lib/search_profile/proto/unpacked_profile.proto";
+import "quality/user_sessions/rt/protos/detail/metrika/request_profile.proto";
+import "quality/user_sessions/rt/protos/detail/feeds/feeds_profile.proto";
+
+message TReefRequestProfileProto {
+    option (NBigRT.YtTableName) = "profile";
+
+    optional string UserID = 1 [(NBigRT.FieldName) = "user_id", (NBigRT.FieldType) = PFT_KEY];
+    optional string RequestID = 2 [(NBigRT.FieldName) = "reqid", (NBigRT.FieldType) = PFT_UNHASHABLE_KEY];
+    optional TSearchProfileBlockstatData BlockstatData  = 14 [(NBigRT.FieldName) = "packed_blockstat_data", (NBigRT.FieldType) = PFT_PACKABLE];
+
+    optional TSearchProfileRedirData RedirData  = 15 [(NBigRT.FieldName) = "packed_redir_data", (NBigRT.FieldType) = PFT_PACKABLE];
+
+    optional TSearchProfileClicksData ClicksData  = 16 [(NBigRT.FieldName) = "packed_clicks_data", (NBigRT.FieldType) = PFT_PACKABLE];
+
+    optional TSearchProfileCommonData CommonData = 17 [(NBigRT.FieldName) = "packed_common_data", (NBigRT.FieldType) = PFT_PACKABLE];
+
+    optional TMetrikaRequestClicksCommonInfo RequestClicksCommonInfo = 18 [(NBigRT.FieldName) = "packed_request_clicks_common_info", (NBigRT.FieldType) = PFT_PACKABLE];
+    optional TSearchProfileTechsData TechsData = 19 [(NBigRT.FieldName) = "packed_techs_data", (NBigRT.FieldType) = PFT_PACKABLE];
+
+    optional TFeedsOutputCache FeedsOutputCache = 20 [(NBigRT.FieldName) = "packed_feeds_output_cache", (NBigRT.FieldType) = PFT_PACKABLE];
+
+    message TTamusWorkedRules {
+        message TPerBlockWorkedRules {
+            repeated string EventIds = 1;
+        }
+        message TBlocksWorkedRules {
+            map<string, TPerBlockWorkedRules> PerBlockRules = 1;
+        };
+        message TTamusWorkedRuleForService {
+            map<string, TBlocksWorkedRules> Rules = 1;
+        };
+        map<string, TTamusWorkedRuleForService> RulesForService = 1;
+    };
+
+    optional TTamusWorkedRules TamusWorkedRules = 21 [(NBigRT.FieldName) = "packed_tamus_worked_rules", (NBigRT.FieldType) = PFT_PACKABLE];
+    // next field number 22
+}

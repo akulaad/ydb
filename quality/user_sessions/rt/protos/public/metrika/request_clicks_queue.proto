@@ -1,0 +1,53 @@
+package NUserSessions.NRT;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+import "quality/user_sessions/rt/protos/common/enum.proto";
+import "quality/user_sessions/rt/protos/public/metrika/common.proto";
+
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos/public/metrika";
+
+message TRequestClicksQueueMessage {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string UserID = 1;
+    optional string RequestID = 2;
+    optional fixed32 Timestamp = 3;
+
+    message TClicksInfo {
+        option (NYT.default_field_flags) = SERIALIZATION_YT;
+        optional uint64 ClientTimestampMS = 1;
+        optional string Url = 2;
+        optional bool IsDynamic = 3;
+        optional string YsClid = 4;
+        optional string BaobabEventID = 5;
+    }
+
+    message TCountersInfo {
+        option (NYT.default_field_flags) = SERIALIZATION_YT;
+        option (NYT.default_field_flags) = OPTIONAL_LIST;
+        repeated uint64 CounterIDs = 1;
+    }
+
+    optional EActionType ActionType = 4;
+
+    optional string ICookie = 5;
+    optional string Referer = 6;
+    optional string PassportUIDHash = 7;
+    optional string Query = 8;
+    optional string Request = 9;
+    optional TClicksInfo ClicksInfo = 10;
+    optional string Service = 11;
+    reserved 12;
+    reserved "YsClid";
+    optional TMetrikaTestInfo TestInfo = 13;
+    optional TCountersInfo CounterIDs = 14;
+    optional uint64 RootCounterID = 15;
+    optional string Subservice = 16;
+    optional string RequestUrl = 17;
+    optional uint32 UserRegion = 18;
+    optional string UserIP = 19;
+    optional string UserAgent = 20;
+    optional EAntifraudVerdict AntifraudVerdict = 21;
+}

@@ -107,7 +107,6 @@ def post_install(self):
                 CFLAGS(
                     -D_LIBCPP_SAFE_STATIC=
                     -D_LIBCXXABI_DTOR_FUNC=
-                    -D__WASM_EXCEPTIONS__
                 )
             ELSEIF (OS_EMSCRIPTEN AND ARCH_WASM32)
                 CFLAGS(

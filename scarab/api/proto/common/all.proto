@@ -1,0 +1,340 @@
+syntax = "proto2";
+
+package NScarabProto.NCommon;
+option go_package = "a.yandex-team.ru/scarab/api/proto/common;scarab_proto";
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/generic.proto";
+
+enum EBrowserEngine {
+    option (_description_enum) = "Browser engine type.";
+    BROWSER_ENGINE_SCARAB_UNKNOWN = 0;
+    BROWSER_ENGINE_PRESTO = 1;
+    BROWSER_ENGINE_GECKO = 2;
+    BROWSER_ENGINE_TRIDIENT = 3;
+    BROWSER_ENGINE_WEBKIT = 4;
+    BROWSER_ENGINE_KHTML = 5;
+    BROWSER_ENGINE_UCBBROWSER = 6;
+    BROWSER_ENGINE_TEXTBASED = 7;
+    BROWSER_ENGINE_PROPRIETARY = 8;
+    BROWSER_ENGINE_UNKNOWN = 9;
+};
+
+
+
+enum EHttpMethod {
+    option (_description_enum) = "https://tools.ietf.org/html/rfc2616#section-9";
+    HTTP_METHOD_SCARAB_UNKNOWN = 0;
+    HTTP_METHOD_OPTIONS = 1;
+    HTTP_METHOD_GET = 2;
+    HTTP_METHOD_HEAD = 3;
+    HTTP_METHOD_POST = 4;
+    HTTP_METHOD_PUT = 5;
+    HTTP_METHOD_DELETE = 6;
+    HTTP_METHOD_TRACE = 7;
+    HTTP_METHOD_CONNECT = 8;
+};
+
+enum EMainService {
+    option (_description_enum) = "EMainServiceSpec from kernel";
+    MAIN_SERVICE_SCARAB_UNKNOWN = 0;
+    MAIN_SERVICE_WEB = 1;
+    MAIN_SERVICE_IMAGES = 2;
+    MAIN_SERVICE_VIDEO = 3;
+    MAIN_SERVICE_GEO = 4;
+    MAIN_SERVICE_PPL = 5;
+    MAIN_SERVICE_PORTAL = 6;
+    MAIN_SERVICE_UNKNOWN = 7;
+};
+
+enum EOsFamily {
+    option (_description_enum) = "OS type.";
+    OS_FAMILY_SCARAB_UNKNOWN = 0;
+    OS_FAMILY_IOS = 1;
+    OS_FAMILY_ANDROID = 2;
+    OS_FAMILY_WINDOWS = 3;
+    OS_FAMILY_MACOS = 4;
+    OS_FAMILY_SYMBIAN = 5;
+    OS_FAMILY_WINDOWSPHONE = 6;
+    OS_FAMILY_TIZEN = 7;
+    OS_FAMILY_BADA = 8;
+    OS_FAMILY_FIREFOXOS = 9;
+    OS_FAMILY_JAVA = 10;
+    OS_FAMILY_MEEGO = 11;
+    OS_FAMILY_RIMTABLETOS = 12;
+    OS_FAMILY_WINDOWSMOBILE = 13;
+    OS_FAMILY_WINDOWSRT = 14;
+    OS_FAMILY_LINUX = 15;
+    OS_FAMILY_UNKNOWN = 16;
+};
+
+enum EPlatform {
+    option (_description_enum) = "Platform";
+    PLATFORM_SCARAB_UNKNOWN = 0;
+    PLATFORM_ANDROID = 1;
+    PLATFORM_APAD = 2;
+    PLATFORM_IPHONE = 3;
+    PLATFORM_IPAD = 4;
+    PLATFORM_WIN_PHONE = 5;
+    PLATFORM_WIN_RT = 6;
+    PLATFORM_IPOD = 7;
+    PLATFORM_IOS = 8;
+    PLATFORM_UNKNOWN = 9;
+    PLATFORM_TV = 10;
+};
+
+enum EPropertiesFormat {
+    PROPERTIES_FORMAT_SCARAB_UNKNOWN = 0;
+    PROPERTIES_FORMAT_JSON = 1;
+    PROPERTIES_FORMAT_ESCAPED_RAW_LOG_RECORD = 2;
+};
+
+enum EProvider {
+    option (_description_enum) = "Entity that wrote this event";
+    PROVIDER_SCARAB_UNKNOWN = 0;
+    PROVIDER_COLLECTIONS_FEED_READER = 1;
+    PROVIDER_TURBO = 2;
+    PROVIDER_ENTITY_RECOMMENDER = 3;
+    PROVIDER_HEALTH = 4;
+    PROVIDER_MSSNGR_ROUTER = 5;
+    PROVIDER_SI_FRONTEND = 6;
+    PROVIDER_USLUGI = 7;
+    PROVIDER_MARKET_PARTNERS = 8;
+    PROVIDER_MOBILE_WEATHER_ANDROID = 9;
+    PROVIDER_WEB_PRS = 10;
+    PROVIDER_SUGGEST_MAPS = 11;
+    PROVIDER_CHATS = 12;
+    PROVIDER_TRAINS = 13;
+    PROVIDER_MOBILE_WEATHER_APP = 14;
+    PROVIDER_MOBILE_REPORT = 15;
+    PROVIDER_PERL_REPORT = 16;
+    PROVIDER_IMAGES_PERL_REPORT = 17;
+    PROVIDER_VIDEO_PERL_REPORT = 18;
+    PROVIDER_NODE_LAYOUT = 19;
+    PROVIDER_ATOM_FRONT = 20;
+    PROVIDER_BROWSER_LAYOUT = 21;
+    PROVIDER_UNKNOWN = 22;
+    PROVIDER_MOBILE_ANDROID_APP = 23;
+    PROVIDER_MOBILE_IOS_APP = 24;
+    PROVIDER_MOBILE_WP_APP = 25;
+    PROVIDER_MOBILE_SEARCH_APP = 26;
+    PROVIDER_WEATHER_NODE_LAYOUT = 27;
+    PROVIDER_RENDERER = 28;
+    PROVIDER_MAIL = 29;
+    PROVIDER_MARKET = 30;
+    PROVIDER_RTB = 31;
+    PROVIDER_ERROR = 32;
+    PROVIDER_PDB_BACKEND = 33;
+    PROVIDER_PDB_INFORMERS_BACKEND = 34;
+    PROVIDER_BLOCKSTAT_CONVERTER = 35;
+    PROVIDER_IMG_REQANS_CONVERTER = 36;
+    PROVIDER_JOINED_BS_DSP_RTB_CONVERTER = 37;
+    PROVIDER_REQANS_CONVERTER = 38;
+    PROVIDER_VIDEOREQANS_CONVERTER = 39;
+    PROVIDER_WEATHER_ACCESS_CONVERTER = 40;
+    PROVIDER_IMG_REQANS_SPLITTER = 41;
+    PROVIDER_REQANS_SPLITTER = 42;
+    PROVIDER_VIDEO_PLAYER = 43;
+    PROVIDER_RECOMMENDER_BACKEND = 44;
+    PROVIDER_UGC = 45;
+    PROVIDER_LAUNCHER = 46;
+    PROVIDER_NEWS = 47;
+    PROVIDER_METRICA_CONVERTER = 48;
+    PROVIDER_CREATE_SCARAB_LIB = 49;
+    PROVIDER_TRANSLATE = 50;
+    PROVIDER_SCRAPER_OVER_YT = 51;
+};
+
+enum EServerGeoSource {
+    option (_description_enum) = "Source of geo-information.";
+    SERVER_GEO_SOURCE_SCARAB_UNKNOWN = 0;
+    SERVER_GEO_SOURCE_IP = 1;
+    SERVER_GEO_SOURCE_CELLID = 2;
+    SERVER_GEO_SOURCE_WIFI = 3;
+    SERVER_GEO_SOURCE_GPS = 4;
+    SERVER_GEO_SOURCE_UNKNOWN = 5;
+};
+
+enum EUserInterface {
+    option (_description_enum) = "Sophisticated entity";
+    USER_INTERFACE_SCARAB_UNKNOWN = 0;
+    USER_INTERFACE_DESKTOP = 1;
+    USER_INTERFACE_PAD = 2;
+    USER_INTERFACE_TOUCH = 3;
+    USER_INTERFACE_MOBILE_APP = 4;
+    USER_INTERFACE_TV = 5;
+    USER_INTERFACE_OLD_MOBILE_APP = 6;
+    USER_INTERFACE_YANDEX_BROWSER_MOBILE_APP = 7;
+    USER_INTERFACE_MOBILE = 8;
+    USER_INTERFACE_SITE_SEARCH = 9;
+    USER_INTERFACE_SITE_SEARCH_WEB = 10;
+    USER_INTERFACE_DIRECT_SEARCH = 11;
+    USER_INTERFACE_UNKNOWN = 12;
+    USER_INTERFACE_ALICE_KIT = 13;
+};
+
+enum EVersionMeta {
+    option (_description_enum) = "Part of version that defines status.";
+    VERSION_META_SCARAB_UNKNOWN = 0;
+    VERSION_META_SNAPSHOT = 1;
+    VERSION_META_ALPHA = 2;
+    VERSION_META_BETA = 3;
+    VERSION_META_RC = 4;
+};
+
+
+
+// User Defined Type
+message TExperiment {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string TestId = 1001 [(_required) = true];
+    optional int32 Bucket = 1002 [(_required) = true];
+
+}
+
+// User Defined Type
+message TFailedEventInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ScarabType = 1001;
+    optional int32 ScarabVersion = 1002;
+    optional string Properties = 1003;
+    optional NScarabProto.NCommon.EPropertiesFormat PropertiesFormat = 1004 [(_required) = true];
+
+}
+
+// User Defined Type
+message TFailedEventMeta {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "The type contains string key and string value object.";
+
+    optional string AppPlatform = 1001;
+    optional string AppVersion = 1002;
+
+}
+
+// Event
+message TFailureEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional NScarabProto.NCommon.TFailedEventInfo FailedEventInfo = 1001 [(_required) = true];
+    optional string Diagnosis = 1002;
+    optional NScarabProto.NCommon.TFailedEventMeta Meta = 1003;
+
+}
+
+// User Defined Type
+message THttpHeader {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "HTTP request header";
+
+    optional string Name = 1001 [(_required) = true];
+    optional string Value = 1002 [(_required) = true];
+
+}
+
+// User Defined Type
+message TLocation {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "Coordinates and it's accuracy.";
+
+    optional double Latitude = 1001 [(_required) = true];
+    optional double Longitude = 1002 [(_required) = true];
+    optional double Accuracy = 1003 [(_required) = true];
+
+}
+
+// User Defined Type
+message TMetrika {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "Properties that will be set from metrica mobile log.";
+
+    optional string AppPlatform = 1001;
+    optional string AppVersionName = 1002;
+    optional string DeviceType = 1003;
+    optional string Locale = 1004;
+    optional string Manufacturer = 1005;
+    optional string Model = 1006;
+    optional string OsVersion = 1007;
+    optional string RegionId = 1008;
+    optional string EventNumber = 1009;
+    optional string SessionId = 1010;
+    optional string Uuid = 1011;
+
+}
+
+
+
+// User Defined Type
+message TTimeZone {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "Time-zone in following format \"[+|-]hour_offset:minute_offset\"";
+
+    optional int32 HourOffset = 1001 [(_required) = true];
+    optional uint32 MinuteOffset = 1002 [(_required) = true];
+
+}
+
+// User Defined Type
+message TUserAgent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "User Agent";
+
+    optional NScarabProto.NCommon.EOsFamily OsFamily = 1001;
+    optional string OsVersion = 1002;
+    optional NScarabProto.NCommon.EBrowserEngine BrowserEngine = 1003;
+    optional NScarabProto.NCommon.EPlatform Platform = 1004;
+    optional string BrowserName = 1005;
+    optional string BrowserVersion = 1006;
+    optional string DeviceName = 1007;
+    optional string DeviceModel = 1008;
+}
+
+// User Defined Type
+message TUserId {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "Set of all known identifiers for this user.";
+
+    optional string Uuid = 1001;
+    optional string YandexUid = 1002;
+    optional string PlatformId = 1003;
+    optional string PlatformId2 = 1004;
+    optional string DeviceId = 1005;
+    optional string YandexFuid = 1006;
+    optional string YandexLogin = 1007;
+    optional string YandexLoginHash = 1008;
+    optional string PassportUid = 1009;
+    optional string RobotUid = 1010;
+    optional string ICookie = 1011;
+
+}
+
+// User Defined Type
+message TVersion {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "Version in following format \"x.y[.w[.z]][.[RC|BETA|ALPTHA|SNAPSHOT][0-9]]\" where x - version y - subversion w - revision z - build";
+
+    optional uint32 MajorVersion = 1001 [(_required) = true];
+    optional uint32 MinorVersion = 1002 [(_required) = true];
+    optional uint32 Revision = 1003;
+    optional uint32 Build = 1004;
+
+}
+
+// User Defined Type
+message TVersionTag {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_description_msg) = "Part of the version that defines release status and index.";
+
+    optional NScarabProto.NCommon.EVersionMeta TagType = 1001 [(_required) = true];
+    optional uint32 TagIndex = 1002;
+
+}
+
+
+
+

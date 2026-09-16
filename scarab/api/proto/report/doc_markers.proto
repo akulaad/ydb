@@ -1,0 +1,232 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NDocMarkers;
+
+// There is heavy weight doc markers
+// could be moved from usual TDocMarkers
+message TDocMarkersFat {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string RandomLog = 1;
+    optional string NewsDataForRandomLog = 2;
+}
+
+message TDocMarkers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AchievementBizKernel = 1 [(_compat_renamed_from) = "Achievement.biz_kernel"];
+    optional string AchievementBrands = 2 [(_compat_renamed_from) = "Achievement.brands"];
+    optional string AchievementCbrfInfo = 3 [(_compat_renamed_from) = "Achievement.cbrf_info"];
+    optional string AchievementCbrfUnified = 4 [(_compat_renamed_from) = "Achievement.cbrf_unified"];
+    optional bool AchievementGreenTraffic = 5 [(_compat_renamed_from) = "Achievement.green_traffic"];
+    optional bool AchievementMobileSpeed = 6 [(_compat_renamed_from) = "Achievement.mobile_speed"];
+    optional bool AchievementMore120 = 7 [(_compat_renamed_from) = "Achievement.more120"];
+    optional bool AchievementOfficial = 8 [(_compat_renamed_from) = "Achievement.official"];
+    optional string AchievementOfficialAuto = 9 [(_compat_renamed_from) = "Achievement.official_auto"];
+    optional bool AchievementOfficialAvia = 10 [(_compat_renamed_from) = "Achievement.official_avia"];
+    optional bool AchievementOfficialNav = 11 [(_compat_renamed_from) = "Achievement.official_nav"];
+    optional bool AchievementOfficialSuggestQuery = 12 [(_compat_renamed_from) = "Achievement.official_suggest_query"];
+    optional bool AchievementOfficialVisa = 13 [(_compat_renamed_from) = "Achievement.official_visa"];
+    optional bool AchievementOfficialVisaCenter = 14 [(_compat_renamed_from) = "Achievement.official_visa_center"];
+    optional bool AchievementOfficialYandex = 15 [(_compat_renamed_from) = "Achievement.official_yandex"];
+    optional bool AchievementRemoveOfficial = 16 [(_compat_renamed_from) = "Achievement.remove_official"];
+    optional bool AchievementRemoveOfficialSuggestQuery = 17 [(_compat_renamed_from) = "Achievement.remove_official_suggest_query"];
+    optional string AchievementServices = 18 [(_compat_renamed_from) = "Achievement.services"];
+    optional bool AchievementSpeed = 19 [(_compat_renamed_from) = "Achievement.speed"];
+    optional double AddTimeFull = 20 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_rt_required) = true];
+    optional bool BlenderRtCounters = 21 [(_infinite_ttl) = true];
+    optional string BlenderRtCountersV2 = 22 [(_split_size_limit) = 200, (_infinite_ttl) = true];
+    optional uint64 BlndrBestPosByRelevance = 23 [(_compat_renamed_from) = "blndrBestPosByRelevance"];
+    optional bool BlndrIsRandom = 24 [(_compat_renamed_from) = "blndrIsRandom"];
+    optional bool BlndrMainPos = 25 [(_compat_renamed_from) = "blndrMain_Pos"];
+    optional bool BlndrMainShow = 26 [(_compat_renamed_from) = "blndrMain_Show"];
+    optional string BlndrMainViewType = 27 [(_compat_renamed_from) = "blndrMain_ViewType", (_split_size_limit) = 10];
+    optional string BlndrPlace = 28 [(_compat_renamed_from) = "blndrPlace", (_split_size_limit) = 10];
+    optional uint64 BlndrPos = 29 [(_compat_renamed_from) = "blndrPos"];
+    optional uint64 BlndrRightPos = 30 [(_compat_renamed_from) = "blndrRight_Pos"];
+    optional bool BlndrRightShow = 31 [(_compat_renamed_from) = "blndrRight_Show"];
+    optional bool BlndrShow = 32 [(_compat_renamed_from) = "blndrShow"];
+    optional string BlndrViewType = 33 [(_compat_renamed_from) = "blndrViewType", (_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional uint64 BlndrWizplacePos = 34 [(_compat_renamed_from) = "blndrWizplace_Pos"];
+    optional bool BlndrWizplaceShow = 35 [(_compat_renamed_from) = "blndrWizplace_Show"];
+    optional uint64 BnaUrlsNm = 36;
+    optional double ChatScore = 37;
+    optional uint64 CustomL3 = 38;
+    optional uint64 DRankingPosition = 39;
+    optional string DisabledP = 40 [(_split_size_limit) = 250, (_ttl) = 360];
+    optional bool DivHilite = 41;
+    optional bool DomainHasMetrika = 42 [(_infinite_ttl) = true];
+    optional string Extend = 43 [(_compat_renamed_from) = "extend", (_split_size_limit) = 10];
+    optional string FactSource = 44 [(_split_size_limit) = 30, (_infinite_ttl) = true];
+    optional string FactType = 45 [(_split_size_limit) = 30];
+    optional string FactorsToDump = 46 [(_compat_renamed_from) = "factors_to_dump", (_split_size_limit) = 50];
+    optional bool FactsnipDssm = 47 [(_compat_renamed_from) = "factsnip_dssm"];
+    optional string FakeSource = 48 [(_key_field) = true, (_infinite_ttl) = true];
+    optional string FaviconDomain = 49 [(_split_size_limit) = 10];
+    optional string FilteredP = 50 [(_split_size_limit) = 20, (_infinite_ttl) = true];
+    optional double FmlRes547520 = 51 [(_compat_renamed_from) = "fml_res_547520"];
+    optional double FmlRes692419 = 52 [(_compat_renamed_from) = "fml_res_692419"];
+    optional double FmlRes711990 = 53 [(_compat_renamed_from) = "fml_res_711990"];
+    optional double Fmlres = 54 [(_compat_renamed_from) = "fmlres"];
+    optional uint64 FreshAge = 55 [(_infinite_ttl) = true, (_rt_required) = true];
+    optional string FreshSource = 56 [(_split_size_limit) = 10];
+    optional string FromUngroup = 57 [(_compat_renamed_from) = "_FromUngroup_", (_split_size_limit) = 10];
+    optional bool GetQuery = 58 [(_compat_renamed_from) = "get_query"];
+    optional string Glue = 59 [(_split_size_limit) = 50];
+    optional string GlueType = 60 [(_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional string Grouping = 61 [(_split_size_limit) = 10];
+    optional string Handle = 62 [(_split_size_limit) = 10];
+    optional bool HasSideblock = 63 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional bool HasTurbo = 64 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional double HostPlayerViewDepth = 65;
+    optional bool IsAdult = 66 [(_compat_renamed_from) = "is_adult"];
+    optional string IsDupCateg = 67 [(_compat_renamed_from) = "_IsDupCateg_", (_split_size_limit) = 10];
+    optional bool IsHttps = 68 [(_ttl) = 1080, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional bool IsMiniapp = 69;
+    optional bool IsNav = 70 [(_compat_renamed_from) = "is_nav"];
+    optional bool IsParthnerV1 = 71;
+    optional bool IsParthnerV2 = 72;
+    optional bool IsParthnerV3 = 73;
+    optional bool IsTasIx = 74 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional string L3Parts = 75 [(_split_size_limit) = 10];
+    optional bool ManualUnban = 76 [(_compat_renamed_from) = "manual_unban"];
+    optional string MetricSignalDumper = 77 [(_split_size_limit) = 10];
+    optional string MiniappCateg = 78 [(_split_size_limit) = 10];
+    optional bool MiniappMixerV1AlphaValue = 79 [(_compat_renamed_from) = "MiniappMixerV1_AlphaValue"];
+    optional bool MiniappMixerV1DeltaL3Value = 80 [(_compat_renamed_from) = "MiniappMixerV1_DeltaL3Value"];
+    optional uint64 MiniappMixerV1SourceL3Value = 81 [(_compat_renamed_from) = "MiniappMixerV1_SourceL3Value"];
+    optional string MisspellAndWeb = 82 [(_compat_renamed_from) = "misspell_and_web", (_split_size_limit) = 5];
+    optional uint64 Nd = 83 [(_compat_renamed_from) = "nd"];
+    optional bool NewUrl = 84;
+    reserved 85; // NewsDataForRandomLog moved to TDocMarkersFat
+    optional bool NewsWizardVideoThumb = 86 [(_compat_renamed_from) = "news_wizard_video_thumb"];
+    optional bool OverAds = 87;
+    optional bool OwnerWebsiteAttention = 88;
+    optional uint64 PRSPos = 89 [(_compat_renamed_from) = "PRS_pos"];
+    optional double PersPrediction = 90 [(_ttl) = 360, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];//deprecated
+    optional string PlacedBy = 91 [(_compat_renamed_from) = "placed_by", (_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional string Placement = 92 [(_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional string Plugins = 93 [(_split_size_limit) = 95, (_infinite_ttl) = true];
+    optional double PrggPredict = 94 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional double ProximaPredict = 95 [(_infinite_ttl) = true, (_owner_fld) = "abc:blndr", (_rt_required)=true];
+    optional uint64 PrsPositionV1After = 96 [(_compat_renamed_from) = "PrsPositionV1_after"];
+    optional uint64 PrsPositionV1Before = 97 [(_compat_renamed_from) = "PrsPositionV1_before"];
+    optional uint64 PrsPositionV2Before = 98 [(_compat_renamed_from) = "PrsPositionV2_before"];
+    reserved 99; // RandomLog moved to TDocMarkersFat
+    optional double RelevPrediction = 100 [(_infinite_ttl) = true];
+    optional uint64 RobotDaterFreshAge = 101 [(_infinite_ttl) = true];
+    optional string Rule = 102 [(_split_size_limit) = 50, (_infinite_ttl) = true];
+    map<string, string> RuleGroupingDeps = 103 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_RuleGroupingDeps", (_split_size_limit) = 70];
+    optional string Slices = 104 [(_split_size_limit) = 50, (_infinite_ttl) = true, (_rt_required)=true];
+    optional bool SnipByLink = 105 [(_infinite_ttl) = true, (_owner_fld) = "abc:snippets"];
+    optional bool SnipByLinkOnly = 106 [(_infinite_ttl) = true, (_owner_fld) = "abc:snippets"];
+    optional string SnipDebug = 107 [(_split_size_limit) = 270, (_owner_fld) = "abc:snippets"];
+    optional double SnipLenStr = 108 [(_infinite_ttl) = true, (_owner_fld) = "abc:snippets"];
+    optional uint64 SnipLenSym = 109 [(_infinite_ttl) = true, (_owner_fld) = "abc:snippets"];
+    optional string SnipMarkers = 110 [(_split_size_limit) = 50, (_infinite_ttl) = true, (_owner_fld) = "abc:snippets"];
+    optional bool TurboAppUrl = 111 [(_compat_renamed_from) = "turbo_app_url"];
+    optional bool UniAnswer = 112 [(_infinite_ttl) = true];
+    optional string UniAnswerComb = 113 [(_split_size_limit) = 10, (_infinite_ttl) = true];
+    optional string UsedGroupings = 114 [(_split_size_limit) = 42];
+    optional string UsedSources = 115 [(_split_size_limit) = 36];
+    optional string ViewGroup = 116 [(_split_size_limit) = 20];
+    optional uint64 WebGroupSize = 117;
+    optional uint64 WebRankingPosition = 118;
+    optional uint64 WizardPos = 119 [(_infinite_ttl) = true, (_key_field) = true];
+    optional string XlVideoPlayer = 120 [(_compat_renamed_from) = "xl_video_player", (_infinite_ttl) = true];
+
+    optional bool EcoFeedGoodHost = 121;
+    optional bool EcoFeedGoodUrl = 122;
+    optional bool EcoFeedHost = 123;
+    optional bool EcoFeedHostDiff = 124;
+    optional bool EcoFeedUrl = 125;
+    optional bool EcoFeedUrlDiff = 126;
+    optional double MedicalHostQuality = 127 [(_ttl) = 360, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional double OwnerIsActualShop = 128 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+    optional bool ShopInShopUrl = 129 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+
+    optional double ProximaPredict2 = 130 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_rt_required) = true];
+
+    optional double DssmPageQualityRTHubMain = 165 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_rt_required) = true]; // deprecated
+    optional double DssmPageQualityRTHubMainModelVersion = 171 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_rt_required) = true];
+    optional double DssmPageQualityRTHubSlot3 = 164 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0]; // deprecated
+
+    optional string SnipExp = 131 [(_split_size_limit) = 0, (_owner_fld) = "abc:snippets"];
+    optional double HostUserLeakage = 132 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+    optional bool ShopInShopCPAUrl = 133 [(_infinite_ttl) = true, (_owner_fld) = "abc:buki", (_split_size_limit) = 0];
+
+    map<string, string> CustomWebInfo = 134 [(_compat_renamed_prefix) = "WebInfo_", (_split_size_limit) = 0, (_ttl)=1080, (_owner_fld) = "abc:buki"];
+    map<string, string> WebConfRearrangeAggrMarkers = 135 [(_compat_renamed_prefix) = "SP_", (_split_size_limit) = 0, (_ttl) = 90];
+    optional float EcomAdditive = 136 [(_owner_fld) = "abc:buki", (_ttl) = 30, (_split_size_limit) = 0];
+    optional float EcomAdditiveFormulaBoost = 137 [(_owner_fld) = "abc:buki", (_ttl) = 30, (_split_size_limit) = 0];
+    optional float PersPredictMeta = 138 [(_owner_fld) = "abc:buki", (_infinite_ttl) = true, (_rt_required) = true];
+    optional float PiracyPredict = 139 [(_owner_fld) = "abc:buki", (_ttl) = 1080];
+    optional float MedicalQuality5k = 140 [(_owner_fld) = "abc:buki", (_ttl) = 1080];
+    optional float L3Relev = 141 [(_owner_fld) = "abc:buki", (_rt_required) = true, (_infinite_ttl) = true];
+    optional string ConfigurableRearrange = 142 [(_owner_fld) = "abc:relev_tools", (_split_size_limit) = 0, (_infinite_ttl) = true]; // FORMULA-2076
+    optional string WordsHits = 143 [(_split_size_limit) = 0, (_owner_fld) = "abc:relev_tools", (_infinite_ttl)=true];             // SEARCH-11250
+    optional string DetailedWordsHits = 145 [(_split_size_limit) = 0, (_owner_fld) = "abc:relev_tools", (_infinite_ttl)=true];      // SEARCH-11250
+    optional bool CostPlus = 144 [(_infinite_ttl) = true, (_owner_fld) = "abc:poo"];                // WMC-11472
+
+    map<string, double> DssmLanguageClassifier = 146 [(_compat_renamed_prefix) = "DssmLanguageClassifier_", (_ttl) = 1080, (_owner_fld) = "abc:searchplay"];
+    optional string AdsOrganic = 147 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional string AdsOrganicWeight = 148 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional uint64 AdsOrganicRealCost = 149 [(_owner_fld) = "abc:commercial", (_rt_required) = true];
+    optional double AdsOrganicConstraint = 150 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double AdsOrganicBillCost = 151 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double AdsOrganicAdditionalClicks = 152 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional bool AdsOrganicIsBoostAffectRearrange = 153 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double AdsOrganicClicks = 154 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional bool AdsOrganicIsClickAdditional = 155 [(_owner_fld) = "abc:commercial", (_rt_required) = true];
+
+    optional double Conversions = 156 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double ConversionCatboostPredictBoost = 157 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+
+    optional uint64 AdsOrganicYclid = 158 [(_owner_fld) = "abc:commercial", (_rt_required) = true];
+    optional uint64 AdsOrganicBannerId = 159 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+
+    optional double AdsOrganicReservePrice = 160 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double AdsOrganicX = 161 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double AdsOrganicPctr = 162 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double AdsOrganicBidLimit = 163 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional double InappropriateDogs = 166 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+
+    optional string TopSnipsFactors = 167 [(_owner_fld) = "abc:snippets", (_split_size_limit) = 0];
+    optional string SnipFactors = 168 [(_owner_fld) = "abc:snippets", (_split_size_limit) = 0];
+    optional string SnipTopTitleFactors = 169 [(_owner_fld) = "abc:snippets", (_split_size_limit) = 0];
+    optional string SnipTitleFactors = 170 [(_owner_fld) = "abc:snippets", (_split_size_limit) = 0];
+
+    map<string, string> SearchGPTDoc = 172 [(_owner_fld) = "abc:search_generative_answers", (_compat_renamed_prefix) = "SearchGPTDoc"];
+
+    optional uint64 EcomTrafaretOldPosition = 173 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional uint64 EcomTrafaretNewPosition = 174 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+
+    optional string SnipEcomClassificators = 175 [(_owner_fld) = "abc:snippets", (_split_size_limit) = 0];
+
+    map <string, bool> HostIsNotAvailable = 176 [(_compat_renamed_prefix)="HostIsNotAvailableIn", (_owner_fld) = "abc:search-quality", (_split_size_limit) = 0];
+
+    optional string AdsOrganicJoinType = 177 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+
+    optional uint64 PositionBeforeRandomShuffleOrganic = 178 [(_owner_fld) = "abc:web-conveyor", (_split_size_limit) = 0, (_ttl) = 60];
+    optional uint64 PositionAfterRandomShuffleOrganic = 179 [(_owner_fld) = "abc:web-conveyor", (_split_size_limit) = 0, (_ttl) = 60];
+    optional string AdsOrganicZeroBid = 180 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional bool AdsOrganicIsZDocIDAdv = 181 [(_owner_fld) = "abc:yabs4", (_split_size_limit) = 0];
+
+    optional string BeforeAdsOrgUngroupGroupPos = 182 [(_owner_fld) = "abs:mmeta-web", (_split_size_limit) = 0, (_ttl) = 30];
+    optional string BeforeAdsOrgUngroupDocPos = 183 [(_owner_fld) = "abs:mmeta-web", (_split_size_limit) = 0, (_ttl) = 30];
+
+    optional string SearchSource = 184 [(_owner_fld) = "abs:mmeta-web", (_split_size_limit) = 0, (_ttl) = 30];
+
+    optional double DssmPageQualityV3 = 185 [(_owner_fld) = "abc:buki", (_split_size_limit) = 0, (_ttl) = 360];
+    optional double DssmPageQualityV4 = 186 [(_owner_fld) = "abc:buki", (_split_size_limit) = 0, (_ttl) = 360];
+    optional double SplitBertSinsigFresh = 187 [(_owner_fld) = "abc:buki", (_split_size_limit) = 0, (_ttl) = 360];
+    optional double SplitBertSinsigV3 = 188 [(_owner_fld) = "abc:buki", (_split_size_limit) = 0, (_ttl) = 360];
+    optional double SplitBertSinsigV4 = 189 [(_owner_fld) = "abc:buki", (_split_size_limit) = 0, (_ttl) = 360];
+
+    //next id 190
+}

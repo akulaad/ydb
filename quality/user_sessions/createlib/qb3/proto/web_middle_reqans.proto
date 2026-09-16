@@ -1,0 +1,31 @@
+package NUserSessions.NProto;
+
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/extension.proto";
+import "scarab/api/proto/common/all.proto";
+import "scarab/api/proto/common/generic.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/report/search_props/WEB.proto";
+import "yt/yt_proto/yt/formats/extension.proto";
+
+message TWebMiddleReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional bytes EventType = 1;
+    optional uint64 EventVersion = 2;
+    optional bytes Key = 3 [(NYT.column_name) = "key", (_infinite_ttl) = true];
+    optional bytes Subkey = 4 [(NYT.column_name) = "subkey", (_infinite_ttl) = true];
+    repeated NScarabProto.NCommon.TExperiment Experiments = 5;
+    optional bytes Host = 6;
+    optional bytes PassportUIDHash = 7;
+    optional bytes RequestId = 8;
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB = 9;
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB_MISSPELL = 10;
+    optional uint64 Timestamp = 11;
+    optional NScarabProto.NCommon.TUserId UserId = 12;
+    optional NScarabProto.NCommon.TIpAddress UserIp = 13;
+    optional NUserSessions.NRT.EAntifraudVerdict AntifraudVerdict = 14 [(NUserSessions.tskv_name) = "_af_verdict"];
+    optional NUserSessions.NRT.EAntifraudVerdict ExpAntifraudVerdict = 15;
+    optional bytes AntifraudInfo = 16;
+}
+

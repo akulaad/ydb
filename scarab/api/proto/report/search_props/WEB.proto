@@ -1,0 +1,1294 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/common/generic.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/report/search_props/common/conf_rearr.proto";
+
+import "search/common/resource_usage_stats/proto/small_version/small_version.proto";
+
+package NScarabProto.NReport.NSearchProps.NWEB;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/WEB";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/achievement/achievement.cpp
+message TPropAchievement {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string HostNamespace = 1 [(_compat_renamed_from) = "host_namespace"];
+    optional string HostQueryNamespace = 2 [(_compat_renamed_from) = "host_query_namespace"];
+    optional uint64 NumResultCateg = 3 [(_compat_renamed_from) = "num_result_categ"];
+    optional uint64 NumResultDocid = 4 [(_compat_renamed_from) = "num_result_docid"];
+    optional string OwnerNamespace = 5 [(_compat_renamed_from) = "owner_namespace"];
+    optional string UrlNamespace = 6 [(_compat_renamed_from) = "url_namespace"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/adjust_serp_size/adjust_serp_size.cpp
+message TPropAdjustSerpSize {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 GroupCount = 1;
+    optional double MaxRelevPredict = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/antidup/antidup.cpp
+message TPropAntiDup {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Antidup = 1 [(_compat_renamed_prefix) = "antidup_"];
+    map<string, string> AntidupRuleDisabled = 2 [(_compat_renamed_prefix) = "AntidupRuleDisabled_"];
+    map<string, uint64> CheckedDocsCount = 3 [(_compat_renamed_prefix) = "CheckedDocsCount_"];
+    optional uint64 CloneFound = 4;
+    map<uint64, bool> CloneRemovedInTop = 5;
+    map<string, bool> DupsInTop10 = 6 [(_compat_renamed_prefix) = "DupsInTop10_"];
+    map<string, uint64> FirstDup = 7 [(_compat_renamed_prefix) = "FirstDup_"];
+    map<string, string> GroupCnt = 8 [(_compat_renamed_prefix) = "group_cnt_"];
+    map<string, string> Info = 9 [(_compat_renamed_prefix) = "info_"];
+    optional string InfoMiddleBase64 = 10 [(_compat_renamed_from) = "info_middle_base64"];
+    map<string, string> Input = 11 [(_compat_renamed_prefix) = "input_"];
+    optional string Middle = 12 [(_compat_renamed_from) = "middle"];
+    optional uint64 MiddleBanned = 13 [(_compat_renamed_from) = "middle_banned"];
+    optional string MiddleDataDir = 14 [(_compat_renamed_from) = "middle_data_dir"];
+    map<string, uint64> Numdocs = 15 [(_compat_renamed_prefix) = "numdocs_"];
+    map<string, bool> SignatureDupsInTop10 = 16 [(_compat_renamed_prefix) = "SignatureDupsInTop10_"];
+    map<string, bool> SnippetDupsInTop10 = 17 [(_compat_renamed_prefix) = "SnippetDupsInTop10_"];
+    map<string, uint64> Time = 18 [(_compat_renamed_prefix) = "time_"];
+    map<string, string> ClonePessimizedInTop = 19 [(_compat_renamed_prefix) = "ClonePessimizedInTop"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/antispam/antispam.cpp
+message TPropAntispam {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> Ban = 1 [(_compat_renamed_prefix) = "ban_", (_compat_min_key_width) = 2];
+    map<string, string> Calc = 2 [(_compat_renamed_prefix) = "calc_"];
+    map<string, string> CalcSc = 3 [(_compat_renamed_prefix) = "calc_sc_"];
+    optional string ErrorCalc = 4 [(_compat_renamed_from) = "error_calc_"];
+    optional string ErrorCalcSc = 5 [(_compat_renamed_from) = "error_calc_sc_"];
+    map<uint64, string> FormulaValue = 6 [(_compat_renamed_prefix) = "formula_value_", (_compat_min_key_width) = 2];
+    optional bool GoodValueThreshold = 7 [(_compat_renamed_from) = "goodValueThreshold"];
+    optional uint64 GroupSize = 8 [(_compat_renamed_from) = "group_size"];
+    optional uint64 GroupsToProcess = 9 [(_compat_renamed_from) = "groups_to_process"];
+    optional double MaxRelevThreshold = 10 [(_compat_renamed_from) = "maxRelevThreshold"];
+    optional uint64 MinRelevance = 11 [(_compat_renamed_from) = "minRelevance"];
+    map<uint64, string> Move = 12 [(_compat_renamed_prefix) = "move_", (_compat_min_key_width) = 2];
+    optional uint64 NumMxnet2 = 13 [(_compat_renamed_from) = "num_mxnet2"];
+    optional uint64 NumRearrange = 14 [(_compat_renamed_from) = "num_rearrange"];
+    map<uint64, string> Pess = 15 [(_compat_renamed_prefix) = "pess_", (_compat_min_key_width) = 2];
+    optional uint64 PessBorderPosition = 16 [(_compat_renamed_from) = "pess_border_position"];
+    map<uint64, string> PessSc = 17 [(_compat_renamed_prefix) = "pess_sc_", (_compat_min_key_width) = 2];
+    map<uint64, string> Protect = 18 [(_compat_renamed_prefix) = "protect_", (_compat_min_key_width) = 2];
+    optional string RelevLocale = 19 [(_compat_renamed_from) = "relev_locale"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/avia_middle/avia_middle.cpp
+message TPropAviaMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Answer = 1;
+    optional bool CouldParseAvticket = 2;
+    optional bool CouldParseBiletyplus = 3;
+    optional bool HasOrganicUrlsRequest = 4;
+    optional bool HasYandexAviaMorda = 5;
+    optional string HostList = 6;
+    optional uint64 MissingGeoid = 7;
+    optional uint64 NumberOfCompetitors = 8;
+    optional bool UsedPages = 9;
+    optional string WrongCondition = 10;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/big_nav_answer/big_nav_answer.cpp
+message TPropBigNavAnswer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CanWork = 1 [(_compat_renamed_from) = "can_work"];
+    optional string DataFrom = 2 [(_compat_renamed_from) = "data_from", (_infinite_ttl) = true];
+    optional double FmlVal = 3 [(_compat_renamed_from) = "fml_val"];
+    optional bool ForcedByDoc = 4 [(_compat_renamed_from) = "forced_by_doc"];
+    optional uint64 FromSearchNm = 5 [(_compat_renamed_from) = "from_search_nm"];
+    optional uint64 QsNm = 6 [(_compat_renamed_from) = "qs_nm"];
+    optional string RmDupFromBna = 7 [(_compat_renamed_from) = "rm_dup_from_bna"];
+    optional uint64 RmDupFromGroup = 8 [(_compat_renamed_from) = "rm_dup_from_group"];
+    optional uint64 SetGta = 9 [(_compat_renamed_from) = "set_gta"];
+    optional bool ShouldShow = 10 [(_compat_renamed_from) = "should_show", (_infinite_ttl) = true];
+    optional uint64 UngroupDel = 11 [(_compat_renamed_from) = "ungroup_del"];
+    optional uint64 UrlsNm = 12 [(_compat_renamed_from) = "urls_nm", (_infinite_ttl) = true];
+    optional bool Work = 13 [(_compat_renamed_from) = "work"];
+}
+
+message TPropCallistoSlotsTier0 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> HasAllWordsTRFm = 1 [(_compat_renamed_prefix) = "HasAllWordsTRFm_"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/conditional_serp_data_writer/conditional_serp_data_writer.cpp
+message TPropConditionalSerpDataWriter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 DocsWithVisitMarks = 1;
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/currency_converter_middle/currency_converter_middle.cpp
+message TPropCurrencyConverterMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 CountMatchedUrls = 1;
+    optional uint64 CountMatchedUrlsWithAmount = 2;
+    optional uint64 Amount = 3;
+    optional string FromTo = 4 [(_split_size_limit) = 5];
+    optional bool SendDataFromMiddle = 5;
+    optional bool NoDataFromRTMR = 6;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/entity_search_middle/entity_search_middle.cpp
+message TPropEntitySearchMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Ontoids = 1 [(_compat_renamed_from) = "ontoids"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/family_filter/family_filter.cpp
+message TPropFamilyFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Fixlist = 1 [(_compat_renamed_from) = "fixlist"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/filterbanned/web/bans/apply_bans.cpp
+message TPropFilterBanned {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 RKNBanned = 1 [(_compat_renamed_from) = "RKN_banned"];
+    optional uint64 RKNBannedLot = 2 [(_compat_renamed_from) = "RKN_banned_lot"];
+    optional string SentHashes = 3;
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/filterbannedlight/rule.cpp
+message TPropFilterBannedLight {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Misc = 1 [(_compat_is_default_container) = true];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/filterbannedlight/rule.cpp
+message TPropFilterPirate {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Misc = 1 [(_compat_is_default_container) = true];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/content_filter/rule.cpp
+message TPropContentFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Misc = 1 [(_compat_is_default_container) = true];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/landing_grouping/filter_landing_grouping.cpp
+message TPropFilterLandingGrouping {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DeletedDocs = 1 [(_compat_renamed_from) = "deleted_docs"];
+    optional string RemainedDocs = 2 [(_compat_renamed_from) = "remained_docs"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/fresh_detector_features.cpp
+message TPropFreshDetector {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated double Features = 1;
+    map<uint64, string> PrsAgeRatio = 2 [(_compat_renamed_prefix) = "PrsAgeRatio_", (_infinite_ttl) = true];
+    optional uint64 PrsSize = 3 [(_infinite_ttl) = true];
+    map<string, string> PrsSourceRatioFrom = 4;
+    optional double PrsAgeRatio300 = 5 [(_compat_renamed_from) = "PrsAgeRatio_300", (_infinite_ttl) = true];
+    optional double PrsAgeRatio600 = 6 [(_compat_renamed_from) = "PrsAgeRatio_600", (_infinite_ttl) = true];
+    optional double PrsAgeRatio3600 = 7 [(_compat_renamed_from) = "PrsAgeRatio_3600", (_infinite_ttl) = true];
+    optional double PrsAgeRatio7200 = 8 [(_compat_renamed_from) = "PrsAgeRatio_7200", (_infinite_ttl) = true];
+    optional double PrsAgeRatio14400 = 9 [(_compat_renamed_from) = "PrsAgeRatio_14400", (_infinite_ttl) = true];
+    optional double PrsAgeRatio28800 = 10 [(_compat_renamed_from) = "PrsAgeRatio_28800", (_infinite_ttl) = true];
+    optional double PrsAgeRatio86400 = 11 [(_compat_renamed_from) = "PrsAgeRatio_86400", (_infinite_ttl) = true];
+    optional double PrsAgeRatio259200 = 12 [(_compat_renamed_from) = "PrsAgeRatio_259200", (_infinite_ttl) = true];
+    optional double PrsSourceRatioFromQuick = 13;
+    optional double PrsSourceRatioFromQuickRt = 14;
+    optional double PrsSourceRatioFromCallisto = 15;
+    optional double PrsSourceRatioFromQuickMed = 16;
+    optional double PrsSourceRatioFromWebTier1 = 17;
+    optional double PrsSourceRatioFromPlatinum = 18;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/gentoloc/gentoloc.cpp
+message TPropGenToLocalDomain {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Worked = 1 [(_compat_renamed_from) = "worked"];
+}
+
+message TPropGroupingHash {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> AfterAfterFetch = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".after_AfterFetch"];
+    map<string, uint64> AfterAfterMerge = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".after_AfterMerge"];
+    map<string, uint64> AfterBeforeFetch = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".after_BeforeFetch"];
+    map<string, uint64> AfterMetarank = 4 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".after_metarank"];
+    map<string, uint64> BeforeAfterFetch = 5 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".before_AfterFetch"];
+    map<string, uint64> BeforeAfterMerge = 6 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".before_AfterMerge"];
+    map<string, uint64> BeforeBeforeFetch = 7 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".before_BeforeFetch"];
+    map<string, uint64> BeforeMetarank = 8 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = ".before_metarank"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/holedetector/holedetector.cpp
+message TPropHoleDetector {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, double> RelevPredictQuantile = 1 [(_compat_renamed_prefix) = "relev_predict_quantile_"];
+    optional double RelevPredictQuantile0 = 2 [(_compat_renamed_from) = "relev_predict_quantile_0"];
+    optional double RelevPredictQuantile025 = 3 [(_compat_renamed_from) = "relev_predict_quantile_0_25"];
+    optional double RelevPredictQuantile05 = 4 [(_compat_renamed_from) = "relev_predict_quantile_0_5"];
+    optional double RelevPredictQuantile075 = 5 [(_compat_renamed_from) = "relev_predict_quantile_0_75"];
+    optional double RelevPredictQuantile1 = 6 [(_compat_renamed_from) = "relev_predict_quantile_1"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/base/yxs_ctxt.cpp
+message TPropL1 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FormulaFmlId = 1 [(_compat_renamed_from) = "L1FormulaFmlId", (_infinite_ttl) = true];
+    optional string FormulaFmlIdPlatinum0 = 2 [(_compat_renamed_from) = "L1FormulaFmlId_platinum0", (_infinite_ttl) = true];
+    optional string FormulaFmlIdQuick = 3 [(_compat_renamed_from) = "L1FormulaFmlId_quick"];
+    optional string FormulaFmlIdQuickrt = 4 [(_compat_renamed_from) = "L1FormulaFmlId_quickrt"];
+    optional string FormulaFmlIdWebfresh = 5 [(_compat_renamed_from) = "L1FormulaFmlId_webfresh", (_infinite_ttl) = true];
+    optional string FormulaId = 6 [(_compat_renamed_from) = "L1FormulaId", (_infinite_ttl) = true];
+    optional string FormulaIdNewBase = 7 [(_compat_renamed_from) = "L1FormulaId_NewBase"];
+    optional string FormulaName = 8 [(_compat_renamed_from) = "L1FormulaName"];
+    optional string FormulaNameNewBase = 9 [(_compat_renamed_from) = "L1FormulaName_NewBase"];
+    optional string FormulaNamePlatinum0 = 10 [(_compat_renamed_from) = "L1FormulaName_platinum0"];
+    optional string FormulaNameQuick = 11 [(_compat_renamed_from) = "L1FormulaName_quick"];
+    optional string FormulaNameQuickrt = 12 [(_compat_renamed_from) = "L1FormulaName_quickrt"];
+    optional string FormulaNameWebfresh = 13 [(_compat_renamed_from) = "L1FormulaName_webfresh"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/lingboost/lingboost.cpp
+message TPropLingBoost {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string BegemotQBundleHash = 1;
+    optional string LightBegemotQBundleHash = 2;
+    map<string, string> Q = 3 [(_compat_renamed_prefix) = "q"]; //TODO: remove, exist in kuka only
+    optional string Status = 4;
+    optional string ThesaurusQbundleHash = 5;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/miniapp_grouping/miniapp_grouping.cpp
+message TPropMiniappGrouping {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool FailedToFindModel = 1;
+    optional double FeatureAntispamNavigation = 2;
+    optional double FeatureCm2 = 3;
+    optional double FeatureDssmRandomLogQueryAvgQueriesAvgCM2 = 4;
+    optional bool FeatureHostInQuery = 5;
+    optional double FeatureIsNavMx = 6;
+    optional double FeaturePayDetectorPredict = 7;
+    optional double FeatureQueryCommercialityMx = 8;
+    optional bool IsYaBro = 9;
+    optional bool ParthnerInTopPRS = 10;
+    optional uint64 ParthnersCountInPrs = 11;
+    optional uint64 UniqueParthnersCountInPrs = 12;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/mobile/mobile.cpp
+message TPropMobile {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Grp = 1 [(_compat_renamed_prefix) = "grp_"];
+    optional uint64 P = 2 [(_compat_renamed_from) = "p"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/narco_pess/narco_pess.cpp
+message TPropNarcoPess {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 NarcoPessBanCount = 1 [(_compat_renamed_from) = "NarcoPess_ban_count"];
+    optional string NarcoPessBanned = 2 [(_compat_renamed_from) = "NarcoPess_banned"];
+    optional string NarcoPessProtected = 3 [(_compat_renamed_from) = "NarcoPess_protected"];
+    optional uint64 NarcoPessProtectedCount = 4 [(_compat_renamed_from) = "NarcoPess_protected_count"];
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/news_block_middle/news_block_middle.cpp
+message TPropNewsBlockMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 FreshDocsAmount = 1;
+    optional uint64 FreshDocsInNewsBlockAmount = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/org_wizard_middle/org_wizard_middle.cpp
+message TPropOrgWizardMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 AddressSnippetSourceCompanyId = 1 [(_compat_renamed_from) = "AddressSnippetSource_CompanyId"];
+    repeated double AddressSnippetSourceFactors = 2 [(_compat_renamed_from) = "AddressSnippetSource_factors"];
+    optional uint64 AddressSnippetSourceGroupPos = 3 [(_compat_renamed_from) = "AddressSnippetSource_GroupPos"];
+    optional uint64 AddressSnippetSourceOrgCountInFirstSnippet = 4 [(_compat_renamed_from) = "AddressSnippetSource_OrgCountInFirstSnippet"];
+    optional uint64 AddressSnippetSourceSnippetCount = 5 [(_compat_renamed_from) = "AddressSnippetSource_SnippetCount"];
+    optional string AddressSnippetSourceSnippetType = 6 [(_compat_renamed_from) = "AddressSnippetSource_SnippetType"];
+    optional bool AddressSnippetSourceTrustedUrl = 7 [(_compat_renamed_from) = "AddressSnippetSource_TrustedUrl"];
+    optional uint64 AddressSnippetSourceWebDocPosition = 8 [(_compat_renamed_from) = "AddressSnippetSource_web_doc_position"];
+    optional bool GeoCacheFlag = 9 [(_compat_renamed_from) = "GeoCache_Flag"];
+    optional string GeoCacheTime = 10 [(_compat_renamed_from) = "GeoCache_Time"];
+    optional bool GeoCacheUseCache = 11 [(_compat_renamed_from) = "GeoCache_UseCache"];
+    optional bool GeosearchAnswered = 12 [(_compat_renamed_from) = "Geosearch_Answered"];
+    optional double ParamsOrgId = 13 [(_compat_renamed_from) = "Params_OrgId"];
+    optional uint64 WebLogUrlsSourceCompanyId = 14 [(_compat_renamed_from) = "WebLogUrlsSource_CompanyId"];
+    optional string WebLogUrlsSourceSnippetType = 15 [(_compat_renamed_from) = "WebLogUrlsSource_SnippetType"];
+    optional uint64 WebLogUrlsSourceWebDocPosition = 16 [(_compat_renamed_from) = "WebLogUrlsSource_web_doc_position"];
+    optional string WebLogUrlsSourceWebUrlsFactors = 17 [(_compat_renamed_from) = "WebLogUrlsSource_web_urls_factors"];
+    optional uint64 WebReportRelatedOrgsSourceBestRelatedUrlPosition = 18 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_BestRelatedUrlPosition"];
+    optional double WebReportRelatedOrgsSourceBestWebRelatedOrgScore = 19 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_BestWebRelatedOrgScore"];
+    optional uint64 WebReportRelatedOrgsSourceCompanyId = 20 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_CompanyId"];
+    optional double WebReportRelatedOrgsSourceFirstWebRelatedOrgsScoreRelation = 21 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_FirstWebRelatedOrgsScoreRelation"];
+    optional double WebReportRelatedOrgsSourceMinToMaxWebOrgsScoreRelation = 22 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_MinToMaxWebOrgsScoreRelation"];
+    optional uint64 WebReportRelatedOrgsSourceMinUrlRelatedOrgCount = 23 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_MinUrlRelatedOrgCount"];
+    optional uint64 WebReportRelatedOrgsSourceOrgCandidateCount = 24 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_OrgCandidateCount"];
+    optional uint64 WebReportRelatedOrgsSourceRelatedWebUrlCount = 25 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_RelatedWebUrlCount"];
+    optional string WebReportRelatedOrgsSourceSnippetType = 26 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_SnippetType"];
+    optional uint64 WebReportRelatedOrgsSourceWebDocPosition = 27 [(_compat_renamed_from) = "WebReportRelatedOrgsSource_web_doc_position"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/images/meta/panther/panther.cpp
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/panther/panther.cpp
+message TPropPanther {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Status = 1;
+    optional string StatusL1 = 2;
+}
+
+message TPropPlatinumTier0 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> HasAllWordsTRFm = 1 [(_compat_renamed_prefix) = "HasAllWordsTRFm_"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/porno/porno.cpp
+message TPropPorno {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 AdaptiveThreshold = 1 [(_compat_renamed_from) = "adaptive_threshold"];
+    optional bool AdultHostAh = 2 [(_compat_renamed_from) = "adult_host_ah"];
+    optional bool AdultHostByRelev = 3 [(_compat_renamed_from) = "adult_host_by_relev"];
+    map<uint64, string> AfterFetchBan = 4 [(_compat_renamed_prefix) = "after_fetch_ban_", (_split_size_limit) = 3250, (_infinite_ttl) = true];
+    map<uint64, string> AfterFetchUnban = 5 [(_compat_renamed_prefix) = "after_fetch_unban_", (_split_size_limit) = 3250, (_infinite_ttl) = true];
+    optional int64 ApproxPlX100 = 6 [(_compat_renamed_from) = "approx_pl_x100"];
+    optional bool ByClean = 7 [(_compat_renamed_from) = "by_clean"];
+    optional bool Clean = 8 [(_compat_renamed_from) = "clean"];
+    optional uint64 Dl = 9 [(_compat_renamed_from) = "dl", (_rt_required) = true, (_infinite_ttl) = true];
+    optional bool EraseAll = 10 [(_compat_renamed_from) = "erase_all"];
+    optional string Factors = 11 [(_compat_renamed_from) = "factors"];
+    optional uint64 FilteredAfterFetch = 12 [(_compat_renamed_from) = "filtered_after_fetch"];
+    optional uint64 FilteredAfterMergeMiddle = 13 [(_compat_renamed_from) = "filtered_after_merge_middle"];
+    optional uint64 FixlistSourceDbg = 14 [(_compat_renamed_from) = "fixlist_source.dbg"];
+    optional string FmlId = 15 [(_compat_renamed_from) = "fml_id", (_split_size_limit) = 1000, (_infinite_ttl) = true];
+    optional double FmlValue = 16 [(_compat_renamed_from) = "fml_value"];
+    optional bool MarkedAdultHost = 17 [(_compat_renamed_from) = "marked_adult_host"];
+    optional double NewFml = 18 [(_compat_renamed_from) = "new_fml"];
+    optional uint64 Pl = 19 [(_compat_renamed_from) = "pl", (_infinite_ttl) = true, (_rt_required) = true];
+    optional bool PlCalcFailed = 20 [(_compat_renamed_from) = "pl_calc_failed"];
+    optional uint64 PlFilter = 21 [(_compat_renamed_from) = "pl_filter"];
+    optional uint64 PlFixlist = 22 [(_compat_renamed_from) = "pl_fixlist"];
+    optional bool PlFmlCalcFailed = 23 [(_compat_renamed_from) = "pl_fml_calc_failed"];
+    map<uint64, string> Pos = 24 [(_compat_renamed_prefix) = "pos", (_split_size_limit) = 3250, (_infinite_ttl) = true];
+    map<uint64, string> PosForced = 25 [(_compat_renamed_prefix) = "pos_forced_", (_split_size_limit) = 3250, (_infinite_ttl) = true];
+    optional string RawFactorsDump = 26 [(_compat_renamed_from) = "raw_factors_dump", (_split_size_limit) = 3250, (_infinite_ttl) = true];
+    optional int64 ReaskGap = 27 [(_compat_renamed_from) = "reask_gap"];
+    optional bool ReaskNotReady = 28 [(_compat_renamed_from) = "reask_not_ready"];
+    optional uint64 ReasksCount = 29 [(_compat_renamed_from) = "reasks_count"];
+    optional bool UseDefaultAd = 30 [(_compat_renamed_from) = "use_default_ad"];
+    optional bool UseUdf = 31 [(_compat_renamed_from) = "use_udf"];
+    optional double OldFml = 32 [(_compat_renamed_from) = "old_fml"];
+    optional double ExpFml = 33 [(_compat_renamed_from) = "exp_fml"];
+    optional uint64 OldPl = 34 [(_compat_renamed_from) = "old_pl"];
+    optional uint64 ExpPl = 35 [(_compat_renamed_from) = "exp_pl"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/pressportret/pressportret.cpp
+message TPropPressportret {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Pp = 1 [(_compat_renamed_from) = "pp"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/proxima_predict/proxima_predict.cpp
+message TPropProximaPredict {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional double Dcg10Global = 1;
+    optional double Dcg10Grouping = 2;
+    optional double Dcg5Global = 3;
+    optional double Dcg5Grouping = 4;
+    optional bool FailedToFetchFormulas = 5;
+    optional bool FailedToFindModel = 6;
+    map<uint64, string> PredictTopGlobal = 7 [(_compat_renamed_prefix) = "PredictTopGlobal_"];
+    map<uint64, string> PredictTopGrouping = 8 [(_compat_renamed_prefix) = "PredictTopGrouping_"];
+    optional string UsedModel = 9;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/prs_freshness_log/prs_freshness_log.cpp
+message TPropPrsFreshnessLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, double> DocPositionDcgsRatio = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "DocPositionDcgsRatio"];
+    map<string, double> DocsRatio = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "DocsRatio"];
+    optional double FetchAllFreshDocPositionDcgsRatio = 3 [(_compat_renamed_from) = "FetchAllFreshDocPositionDcgsRatio"];
+    optional double FetchAllFreshDocsRatio = 4 [(_compat_renamed_from) = "FetchAllFreshDocsRatio"];
+    optional double FetchQuickSamohodDocPositionDcgsRatio = 5 [(_compat_renamed_from) = "FetchQuickSamohodDocPositionDcgsRatio"];
+    optional double FetchQuickSamohodDocsRatio = 6 [(_compat_renamed_from) = "FetchQuickSamohodDocsRatio"];
+    optional double FetchUnknownFreshDocPositionDcgsRatio = 7 [(_compat_renamed_from) = "FetchUnknownFreshDocPositionDcgsRatio"];
+    optional double FetchUnknownFreshDocsRatio = 8 [(_compat_renamed_from) = "FetchUnknownFreshDocsRatio"];
+    optional double FetchWebFreshDocPositionDcgsRatio = 9 [(_compat_renamed_from) = "FetchWebFreshDocPositionDcgsRatio"];
+    optional double FetchWebFreshDocsRatio = 10 [(_compat_renamed_from) = "FetchWebFreshDocsRatio"];
+    optional double MergeAllFreshDocPositionDcgsRatio = 11 [(_compat_renamed_from) = "MergeAllFreshDocPositionDcgsRatio"];
+    optional double MergeAllFreshDocsRatio = 12 [(_compat_renamed_from) = "MergeAllFreshDocsRatio"];
+    optional double MergeQuickSamohodDocPositionDcgsRatio = 13 [(_compat_renamed_from) = "MergeQuickSamohodDocPositionDcgsRatio"];
+    optional double MergeQuickSamohodDocsRatio = 14 [(_compat_renamed_from) = "MergeQuickSamohodDocsRatio"];
+    optional double MergeUnknownFreshDocPositionDcgsRatio = 15 [(_compat_renamed_from) = "MergeUnknownFreshDocPositionDcgsRatio"];
+    optional double MergeUnknownFreshDocsRatio = 16 [(_compat_renamed_from) = "MergeUnknownFreshDocsRatio"];
+    optional double MergeWebFreshDocPositionDcgsRatio = 17 [(_compat_renamed_from) = "MergeWebFreshDocPositionDcgsRatio"];
+    optional double MergeWebFreshDocsRatio = 18 [(_compat_renamed_from) = "MergeWebFreshDocsRatio"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/prs_log/prs_log.cpp
+message TPropPrsLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string PRS = 1;
+    optional string Trash = 2;
+    optional string Web = 3;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/prs_log/prs_log.cpp
+message TPropPrsLogFinal {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Final = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/querysearch/querysearch_request.cpp
+message TPropQuerySearchRequest {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AggregatedExternalItems = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AggregatedExternalItems"];
+    map<string, string> AggregatedItems = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AggregatedItems"];
+    map<string, uint64> GroupingSize = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/GroupingSize"];
+    map<string, uint64> SentRequests = 4 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/SentRequests"];
+    map<string, string> Misc = 5 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/querysearch/querysearch_response.cpp
+message TPropQuerySearchResponse {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AfterQueryDataMerge = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AfterQueryDataMerge"];
+    map<string, string> BeforeQueryDataMerge = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/BeforeQueryDataMerge"];
+    map<string, uint64> ValidReqHandles = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/ValidReqHandles"];
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/ranges/ranges.cpp
+message TPropRanges {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Module = 1 [(_compat_renamed_from) = "module"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/rapid_clicks_features.cpp
+message TPropRapidClicks {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 CatQueryDoppDiff = 1;
+    optional uint64 CatQueryDoppOsDiff = 2;
+    optional uint64 CatQueryDoppOsTimeDiff = 3;
+    optional uint64 CatQueryDoppRegDiff = 4;
+    optional uint64 CatQueryDoppRegLargeDiff = 5;
+    optional uint64 CatQueryDoppRegLargeTimeDiff = 6;
+    optional uint64 CatQueryDoppRegTimeDiff = 7;
+    optional uint64 CatQueryDoppTimeDiff = 8;
+    optional uint64 CatUserDiff = 9;
+    optional uint64 CatUserTimeDiff = 10;
+    optional uint64 DocsWithFactors = 11;
+    optional uint64 DocsWithPersFactors = 12;
+
+    optional bool BigRTCatQueryDoppOsReceivedData = 13;
+    optional bool BigRTCatQueryDoppReceivedData = 14;
+    optional bool BigRTCatQueryDoppRegLargeReceivedData = 15;
+    optional bool BigRTCatQueryDoppRegReceivedData = 16;
+    optional bool BigRTCatUserReceivedData = 17;
+
+    map<string, string> Unmatched = 20 [(_compat_is_default_container) = true];
+}
+
+message TPropRoot {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+
+    optional double Acc = 1;
+    map<string, string> AllFactorsUnanswer = 2 [(_compat_renamed_prefix) = "AllFactorsUnanswer_", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string BaseRankingMn = 3 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional string BaseRankingModel = 4 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional string BaseRankingWords = 5 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional uint64 BertRegion = 6 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional bool BsTouched = 7 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 30, (_split_size_limit) = 0];
+    optional bool Cached = 8 [(_infinite_ttl) = true, (_owner_fld) = "abc:mmeta-web", (_rt_required) = true];
+    optional uint64 CalcMetaRelevanceMcs = 9 [(_infinite_ttl) = true, (_owner_fld) = "abc:mmeta-web", (_split_size_limit) = 0];
+    map<uint64, uint64> ClientGroup = 10 [(_compat_renamed_prefix) = "ClientGroup_", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_split_size_limit) = 0];
+    map<string, string> ConfigInfo = 11 [(_compat_renamed_prefix) = "ConfigInfo_", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string ExtensionsRankModel = 12 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_split_size_limit) = 0];
+    map<string, string> FormulaValueDump = 13 [(_compat_renamed_prefix) = "FormulaValueDump_", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_split_size_limit) = 0];
+    map<string, string> HasAllWordsTRFm = 14 [(_compat_renamed_prefix) = "HasAllWordsTRFm_", (_owner_fld) = "abc:basesearch", (_ttl) = 30, (_split_size_limit) = 0];
+    optional string HostName = 15 [(_infinite_ttl) = true, (_owner_fld) = "abc:mmeta-web", (_rt_required) = true];
+    optional uint64 Ig = 16 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string L2FormulaId = 17 [(_infinite_ttl) = true, (_owner_fld) = "abc:relev_tools"];
+    optional double L2QuickSamohodRate = 18 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string L3FormulaId = 19 [(_infinite_ttl) = true, (_owner_fld) = "abc:relev_tools"];
+    optional uint64 MMetaWebL3ModelsFlagsVersion = 20 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional uint64 MetaRankDocs = 21 [(_owner_fld) = "abc:mmeta-web", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional uint64 MetaRankGroups = 22 [(_owner_fld) = "abc:mmeta-web", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional double MetaRankSuperMindMult = 23 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string MiddleAviaHost = 24 [(_owner_fld) = "abc:ticket", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string MiddleAviaWizardCommon = 25 [(_owner_fld) = "abc:ticket", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string MiddleAviaWizardData = 26 [(_owner_fld) = "abc:ticket", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional uint64 Nctx = 27 [(_owner_fld) = "abc:mmeta-web", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    map<string, NScarabProto.NCommon.TListOfDouble> NumDocs = 28 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_numdocs", (_owner_fld) = "abc:mmeta-web"];
+    optional string OrgWizardMiddleData = 29 [(_owner_fld) = "abc:geosearch2", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string OrgWizardMiddleGeoAnswer = 30 [(_owner_fld) = "abc:geosearch2", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string RankingIntMn = 31 [(_owner_fld) = "abc:relev_tools", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string RankingMn = 32 [(_owner_fld) = "abc:relev_tools", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string RankingModel = 33 [(_owner_fld) = "abc:relev_tools", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional bool RankingTopHandJobBoosts = 34 [(_owner_fld) = "abc:relev_tools", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string RankingWords = 35 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional string RapidClicksRtmrResponse = 36 [(_owner_fld) = "abc:searchpers", (_ttl) = 30, (_split_size_limit) = 0];//deprecated
+    map<string, string> RemovedDoc = 37 [(_compat_renamed_prefix) = "RemovedDoc_", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_split_size_limit) = 0];
+    optional string RequestedRankingModel = 38 [(_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    map<string, string> ResultDocIds = 39 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_split_size_limit) = 0];
+    map<string, string> SnippetUnanswer = 40 [(_compat_renamed_prefix) = "SnippetUnanswer_", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional uint64 SourceTimestamp = 41 [(_owner_fld) = "abc:mmeta-web", (_infinite_ttl) = true, (_rt_required) = true];
+    optional double SuperMindMult = 42 [(_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    map<string, string> Unanswer = 43 [(_compat_renamed_prefix) = "Unanswer_", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional uint64 UserHistoryClusterizationLag = 44 [(_split_size_limit) = 0, (_owner_fld) = "abc:searchpers", (_infinite_ttl) = true];
+    optional uint64 UserHistoryRtmrLag = 45 [(_split_size_limit) = 0, (_owner_fld) = "abc:searchpers", (_infinite_ttl) = true];
+    optional uint64 UserHistorySaasLag = 46 [(_split_size_limit) = 0, (_owner_fld) = "abc:searchpers", (_infinite_ttl) = true];
+    optional uint64 UserHistoryBigRTLag = 56 [(_split_size_limit) = 0, (_owner_fld) = "abc:searchpers", (_infinite_ttl) = true];
+    map<string, string> WebL3ModelVersionForExport = 47 [(_compat_renamed_prefix) = "WebL3ModelVersionForExport_", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 30];
+    optional string WebL3ModelsFlagsVersion = 48 [(_split_size_limit) = 0, (_owner_fld) = "abc:relev_tools", (_ttl) = 1080];
+    optional string WebModelOverFeaturesClampedFactors = 49 [(_split_size_limit) = 0, (_owner_fld) = "abc:mmeta-web", (_ttl) = 30];
+    map<string, uint64> WebModelOverFeaturesVersionForExport = 50 [(_compat_renamed_prefix) = "WebModelOverFeaturesVersionForExport_", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta-web", (_ttl) = 30];
+    optional uint64 YdoMiddleBestWorkerUrls = 51 [(_split_size_limit) = 0, (_owner_fld) = "abc:ydo"];
+    optional string YdoMiddleData = 52 [(_split_size_limit) = 0, (_owner_fld) = "abc:ydo"];
+    optional uint64 YdoMiddleWorkersCount = 53 [(_split_size_limit) = 0, (_owner_fld) = "abc:ydo"];
+
+    map<uint64, string> ExpRankingModel = 54 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_RankingModel", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta-web", (_ttl) = 30];
+    map<uint64, string> ExpRankingMn = 55 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_RankingMn", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta-web", (_ttl) = 30];
+
+    map<string, string> WebRTModelsServiceProps = 57 [(_compat_renamed_prefix) = "WebRTModelsService_", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    map<string, string> BertServiceProps = 58 [(_compat_renamed_prefix) = "BertService_", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 0, (_split_size_limit) = 0];//deprecated
+
+    optional string SPMedDssmGood = 60 [(_compat_renamed_from) = "SP_MedDssmGood", (_owner_fld) = "abc:buki", (_ttl) = 1080, (_split_size_limit) = 0];
+    map<string, uint64> WebModelOverRapidClicksFeaturesVersionForExport = 61 [(_compat_renamed_prefix) = "WebModelOverRapidClicksFeaturesVersionForExport_", (_owner_fld) = "abc:relev_tools", (_ttl) = 30, (_split_size_limit) = 0];
+    optional string CostPlus = 62 [(_owner_fld) = "abc:poo", (_infinite_ttl) = true, (_split_size_limit) = 0];
+
+    map<string, string> WebInfoProps = 63 [(_owner_fld) = "abc:buki", (_compat_renamed_prefix) = "WebInfo_", (_rt_required) = true];
+    map<string, string> CachedProps = 64 [(_owner_fld) = "abc:mmeta-web", (_compat_renamed_prefix) = "Cached_", (_ttl) = 720, (_split_size_limit) = 0];
+    map<string, string> WebRearrsExpProps = 65 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_WebExp", (_ttl) = 1080, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+
+    optional string AllFactorsUnanswer0Tier = 66 [(_compat_renamed_from) = "AllFactorsUnanswer_0_TIER", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerPlatinum = 67 [(_compat_renamed_from) = "AllFactorsUnanswer_PLATINUM", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerQuickSamohodOnMiddle = 68 [(_compat_renamed_from) = "AllFactorsUnanswer_QUICK_SAMOHOD_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerWeb = 69 [(_compat_renamed_from) = "AllFactorsUnanswer_WEB", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerWebfreshOnMiddle = 70 [(_compat_renamed_from) = "AllFactorsUnanswer_WEBFRESH_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerWebEcom1 = 71 [(_compat_renamed_from) = "AllFactorsUnanswer_WEB_ECOM_1", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerPlatinumLower = 72 [(_compat_renamed_from) = "AllFactorsUnanswer_platinum", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional string AllFactorsUnanswerWebLower = 73 [(_compat_renamed_from) = "AllFactorsUnanswer_web", (_owner_fld) = "abc:mmeta-web", (_rt_required) = true, (_ttl) = 360];
+    optional uint64 HasAllWordsTRFm00TimeDistr = 74 [(_compat_renamed_from) = "HasAllWordsTRFm_0_0_TimeDistr", (_owner_fld) = "abc:basesearch", (_ttl) = 30, (_split_size_limit) = 0];
+    optional string SnippetUnanswer0Tier = 75 [(_compat_renamed_from) = "SnippetUnanswer_0_TIER", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerPlatinum = 76 [(_compat_renamed_from) = "SnippetUnanswer_PLATINUM", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerQuickSamohodOnMiddle = 77 [(_compat_renamed_from) = "SnippetUnanswer_QUICK_SAMOHOD_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerWeb = 78 [(_compat_renamed_from) = "SnippetUnanswer_WEB", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerWebfreshOnMiddle = 79 [(_compat_renamed_from) = "SnippetUnanswer_WEBFRESH_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerWebEcom1 = 80 [(_compat_renamed_from) = "SnippetUnanswer_WEB_ECOM_1", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerPlatinumLower = 81 [(_compat_renamed_from) = "SnippetUnanswer_platinum", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string SnippetUnanswerWebLower = 82 [(_compat_renamed_from) = "SnippetUnanswer_web", (_owner_fld) = "abc:mmeta-web", (_ttl) = 360, (_rt_required) = true];
+    optional string WebL3ModelVersionContextModelReformulations = 83 [(_compat_renamed_from) = "WebL3ModelVersionForExport_context_model_reformulations", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 30];
+    optional string WebL3ModelVersionNeuroTextNoTitleDssmLongClicksPredictor = 84 [(_compat_renamed_from) = "WebL3ModelVersionForExport_neuro_text_no_title_dssm_long_clicks_predictor", (_split_size_limit) = 0, (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 30];
+    optional string WebRTModelsServiceFPMDocPartFeaturesPersonalModelV1 = 85 [(_compat_renamed_from) = "WebRTModelsService_FPMDocPart_features_personal_model_v1", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceFPMQueryPartFeaturesPersonalModelV1 = 86 [(_compat_renamed_from) = "WebRTModelsService_FPMQueryPart_features_personal_model_v1", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebAntispamDocVpnRtDssm = 87 [(_compat_renamed_from) = "WebRTModelsService_Web_antispam_doc_vpn_rt_dssm", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebBigrams = 88 [(_compat_renamed_from) = "WebRTModelsService_Web_bigrams", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebCommercialDssmOddLike = 89 [(_compat_renamed_from) = "WebRTModelsService_Web_commercial_dssm_odd_like", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebCtrEngSsHard = 90 [(_compat_renamed_from) = "WebRTModelsService_Web_ctr_eng_ss_hard", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebCtrNoMiner = 91 [(_compat_renamed_from) = "WebRTModelsService_Web_ctr_no_miner", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmDogL3 = 92 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_dog_l3", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmEcomConversions = 93 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_ecom_conversions", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmEcomHhi = 94 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_ecom_hhi", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmFormula8YearsCe25PredictionRatings = 95 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_formula_8years_ce25_prediction_ratings", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmGlobalPq = 96 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_global_pq", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmNavLinear = 97 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_nav_linear", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDssmTrRelevant = 98 [(_compat_renamed_from) = "WebRTModelsService_Web_dssm_tr_relevant", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebDwelltimeRegChainEmbedding = 99 [(_compat_renamed_from) = "WebRTModelsService_Web_dwelltime_reg_chain_embedding", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebFinLawUrlTitleClassifier = 100 [(_compat_renamed_from) = "WebRTModelsService_Web_fin_law_url_title_classifier", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebMulticosStreams = 101 [(_compat_renamed_from) = "WebRTModelsService_Web_multicos_streams", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebPageQualityDevV3 = 102 [(_compat_renamed_from) = "WebRTModelsService_Web_page_quality_dev_v3", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebPageQualityDevV4 = 103 [(_compat_renamed_from) = "WebRTModelsService_Web_page_quality_dev_v4", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebPageQualityDevV5 = 104 [(_compat_renamed_from) = "WebRTModelsService_Web_page_quality_dev_v5", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebPageQualityDevV6 = 105 [(_compat_renamed_from) = "WebRTModelsService_Web_page_quality_dev_v6", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebPqUrlTitleClassifier = 106 [(_compat_renamed_from) = "WebRTModelsService_Web_pq_url_title_classifier", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebQueryWordTitleEmbedding = 107 [(_compat_renamed_from) = "WebRTModelsService_Web_query_word_title_embedding", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebReformulationsLongestClickLogDt = 108 [(_compat_renamed_from) = "WebRTModelsService_Web_reformulations_longest_click_log_dt", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebReformulationsLongestClickLogDtEarlyBindingDssm = 109 [(_compat_renamed_from) = "WebRTModelsService_Web_reformulations_longest_click_log_dt_early_binding_dssm", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebReformulationsWithExtensions = 110 [(_compat_renamed_from) = "WebRTModelsService_Web_reformulations_with_extensions", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebRTModelsServiceWebRelevSentsReformulations = 111 [(_compat_renamed_from) = "WebRTModelsService_Web_relev_sents_reformulations", (_owner_fld) = "abc:mmeta_model_calcers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string WebInfoFactorsRangesError = 112 [(_compat_renamed_from) = "WebInfo_FactorsRanges_error", (_owner_fld) = "abc:buki", (_rt_required) = true];
+    optional string WebInfoMissingWordsWordsToCount = 113 [(_compat_renamed_from) = "WebInfo_MissingWords.WordsToCount", (_owner_fld) = "abc:buki", (_rt_required) = true];
+    optional bool WebInfoHasAttrs = 114 [(_compat_renamed_from) = "WebInfo_HasAttrs", (_owner_fld) = "abc:buki", (_rt_required) = true];
+    optional string WebRearrsExpRelCanonicalGroupGlueDeletedDocsCountByGroup = 115 [(_compat_renamed_from) = "RelCanonicalGroupGlue.DeletedDocsCountByGroup_WebExp", (_ttl) = 1080, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional uint64 WebRearrsExpRelCanonicalGroupGlueTotalDeletedDocs = 116 [(_compat_renamed_from) = "RelCanonicalGroupGlue.TotalDeletedDocs_WebExp", (_ttl) = 1080, (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional string Unanswer0TIER = 117 [(_compat_renamed_from) = "Unanswer_0_TIER", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerAttributeIndex = 118 [(_compat_renamed_from) = "Unanswer_AttributeIndex", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerBANFILTERSAAS = 119 [(_compat_renamed_from) = "Unanswer_BANFILTER-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerBANFILTERSAASHAHN = 120 [(_compat_renamed_from) = "Unanswer_BANFILTER-SAAS_HAHN", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerBANFILTERSAASU = 121 [(_compat_renamed_from) = "Unanswer_BANFILTER-SAAS_U", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerBertPersonalFactors = 122 [(_compat_renamed_from) = "Unanswer_BertPersonalFactors", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerCFGMODELS = 123 [(_compat_renamed_from) = "Unanswer_CFG_MODELS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerCandgenPLATINUM = 124 [(_compat_renamed_from) = "Unanswer_Candgen.PLATINUM", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerCandgenWEB = 125 [(_compat_renamed_from) = "Unanswer_Candgen.WEB", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerCandgenWEBFRESHONMIDDLE = 126 [(_compat_renamed_from) = "Unanswer_Candgen.WEBFRESH_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerCfgModelsFactors = 127 [(_compat_renamed_from) = "Unanswer_CfgModelsFactors", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerCfgModelsSplitFactors = 128 [(_compat_renamed_from) = "Unanswer_CfgModelsSplitFactors", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerDYNTABLEHTTPPROXYSOURCE = 129 [(_compat_renamed_from) = "Unanswer_DYNTABLE_HTTP_PROXY_SOURCE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerECOMSNIPSSAAS = 130 [(_compat_renamed_from) = "Unanswer_ECOMSNIPS-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorage = 131 [(_compat_renamed_from) = "Unanswer_EmbeddingStorage", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageBeta = 132 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageBeta", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageBeta1 = 133 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageBeta1", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageBeta2 = 134 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageBeta2", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageBeta3 = 135 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageBeta3", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageBeta4 = 136 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageBeta4", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageBeta5 = 137 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageBeta5", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerEmbeddingStorageMultibeta = 138 [(_compat_renamed_from) = "Unanswer_EmbeddingStorageMultibeta", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerFASTSNIPSSAAS = 139 [(_compat_renamed_from) = "Unanswer_FASTSNIPS-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerFASTSNIPSUSAAS = 140 [(_compat_renamed_from) = "Unanswer_FASTSNIPS_U-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerFactorsKeyInvService = 141 [(_compat_renamed_from) = "Unanswer_FactorsKeyInvService", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerGEOSEARCH = 142 [(_compat_renamed_from) = "Unanswer_GEOSEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerGremlinFactors = 143 [(_compat_renamed_from) = "Unanswer_GremlinFactors", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerInvertedIndexStorage = 144 [(_compat_renamed_from) = "Unanswer_InvertedIndexStorage", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerKeyInvService = 145 [(_compat_renamed_from) = "Unanswer_KeyInvService", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerMIDDLEHOSTDATASAAS = 146 [(_compat_renamed_from) = "Unanswer_MIDDLE_HOST_DATA_SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerMODELSPROXY = 147 [(_compat_renamed_from) = "Unanswer_MODELS_PROXY", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerNEWSTRBNOBACKEND = 148 [(_compat_renamed_from) = "Unanswer_NEWS_TR_BNO_BACKEND", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPIRASNIPSSAAS = 149 [(_compat_renamed_from) = "Unanswer_PIRASNIPS-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPLATINUM = 150 [(_compat_renamed_from) = "Unanswer_PLATINUM", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPLATINUMINT = 151 [(_compat_renamed_from) = "Unanswer_PLATINUMINT", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPLUTOMETA = 152 [(_compat_renamed_from) = "Unanswer_PLUTOMETA", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYBERTPERSONAL = 153 [(_compat_renamed_from) = "Unanswer_PROXY_BERT_PERSONAL", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYBERTPERSONALBLENDER = 154 [(_compat_renamed_from) = "Unanswer_PROXY_BERT_PERSONAL_BLENDER", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYCFGMODELS = 155 [(_compat_renamed_from) = "Unanswer_PROXY_CFG_MODELS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYCFGMODELSSPLIT = 156 [(_compat_renamed_from) = "Unanswer_PROXY_CFG_MODELS_SPLIT", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYDYNTABLEHTTPPROXYSOURCE = 157 [(_compat_renamed_from) = "Unanswer_PROXY_DYNTABLE_HTTP_PROXY_SOURCE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYFETCHDOCDATA = 158 [(_compat_renamed_from) = "Unanswer_PROXY_FETCH_DOC_DATA", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYFETCHDOCDATAPLATINUM = 159 [(_compat_renamed_from) = "Unanswer_PROXY_FETCH_DOC_DATA_PLATINUM", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYFETCHDOCDATAQUICKSAMOHODONMIDDLE = 160 [(_compat_renamed_from) = "Unanswer_PROXY_FETCH_DOC_DATA_QUICK_SAMOHOD_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYFETCHDOCDATAWEB = 161 [(_compat_renamed_from) = "Unanswer_PROXY_FETCH_DOC_DATA_WEB", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYFETCHDOCDATAWEBFRESHONMIDDLE = 162 [(_compat_renamed_from) = "Unanswer_PROXY_FETCH_DOC_DATA_WEBFRESH_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYFETCHDOCDATAWEBECOM1 = 163 [(_compat_renamed_from) = "Unanswer_PROXY_FETCH_DOC_DATA_WEB_ECOM_1", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYGREMLIN = 164 [(_compat_renamed_from) = "Unanswer_PROXY_GREMLIN", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYRAPIDCLICKSCONVERSSAAS = 165 [(_compat_renamed_from) = "Unanswer_PROXY_RAPID_CLICKS_CONVERS-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYRTMODELS = 166 [(_compat_renamed_from) = "Unanswer_PROXY_RTMODELS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPROXYRTMODELSFEATURESPERSONALMODEL = 167 [(_compat_renamed_from) = "Unanswer_PROXY_RTMODELS_FEATURES_PERSONAL_MODEL", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerQUICKSAMOHODONMIDDLE = 168 [(_compat_renamed_from) = "Unanswer_QUICK_SAMOHOD_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRANKINGMIDSAAS = 169 [(_compat_renamed_from) = "Unanswer_RANKING_MID-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRANKINGMIDBATCHSAAS = 170 [(_compat_renamed_from) = "Unanswer_RANKING_MID_BATCH-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRAPIDCLICKSCONVERSSAAS = 171 [(_compat_renamed_from) = "Unanswer_RAPID_CLICKS_CONVERS-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRTMODELSFEATURESPERSONALMODEL = 172 [(_compat_renamed_from) = "Unanswer_RTMODELS_FEATURES_PERSONAL_MODEL", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRTMRFACTORSAPI = 173 [(_compat_renamed_from) = "Unanswer_RTMR_FACTORS_API", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRTMRSTOCKSPERSONAL = 174 [(_compat_renamed_from) = "Unanswer_RTMR_STOCKS_PERSONAL", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRemoteStorage = 175 [(_compat_renamed_from) = "Unanswer_RemoteStorage", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRtModelsFPMFactors = 176 [(_compat_renamed_from) = "Unanswer_RtModelsFPMFactors", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerRtModelsFactors = 177 [(_compat_renamed_from) = "Unanswer_RtModelsFactors", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerSERPDATASAAS = 178 [(_compat_renamed_from) = "Unanswer_SERPDATA-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerSTOCKSRUNTIMEDATA = 179 [(_compat_renamed_from) = "Unanswer_STOCKS_RUNTIME_DATA", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerTWITTERTRBNOBACKEND = 180 [(_compat_renamed_from) = "Unanswer_TWITTER_TR_BNO_BACKEND", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerUSERHISTORYSAAS = 181 [(_compat_renamed_from) = "Unanswer_USER_HISTORY-SAAS", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerWEB = 182 [(_compat_renamed_from) = "Unanswer_WEB", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerWEBFRESHONMIDDLE = 183 [(_compat_renamed_from) = "Unanswer_WEBFRESH_ON_MIDDLE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerWEBECOM = 184 [(_compat_renamed_from) = "Unanswer_WEB_ECOM", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerWEBECOM1 = 185 [(_compat_renamed_from) = "Unanswer_WEB_ECOM_1", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerZDOCIDADVMACHINE = 186 [(_compat_renamed_from) = "Unanswer_ZDOCID_ADVMACHINE", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerMain = 187 [(_compat_renamed_from) = "Unanswer_main", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerPlatinumLower = 188 [(_compat_renamed_from) = "Unanswer_platinum", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string UnanswerWebLower = 189 [(_compat_renamed_from) = "Unanswer_web", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_rt_required) = true];
+    optional string Cached0TIERAUX = 190 [(_compat_renamed_from) = "Cached_0_TIER_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string Cached0TIERFACTOR = 191 [(_compat_renamed_from) = "Cached_0_TIER_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string Cached0TIERSEARCH = 192 [(_compat_renamed_from) = "Cached_0_TIER_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string Cached0TIERSNIPPET = 193 [(_compat_renamed_from) = "Cached_0_TIER_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBANFILTERSAASAUX = 194 [(_compat_renamed_from) = "Cached_BANFILTER-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBANFILTERSAASHAHNAUX = 195 [(_compat_renamed_from) = "Cached_BANFILTER-SAAS_HAHN_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBANFILTERSAASUAUX = 196 [(_compat_renamed_from) = "Cached_BANFILTER-SAAS_U_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtOwner = 197 [(_compat_renamed_from) = "Cached_BigRt_Owner", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtQueryDopp = 198 [(_compat_renamed_from) = "Cached_BigRt_QueryDopp", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtQueryDoppIpRegion = 199 [(_compat_renamed_from) = "Cached_BigRt_QueryDoppIpRegion", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtQueryDoppOs = 200 [(_compat_renamed_from) = "Cached_BigRt_QueryDoppOs", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtQueryDoppRegion = 201 [(_compat_renamed_from) = "Cached_BigRt_QueryDoppRegion", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtQueryDoppRegionLarge = 202 [(_compat_renamed_from) = "Cached_BigRt_QueryDoppRegionLarge", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtQueryLogDtBigramsCluster = 203 [(_compat_renamed_from) = "Cached_BigRt_QueryLogDtBigramsCluster", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedBigRtUrl = 204 [(_compat_renamed_from) = "Cached_BigRt_Url", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedCFGMODELSAUX = 205 [(_compat_renamed_from) = "Cached_CFG_MODELS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedCfgModels = 206 [(_compat_renamed_from) = "Cached_CfgModels", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedDYNTABLEHTTPPROXYSOURCEAUX = 207 [(_compat_renamed_from) = "Cached_DYNTABLE_HTTP_PROXY_SOURCE_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedECOMSNIPSSAASAUX = 208 [(_compat_renamed_from) = "Cached_ECOMSNIPS-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedFASTSNIPSSAASAUX = 209 [(_compat_renamed_from) = "Cached_FASTSNIPS-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedFASTSNIPSUSAASAUX = 210 [(_compat_renamed_from) = "Cached_FASTSNIPS_U-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedGEOSEARCHAUX = 211 [(_compat_renamed_from) = "Cached_GEOSEARCH_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedMIDDLEHOSTDATASAASAUX = 212 [(_compat_renamed_from) = "Cached_MIDDLE_HOST_DATA_SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedMODELSPROXYAUX = 213 [(_compat_renamed_from) = "Cached_MODELS_PROXY_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedNEWSTRBNOBACKENDAUX = 214 [(_compat_renamed_from) = "Cached_NEWS_TR_BNO_BACKEND_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPIRASNIPSSAASAUX = 215 [(_compat_renamed_from) = "Cached_PIRASNIPS-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPLATINUMFACTOR = 216 [(_compat_renamed_from) = "Cached_PLATINUM_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPLATINUMSEARCH = 217 [(_compat_renamed_from) = "Cached_PLATINUM_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPLATINUMSNIPPET = 218 [(_compat_renamed_from) = "Cached_PLATINUM_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPLUTOMETAAUX = 219 [(_compat_renamed_from) = "Cached_PLUTOMETA_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedQUICKSAMOHODONMIDDLEFACTOR = 220 [(_compat_renamed_from) = "Cached_QUICK_SAMOHOD_ON_MIDDLE_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedQUICKSAMOHODONMIDDLESEARCH = 221 [(_compat_renamed_from) = "Cached_QUICK_SAMOHOD_ON_MIDDLE_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedQUICKSAMOHODONMIDDLESNIPPET = 222 [(_compat_renamed_from) = "Cached_QUICK_SAMOHOD_ON_MIDDLE_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedRANKINGMIDSAASAUX = 223 [(_compat_renamed_from) = "Cached_RANKING_MID-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedRANKINGMIDBATCHSAASAUX = 224 [(_compat_renamed_from) = "Cached_RANKING_MID_BATCH-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedRAPIDCLICKSCONVERSSAASAUX = 225 [(_compat_renamed_from) = "Cached_RAPID_CLICKS_CONVERS-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedRTMODELSFEATURESPERSONALMODELAUX = 226 [(_compat_renamed_from) = "Cached_RTMODELS_FEATURES_PERSONAL_MODEL_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedRTMRFACTORSAPIAUX = 227 [(_compat_renamed_from) = "Cached_RTMR_FACTORS_API_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedRTMRSTOCKSPERSONALAUX = 228 [(_compat_renamed_from) = "Cached_RTMR_STOCKS_PERSONAL_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedSERPDATASAASAUX = 229 [(_compat_renamed_from) = "Cached_SERPDATA-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedSTOCKSRUNTIMEDATAAUX = 230 [(_compat_renamed_from) = "Cached_STOCKS_RUNTIME_DATA_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedSplitCfgModels = 231 [(_compat_renamed_from) = "Cached_SplitCfgModels", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedTWITTERTRBNOBACKENDAUX = 232 [(_compat_renamed_from) = "Cached_TWITTER_TR_BNO_BACKEND_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedUSERHISTORYSAASAUX = 233 [(_compat_renamed_from) = "Cached_USER_HISTORY-SAAS_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBFRESHONMIDDLEFACTOR = 234 [(_compat_renamed_from) = "Cached_WEBFRESH_ON_MIDDLE_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBFRESHONMIDDLESEARCH = 235 [(_compat_renamed_from) = "Cached_WEBFRESH_ON_MIDDLE_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBFRESHONMIDDLESNIPPET = 236 [(_compat_renamed_from) = "Cached_WEBFRESH_ON_MIDDLE_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBECOM1FACTOR = 237 [(_compat_renamed_from) = "Cached_WEB_ECOM_1_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBECOM1SEARCH = 238 [(_compat_renamed_from) = "Cached_WEB_ECOM_1_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBECOM1SNIPPET = 239 [(_compat_renamed_from) = "Cached_WEB_ECOM_1_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBFACTOR = 240 [(_compat_renamed_from) = "Cached_WEB_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBSEARCH = 241 [(_compat_renamed_from) = "Cached_WEB_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWEBSNIPPET = 242 [(_compat_renamed_from) = "Cached_WEB_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedZDOCIDADVMACHINEAUX = 243 [(_compat_renamed_from) = "Cached_ZDOCID_ADVMACHINE_AUX", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPlatinumFactorLower = 244 [(_compat_renamed_from) = "Cached_platinum_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPlatinumSearchLower = 245 [(_compat_renamed_from) = "Cached_platinum_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedPlatinumSnippetLower = 246 [(_compat_renamed_from) = "Cached_platinum_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWebFactorLower = 247 [(_compat_renamed_from) = "Cached_web_FACTOR", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWebSearchLower = 248 [(_compat_renamed_from) = "Cached_web_SEARCH", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string CachedWebSnippetLower = 249 [(_compat_renamed_from) = "Cached_web_SNIPPET", (_owner_fld) = "abc:mmeta-web", (_ttl) = 720, (_split_size_limit) = 0];
+    optional string ResultDocIdsD = 250 [(_compat_renamed_from) = "ResultDocIds.d", (_owner_fld) = "abc:mmeta-web", (_ttl) = 1080, (_split_size_limit) = 0];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/route/route.cpp
+message TPropRoute {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool IsSpokRelevLocale = 1;
+    repeated double NewRegionPLATINUM = 2;
+    repeated double NewRegionQUICKSAMOHODONMIDDLE = 3 [(_compat_renamed_from) = "NewRegionQUICK_SAMOHOD_ON_MIDDLE"];
+    repeated double NewRegionWEB = 4;
+    repeated double NewRegionWEBFRESHONMIDDLE = 5 [(_compat_renamed_from) = "NewRegionWEBFRESH_ON_MIDDLE"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/saas_snippets/saas_snippets.cpp
+message TPropSaasSnippets {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> Req = 1 [(_compat_renamed_prefix) = "Req/"];
+    map<string, string> Resp = 2 [(_compat_renamed_prefix) = "Resp/"];
+}
+
+message TPropSamokhodBaseTier {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> HasAllWordsTRFm = 1 [(_compat_renamed_prefix) = "HasAllWordsTRFm_"];
+}
+
+message TPropStabilityCacheKey {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 L3 = 1;
+    optional uint64 Result = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/telegram_reference/telegram_reference.cpp
+message TPropTelegramReference {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double TelegramReference = 1 [(_compat_renamed_from) = "telegram_reference"];
+}
+
+message TPropTier {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Tier1 = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/trash/trash.cpp
+message TPropTrash {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 Adv = 1 [(_compat_renamed_from) = "adv"];
+    optional string PosInfo = 2 [(_compat_renamed_from) = "pos_info"];
+    optional string RelevInfo = 3 [(_compat_renamed_from) = "relev_info"];
+    map<uint64, uint64> TrashPessimizedCount = 4 [(_compat_renamed_prefix) = "trash_pessimized_count_"];
+    map<uint64, uint64> UnderPessimizedCount = 5 [(_compat_renamed_prefix) = "under_pessimized_count_"];
+    optional string Yellow = 6 [(_compat_renamed_from) = "yellow"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/turbo_page_checker/turbo_page_checker.cpp
+message TPropTurboPageChecker {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool TurboHostDataSaas = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/ungroup_small/ungroup_small.cpp
+message TPropUngroupSmall {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Count = 1 [(_compat_renamed_from) = "count"];
+    optional uint64 Documents = 2 [(_compat_renamed_from) = "documents"];
+    optional uint64 Ungrouped = 3 [(_compat_renamed_from) = "ungrouped"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/ungroup_vital/ungroup_vital.cpp
+message TPropUngroupVital {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 AvailableDocsCount = 1;
+    optional uint64 InsertedDocs = 2;
+    optional uint64 MetaGroupsToMergeSize = 3 [(_compat_renamed_from) = "meta_groups_to_merge_size"];
+    optional uint64 Documents = 4 [(_compat_renamed_from) = "docs"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/user_grouping_transport/user_grouping_transport.cpp
+message TPropUserGroupingsSave {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Saved = 1 [(_compat_renamed_from) = "saved"];
+    optional string SavedGroupWithName = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videodyntop/videodyntop.cpp
+message TPropVideoDynamicTopSizes {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double DynamicL1TopSize = 1;
+    optional double DynamicNewL1TopSize = 2;
+    optional string FormulaName = 3;
+    optional string NewL1FormulaName = 4;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_touch_ban/video_touch_ban.cpp
+message TPropVideoTouchBan {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 VideoTouchBanWorked = 1 [(_compat_renamed_from) = "VideoTouchBan_worked"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/formula_chooser/formula_chooser.cpp
+message TPropWebFormulaChooser {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Deduction = 1;
+    reserved 2;
+    optional string FlagsVal = 3;
+    optional uint64 SuccessCaseId = 4;
+    optional uint64 UsedMappingsId = 5;
+    map<string, string> Deduced = 6 [(_compat_renamed_prefix) = "Deduced", (_infinite_ttl) = true];
+    map<string, string> Unmatched = 10 [(_compat_is_default_container) = true];
+    optional string DeducedL3Var = 11 [(_compat_renamed_from) = "DeducedL3Var", (_infinite_ttl) = true];
+    optional string DeducedL4PersVar = 12 [(_compat_renamed_from) = "DeducedL4PersVar", (_infinite_ttl) = true];
+    optional string DeducedL2Var = 13 [(_compat_renamed_from) = "DeducedL2Var", (_infinite_ttl) = true];
+    optional string DeducedBanL2Var = 14 [(_compat_renamed_from) = "DeducedBanL2Var", (_infinite_ttl) = true];
+}
+
+message TPropWebTier1 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> HasAllWordsTRFm = 1 [(_compat_renamed_prefix) = "HasAllWordsTRFm_"];
+}
+
+message TPropL4Pers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated double NewOrder = 1 [(_infinite_ttl) = true];
+    optional double Effect = 2 [(_infinite_ttl) = true];
+    optional uint64 FirstTouched = 3 [(_infinite_ttl) = true];
+    optional bool Success = 4;
+}
+
+
+message TPropUserHistory {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 LongClicksAmount = 1;
+    optional uint64 OldestLongClickTimestamp = 2;
+    optional uint64 OldestRequestTimestamp = 3;
+    optional uint64 RequestAmount = 4;
+    optional uint64 RequestAmountLastDay = 5;
+    optional uint64 RequestAmountLastMonth = 6;
+    optional uint64 RequestAmountLastWeek = 7;
+}
+
+message TPropLogPrsFactorsStat {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 AllCount = 1;
+    map<uint64, uint64> NonZero = 2 [(_compat_renamed_prefix) = "NonZero"];
+}
+
+message TPropFormulasBundle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string PrsFormulas = 1;
+    optional string ArsFormulas = 2;
+    optional uint32 LandingDocs = 3;
+    optional uint32 UsedGenerationId = 4;
+    optional string QueryFormulas = 5;
+    optional string QueryFormulasPredicts = 6;
+    optional string PrePrsFormulas = 7;
+    optional string AfterArsFormulas = 8;
+    optional uint64 DocsInArsNonSeenInPrs = 9;
+
+    map<string, string> Unmatched = 10 [(_compat_is_default_container) = true];
+}
+
+message TPropNavParasites {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional float Parasite = 1 [(_compat_renamed_from) = "parasite"];
+    map<string, string> Unmatched = 10 [(_compat_is_default_container) = true];
+}
+
+message TPropAdditiveBoostRearrange {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AdditiveBoostBannedUrlsInPrsTop = 1;
+    optional bool AdditiveBoostDiff = 2;
+    optional uint64 DocsForAdditiveBoostCountInPrs = 3;
+    optional uint64 DocsForAdditiveBoostCountInPrsTop = 4;
+    optional uint64 DocsForAdditiveBanCountInPrs = 5;
+    optional uint64 DocsForAdditiveBanCountInPrsTop = 6;
+    map<string, string> Unmatched = 7 [(_compat_is_default_container) = true];
+    optional string AdditiveBoostBannedUrlsInArsTop = 8;
+    optional bool AdditiveBoostArsDiff = 9;
+    optional uint64 DocsForAdditiveBoostCountInArs = 10;
+    optional uint64 DocsForAdditiveBoostCountInArsTop = 11;
+    optional uint64 DocsForAdditiveBanCountInArs = 12;
+    optional uint64 DocsForAdditiveBanCountInArsTop = 13;
+}
+
+message TPropWebClientAdjuster {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool WithConstraints = 1;
+    optional bool PassAll = 2;
+    optional bool MobileStoresL2Boost = 3;
+    optional bool WithAttrs = 4;
+    optional bool Candgen = 5;
+    optional bool SearchL2 = 6;
+    optional uint64 KnownFiltersCount = 7;
+    map<string, string> Unmatched = 10 [(_compat_is_default_container) = true];
+}
+
+message TPropWebFeaturesRemap {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string WorkedRemap = 1;
+    map<string, string> Unmatched = 10 [(_compat_is_default_container) = true];
+}
+
+message TPropMissingWords {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Worked = 1;
+    optional string Disabled = 2;
+    optional string Errors = 3;
+    optional string RuleParams = 4;
+    optional string FilteringOptionsVersion = 5;
+    map<string, string> DryRunWorked = 6 [(_compat_renamed_prefix) = "DryRun_Worked_"];
+}
+
+message TPropStockinWizardMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 CountMatchedUrls = 1;
+    optional string InstrumentId = 2;
+}
+
+message TPropYtierBooster {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    map<string, uint64> YtierTop20 = 1 [(_compat_renamed_prefix) = "YtierTop20_"];
+}
+
+message TPropMiniappMixer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 FeedDocsCountInPrs = 1;
+}
+
+message TPropSensitiveRearrange {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional float HPDetectorPredict = 1;
+    optional uint64 NumDocsForPossibleBoost = 2;
+}
+
+message TPropFilterTranslated {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    map<uint64, uint64> TranslatedDocsInTop = 1 [(_compat_renamed_prefix) = "TranslatedDocsInTop"];
+    map<uint64, uint64> TranslatedWikiDocsInTop = 2 [(_compat_renamed_prefix) = "TranslatedWikiDocsInTop"];
+    optional uint64 TranslatedDocsInTop5 = 3 [(_compat_renamed_from) = "TranslatedDocsInTop5"];
+    optional uint64 TranslatedDocsInTop10 = 4 [(_compat_renamed_from) = "TranslatedDocsInTop10"];
+    optional uint64 TranslatedDocsInTop20 = 5 [(_compat_renamed_from) = "TranslatedDocsInTop20"];
+    optional uint64 TranslatedWikiDocsInTop5 = 6 [(_compat_renamed_from) = "TranslatedWikiDocsInTop5"];
+    optional uint64 TranslatedWikiDocsInTop10 = 7 [(_compat_renamed_from) = "TranslatedWikiDocsInTop10"];
+    optional uint64 TranslatedWikiDocsInTop20 = 8 [(_compat_renamed_from) = "TranslatedWikiDocsInTop20"];
+}
+
+message TPropLua {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 MobileFriendlyBoostFetchBoostedDocs = 1 [(_compat_renamed_from) = "MobileFriendlyBoost_fetch_boosted_docs"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/stocks_wizard_middle/stocks_wizard_middle.cpp
+message TPropStocksWizardMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 CountMatchedUrls = 1;
+    optional string InstrumentId = 2 [(_split_size_limit) = 5];
+    optional uint64 NoDataFromRTMRForCarouselErrors = 3;
+    optional uint64 PersonalizationKeysCount = 4;
+    optional bool SendDataFromMiddle = 5;
+    optional bool NoRTMRDataForMainInstrument = 6;
+}
+
+message TPropDedublicateOrganicByOwner {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AllPagesHasFilteredDocs = 1;
+    optional bool FirstPageHasFilteredDocs = 2;
+    map<string, uint64> AllPagesFilteredOwners = 3 [(_compat_renamed_prefix) = "AllPagesFilteredOwners_", (_split_size_limit) = 50];
+    map<string, uint64> FirstPageFilteredOwners = 4 [(_compat_renamed_prefix) = "FirstPageFilteredOwners_", (_split_size_limit) = 50];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/history/search/web/extensions/rearrange/ecom_trafaret/ecom_trafaret.cpp
+message TPropEcomTrafaret {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    repeated uint64 EcomTrafaretFilteredIndexes = 1;
+    optional uint64 EcomTrafaretGroupingSize = 2;
+}
+
+message TPropQuerydepGeneratedTitlesMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional uint64 CountUrl = 1;
+    optional string PositionUrls = 2;
+}
+
+message TPropRealTimeEcomContext {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string OfferExpFactors = 1;
+    optional string HostExpFactors = 2;
+}
+
+message TPropEcomThompsonSamplingContext {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 SaasClickResponsesCount = 1;
+    optional uint64 SaasHostsResponsesCount = 2;
+    optional uint64 HostSamplesCount = 3;
+    optional uint64 SelectedDocsCount = 4;
+    optional string DebugDump = 5;
+}
+
+message TPropEcomGroupingMiddleContext {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    // capture AfterMergeOfferCount, AfterMergeListingCount, AfterMergeArticleCount, AfterMergeOtherCount, AfterMergeNavCount, etc
+    map<string, uint32> Count = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "Count"];
+};
+
+message TPropRandomShuffleOrganic {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Reorder = 1;
+}
+
+message TEcomLogEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool HasDocFromCandgen = 1;
+    optional bool HasRelDocFromCandgen = 2;
+    optional bool HasDocFromWebEcom = 3;
+    optional bool HasRelDocFromWebEcom = 4;
+    optional bool HasDocFromWebEcom1 = 5;
+    optional bool HasRelDocFromWebEcom1 = 6;
+    optional bool HasDocFromWebEcom2 = 7;
+    optional bool HasRelDocFromWebEcom2 = 8;
+}
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional TPropPrsLog PrsLog = 1 [(_split_size_limit) = 0, (_owner_fld) = "abc:buki", (_ttl) = 360];
+    optional TPropAchievement Achievement = 2 [(_split_size_limit) = 100];
+    optional TPropAdjustSerpSize AdjustSerpSize = 3 [(_split_size_limit) = 5, (_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+    optional TPropAntiDup AntiDup = 4 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropAntiDup AntiDup0 = 5 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropAntispam Antispam = 6 [(_split_size_limit) = 0, (_ttl) = 1080, (_owner_fld) = "abc:searchspam"];
+    optional TPropAviaMiddle AviaMiddle = 7 [(_split_size_limit) = 90];
+    optional TPropBigNavAnswer BigNavAnswer = 8 [(_split_size_limit) = 15];
+    optional TPropCallistoSlotsTier0 CallistoSlotsTier0 = 9 [(_compat_path_separator) = "/", (_split_size_limit) = 0, (_owner_fld) = "abc:basesearch", (_ttl) = 360];
+    optional TPropConditionalSerpDataWriter ConditionalSerpDataWriter = 10 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropVideoDynamicTopSizes DynamicTopSizes = 11 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropEntitySearchMiddle EntitySearchMiddle = 12 [(_split_size_limit) = 20];
+    optional TPropFamilyFilter FamilyFilter = 13 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:antiporno"];
+    optional TPropFilterBanned FilterBanned = 14 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:searchspam"];
+    optional TPropFilterLandingGrouping FilterLandingGrouping = 15 [(_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:unisearch"];
+    optional TPropFreshDetector FreshDetector = 16 [(_split_size_limit) = 0, (_infinite_ttl) = true, (_owner_fld) = "abc:buki"];
+    optional TPropGenToLocalDomain GenToLocalDomain = 17 [(_split_size_limit) = 0, (_ttl) = 30];
+    optional TPropGroupingHash GroupingHash = 18 [(_split_size_limit) = 0, (_ttl) = 30];
+    optional TPropHoleDetector HoleDetector = 19 [(_split_size_limit) = 0, (_infinite_ttl) = true, (_owner_fld) = "abc:ads"];
+    optional TPropL1 L1 = 20 [(_compat_renamed_from) = "", (_split_size_limit) = 0, (_owner_fld) = "abc:buki"];
+    optional TPropLingBoost LingBoost = 21 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:boostingwizard"];
+    optional TPropLingBoost LingBoostL2 = 22 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:boostingwizard"];
+    optional TPropMiniappGrouping MiniappGrouping = 23 [(_split_size_limit) = 5];
+    optional TPropMobile Mobile = 24 [(_split_size_limit) = 5];
+    optional TPropNarcoPess NarcoPess = 25 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:searchspam"];
+    optional TPropOrgWizardMiddle OrgWizardMiddle = 26 [(_split_size_limit) = 95];
+    optional TPropPanther Panther = 27 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropPlatinumTier0 PlatinumTier0 = 28 [(_compat_path_separator) = "/", (_split_size_limit) = 0, (_ttl) = 30];
+    optional TPropPorno Porno = 29 [(_owner_fld) = "abc:searchspam", (_infinite_ttl) = true];
+    optional TPropPressportret Pressportret = 30 [(_split_size_limit) = 0, (_ttl) = 0];
+    optional TPropProximaPredict ProximaPredict = 31 [(_split_size_limit) = 0, (_ttl) = 1080, (_owner_fld) = "abc:buki"];
+    optional TPropPrsFreshnessLog PrsFreshnessLog = 32 [(_split_size_limit) = 0, (_ttl) = 1080, (_owner_fld) = "abc:webfresh"];
+    optional TPropPrsLogFinal PrsLogFinal = 33 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropQuerySearchRequest QuerySearchRequest = 34 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:searchspam"];
+    optional TPropQuerySearchResponse QuerySearchResponse = 35 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:searchspam"];
+    optional TPropRanges Ranges = 36 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:buki"];
+    optional TPropRapidClicks RapidClicks = 37 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:searchpers"];
+    optional TPropRoot Root = 38 [(_compat_renamed_from) = "", (_split_size_limit) = 13500];
+    optional TPropRoute Route = 39 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:buki"];
+    optional TPropSaasSnippets SaasSnippets = 40 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:mmeta-web"];
+    optional TPropSamokhodBaseTier SamokhodBaseTier = 41 [(_compat_path_separator) = "/", (_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:basesearch"];
+    optional TPropStabilityCacheKey StabilityCacheKey = 42 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:mmeta-web"];
+    optional TPropTier Tier = 43 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:mmeta-web"];
+    optional TPropTrash Trash = 44 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:buki"];
+    optional TPropTurboPageChecker TurboPageChecker = 45 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:mmeta-web"];
+    optional TPropUngroupSmall UngroupSmall = 46 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:buki"];
+    optional TPropUngroupVital UngroupVital = 47 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:buki"];
+    optional TPropUserGroupingsSave UserGroupingsSave = 48 [(_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:unisearch"];
+    optional TPropVideoDynamicTopSizes VideoDynamicTopSizes = 49 [(_split_size_limit) = 0]; //TODO: remove
+    optional TPropVideoTouchBan VideoTouchBan = 50 [(_split_size_limit) = 0];
+    optional TPropWebFormulaChooser WebFormulaChooser = 51  [(_owner_fld) = "abc:buki", (_split_size_limit) = 0, (_infinite_ttl) = true];
+    optional TPropWebTier1 WebTier1 = 52 [(_compat_path_separator) = "/", (_split_size_limit) = 0, (_ttl) = 30, (_owner_fld) = "abc:basesearch"];
+    optional TPropL4Pers L4Pers = 53 [(_split_size_limit) = 195, (_ttl) = 30, (_owner_fld) = "abc:buki"];
+    optional string RapidClicksBigRTResponse = 54 [(_owner_fld) = "abc:searchpers", (_split_size_limit) = 0, (_ttl) = 30];
+    optional string SearchPersBigRTProfile = 55 [(_compat_renamed_from) = "SearchPersBigRTProfile.nodump", (_owner_fld) = "abc:searchpers", (_ttl) = 360, (_split_size_limit) = 0];
+    optional string UserHistoryResponse = 56 [(_owner_fld) = "abc:buki", (_ttl) = 0, (_split_size_limit) = 0];
+
+    optional TPropUserHistory UserHistory = 57 [(_split_size_limit) = 0, (_owner_fld) = "abc:searchpers", (_ttl) = 360];
+    optional TPropLogPrsFactorsStat LogPrsFactorsStat = 58 [(_split_size_limit) = 0, (_owner_fld) = "abc:buki", (_ttl) = 30];
+    optional TPropFormulasBundle FormulasBundle = 59  [(_owner_fld) = "abc:relev_tools", (_split_size_limit) = 0, (_ttl) = 360];
+    optional string PantherRequest = 60 [(_split_size_limit) = 0, (_owner_fld) = "abc:mmeta-web", (_ttl) = 0]; //TODO: remove/move it as other potentially heavy binary data?
+    optional TPropNavParasites NavParasites = 61 [(_split_size_limit) = 0, (_owner_fld) = "abc:searchspam", (_ttl) = 360];
+
+    optional NScarabProto.NReport.NSearchProps.NCommon.TPropConfigurableRearrangeApplier ConfigurableRearrangeApplier = 62 [
+        (_owner_fld) = "abc:relev_tools",
+        (_split_size_limit) = 470
+    ];
+
+    optional TPropWebClientAdjuster WebClientAdjuster = 63 [(_split_size_limit) = 0, (_owner_fld) = "abc:relev_tools", (_ttl) = 30];
+    optional TPropWebFeaturesRemap FeaturesRemap = 64 [(_owner_fld) = "abc:relev_tools", (_split_size_limit) = 0, (_ttl) = 30];
+    optional TPropMissingWords MissingWords = 65 [(_owner_fld) = "abc:relev_tools", (_split_size_limit) = 0, (_ttl) = 30];
+    optional TPropAdditiveBoostRearrange AdditiveBoostRearrange = 66 [(_owner_fld) = "abc:relev_tools", (_split_size_limit) = 0, (_ttl) = 360];
+    map<string, string> LuaExp = 67 [(_compat_renamed_prefix) = "LuaExp", (_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:mmeta-web"];//deprecated a long time ago
+    optional TPropStockinWizardMiddle StockingWizardsMiddle = 68 [(_compat_disabled) = true];
+    optional TPropYtierBooster YtierBooster = 69 [(_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:mmeta-web"];
+    optional TPropMiniappMixer MiniappMixer = 70 [(_split_size_limit) = 5];
+    optional TPropSensitiveRearrange SensitiveRearrange = 71 [(_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:relev_tools"];
+    optional TPropFilterTranslated FilterTranslated = 72 [(_split_size_limit) = 0, (_ttl) = 1080, (_owner_fld) = "abc:cross_language_search"];
+    optional TPropLua Lua = 73 [(_split_size_limit) = 0, (_ttl) = 0, (_owner_fld) = "abc:mmeta-web"];
+    optional TPropCurrencyConverterMiddle CurrencyConverterMiddle = 74 [(_split_size_limit) = 0, (_owner_fld) = "abc:blndr", (_ttl) = 1080];
+    optional TPropStocksWizardMiddle StocksWizardMiddle = 75 [(_split_size_limit) = 0, (_owner_fld) = "abc:blndr", (_ttl) = 1080];
+    optional string DocumentsStats = 76 [(_split_size_limit) = 0, (_ttl) = 1080, (_owner_fld) = "abc:buki"];
+    optional TPropNewsBlockMiddle NewsBlockMiddle = 77 [(_split_size_limit) = 0, (_owner_fld) = "abc:blndr", (_ttl) = 1080];
+    optional TPropTelegramReference TelegramReference = 78 [(_split_size_limit) = 20, (_ttl) = 1080, (_owner_fld) = "abc:buki"];
+    optional TPropDedublicateOrganicByOwner DedublicateOrganicByOwner = 79 [(_split_size_limit) = 0, (_owner_fld) = "abc:unisearch"];
+    optional string TopDocsL2Features = 80 [(_split_size_limit) = 0, (_owner_fld) = "abc:relev_tools"];
+    optional TPropFilterBannedLight FilterBannedLight = 81 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:searchspam"];
+    optional TPropEcomTrafaret EcomTrafaret = 82 [(_owner_fld) = "abc:commercial", (_split_size_limit) = 0];
+    optional TPropContentFilter ContentFilter = 83 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:searchspam"];
+    optional TPropQuerydepGeneratedTitlesMiddle QuerydepGeneratedTitlesMiddle = 84 [(_split_size_limit) = 0, (_ttl) = 720, (_owner_fld) = "abc:blndr"];
+    optional TPropRealTimeEcomContext RealTimeEcomContext = 85 [(_split_size_limit) = 0, (_owner_fld) = "abc:blndr", (_ttl) = 1080];
+    optional NSearch.NResourceUsageStats.TSmallVersion ResourceUsageStats = 86 [(_split_size_limit) = 0, (_owner_fld) = "abc:webbasesearchsshsudo", (_ttl) = 360];
+    optional TPropEcomThompsonSamplingContext EcomThompsonSamplingMiddle = 87 [(_split_size_limit) = 0, (_owner_fld) = "abc:blndr", (_ttl) = 1080];
+    optional TPropRandomShuffleOrganic RandomShuffleOrganic = 88 [(_split_size_limit) = 0, (_owner_fld) = "abc:web-conveyor", (_ttl) = 60];
+    optional TPropFilterPirate FilterPirate = 89 [(_split_size_limit) = 0, (_ttl) = 360, (_owner_fld) = "abc:searchspam"];
+    optional TPropEcomGroupingMiddleContext EcomGroupingMiddle = 90 [(_split_size_limit) = 0, (_owner_fld) = "abc:blndr", (_ttl) = 360];
+    optional TEcomLogEvent EcomLogEvent = 91 [(_split_size_limit) = 0, (_owner_fld) = "abc:ecom_ranking", (_ttl) = 360];
+} // next: 92

@@ -1,0 +1,24 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/extension.proto";
+
+import "scarab/api/proto/common/generic.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="CommonDataForRab";
+
+message TRABCommonPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional bool FromBeta = 4 [(NUserSessions.tskv_name) = "from_beta"];
+    optional bytes Service = 5 [(NUserSessions.tskv_name) = "service"];
+    optional uint64 Timestamp = 6;
+
+    optional NScarabProto.NCommon.TIpAddress UserIp = 7;
+
+    optional bytes UIType = 8 [(NUserSessions.tskv_name) = "ui"];
+    optional bytes UserAgentRaw = 9 [(NUserSessions.tskv_name) = "u-agent"];
+    optional bytes Referer = 10 [(NUserSessions.tskv_name) = "referer"];
+    optional bytes Query = 11 [(NUserSessions.tskv_name) = "query"];
+    optional bytes PassportUIDHash = 12;
+}

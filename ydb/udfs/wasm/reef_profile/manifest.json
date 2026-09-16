@@ -1,0 +1,80 @@
+{
+  "module_name": "ReefProfile",
+  "calling_convention": "bridge",
+  "module_extension": "wasm",
+  "required_libraries": ["sdk"],
+  "functions": [
+    {
+      "name": "ParseReefRequestProfile",
+      "export": "parse_reef_request_profile",
+      "argument_types": [
+        {
+          "value": "struct",
+          "tag": "concrete_type",
+          "members": [
+            {"name": "user_id", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "reqid", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "codec", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_blockstat_data", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_blockstat_data_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_redir_data", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_redir_data_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_clicks_data", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_clicks_data_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_common_data", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_common_data_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_request_clicks_common_info", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_request_clicks_common_info_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_techs_data", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_techs_data_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_feeds_output_cache", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_feeds_output_cache_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_tamus_worked_rules", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}},
+            {"name": "packed_tamus_worked_rules_patch", "type": {"value": "optional", "tag": "concrete_type", "item": {"value": "string", "tag": "concrete_type"}}}
+          ]
+        },
+        {
+          "value": "optional",
+          "tag": "concrete_type",
+          "item": {
+            "value": "dict",
+            "tag": "concrete_type",
+            "key": {"value": "string", "tag": "concrete_type"},
+            "payload": {"value": "int64", "tag": "concrete_type"}
+          }
+        }
+      ],
+      "result_type": {
+        "value": "optional",
+        "tag": "concrete_type",
+        "item": {"value": "string", "tag": "concrete_type"}
+      }
+    },
+    {
+      "name": "ParseReefRequestProfileProto",
+      "export": "parse_reef_request_profile_proto",
+      "argument_types": [
+        {
+          "value": "optional",
+          "tag": "concrete_type",
+          "item": {"value": "string", "tag": "concrete_type"}
+        },
+        {
+          "value": "optional",
+          "tag": "concrete_type",
+          "item": {
+            "value": "dict",
+            "tag": "concrete_type",
+            "key": {"value": "string", "tag": "concrete_type"},
+            "payload": {"value": "int64", "tag": "concrete_type"}
+          }
+        }
+      ],
+      "result_type": {
+        "value": "optional",
+        "tag": "concrete_type",
+        "item": {"value": "string", "tag": "concrete_type"}
+      }
+    }
+  ]
+}

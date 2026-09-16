@@ -1,0 +1,42 @@
+import "yt/yt_proto/yt/formats/extension.proto";
+
+package NSearch.NResourceUsageStats;
+
+option go_package = "a.yandex-team.ru/search/common/resource_usage_stats/proto/small_version;small_version";
+
+message TSmallVersionByServiceName {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Base = 1;
+    optional uint64 IntL1 = 2;
+    optional uint64 IntL2 = 3;
+    optional uint64 Keyinv = 4;
+    optional uint64 Attribute = 5;
+    optional uint64 EmbeddingStorage = 6;
+    optional uint64 Merger = 7;
+    optional uint64 SVS = 8;
+}
+
+message TSmallVersionByRequestType {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TSmallVersionByServiceName Search = 1;
+    optional TSmallVersionByServiceName Factor = 2;
+    optional TSmallVersionByServiceName Snippet = 3;
+}
+
+message TSmallVersionByTier {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TSmallVersionByRequestType WebTier0 = 1;
+    optional TSmallVersionByRequestType PlatinumTier0 = 2;
+    optional TSmallVersionByRequestType WebFreshTier = 3;
+    optional TSmallVersionByRequestType QuickTier = 4;
+    optional uint64 Middle = 5;
+}
+
+message TSmallVersion {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TSmallVersionByTier CpuTimeMilliseconds = 1;
+}

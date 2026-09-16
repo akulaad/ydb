@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NImagesRelev;
+
+// Source definition
+message TImagesRelev {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated uint64 Vserials = 1 [(_compat_renamed_from) = "vserials"];
+}

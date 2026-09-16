@@ -79,9 +79,10 @@ ELSEIF (OS_EMSCRIPTEN AND ARCH_WASM64)
     PEERDIR(
         contrib/restricted/emscripten/include
     )
+    # No -D__WASM_EXCEPTIONS__: that path needs -fwasm-exceptions (Tag section
+    # id 13). Match wasm32 and keep the abort stub in Unwind-wasm.c.
     CFLAGS(
         -D_LIBUNWIND_HIDE_SYMBOLS
-        -D__WASM_EXCEPTIONS__
         -Wno-c23-extensions
     )
     SRCS(

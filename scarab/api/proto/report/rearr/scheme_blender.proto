@@ -1,0 +1,60 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NRearr;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/rearr";
+
+// Props definitions
+
+message TPropAntiwizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool InfluencedVideo = 1 [(_compat_renamed_from) = "influenced/video"];
+}
+
+message TPropCfg {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool DumpDocTextFeatures = 1 [(_compat_renamed_from) = "dump_doc_text_features"];
+    map<string, bool> LandingsDisabledReasons = 2 [(_compat_renamed_prefix) = "landings/DisabledReasons/"];
+    map<string, string> LandingsIntentSubstitute = 3 [(_compat_renamed_prefix) = "landings/IntentSubstitute/"];
+    map<string, bool> LandingsPriority = 4 [(_compat_renamed_prefix) = "landings/Priority/"];
+}
+
+message TPropCommands {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AfterBlend = 1 [(_compat_renamed_prefix) = "after_blend/"];
+    map<string, string> AfterCalculateIntentWeight = 2 [(_compat_renamed_prefix) = "after_calculate_intent_weight/"];
+    map<string, string> BeforeCalculateIntentWeight = 3 [(_compat_renamed_prefix) = "before_calculate_intent_weight/"];
+}
+
+message TPropFml {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool GEOVNoset = 1 [(_compat_renamed_from) = "GEOV/noset"];
+}
+
+message TPropGEOV {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double WeightF = 1 [(_compat_renamed_from) = "weightF"];
+}
+
+// Source definition
+message TRearrSchemeBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropAntiwizard Antiwizard = 1 [(_compat_renamed_from) = "antiwizard", (_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropCfg Cfg = 2 [(_compat_renamed_from) = "cfg",  (_compat_path_separator) = "/", (_split_size_limit) = 60];
+    optional TPropCommands Commands = 3 [(_compat_renamed_from) = "commands", (_compat_path_separator) = "/", (_split_size_limit) = 5200];
+    optional bool Enabled = 4 [(_compat_renamed_from) = "enabled"];
+    optional TPropFml Fml = 5 [(_compat_renamed_from) = "fml", (_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropGEOV GEOV = 6 [(_split_size_limit) = 5];
+    optional string WizOnly = 7 [(_compat_renamed_from) = "wiz_only", (_split_size_limit) = 5];
+}

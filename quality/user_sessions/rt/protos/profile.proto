@@ -1,0 +1,72 @@
+package NUserSessions.NRT;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+
+import "quality/user_sessions/rt/protos/common/enum.proto";
+import "quality/user_sessions/rt/protos/common/misc.proto";
+import "scarab/api/proto/report/rearr/root.proto";
+import "scarab/api/proto/report/relev/relev.proto";
+import "scarab/api/proto/report/search_props/UPPER.proto";
+import "scarab/api/proto/report/search_props/WEB.proto";
+
+import "yt/yt_proto/yt/core/yson/proto/protobuf_interop.proto";
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos;user_sessions";
+
+
+message TProfileMessage {
+    message TInfo {
+        // fields for images & video
+        optional string ServiceDomRegion = 1;
+        optional EUserInterface UserInterface = 2;
+        optional string CorrectedQuery = 3;
+        optional uint32 PageNo = 4;
+        // field for exp
+        optional bool UseInMLDebugExp = 5;
+
+        optional bytes RelevBytes = 6;
+        optional bytes RearrBytes = 7;
+        optional bytes DocumentsBytes = 8;
+
+        repeated TSlot Slots = 9;
+
+        reserved 10; // was IsProtoReqans
+
+        optional string UserAgent = 11;
+
+        optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB = 12;
+        optional NScarabProto.NReport.NSearchProps.NUPPER.TSource SearchPropsUPPER = 13;
+        optional NScarabProto.NReport.NRearr.TRearr Rearr = 14;
+
+        // heights for baobab blocks (blockId => height)
+        map<string, uint32> BlockHeights = 15 [(NYT.NYson.NProto.yson_map) = true];
+
+        optional string BrowserAndVersion = 16;
+        optional string UserIP = 17;
+
+        optional string PassportUIDKey = 18;
+
+        optional uint32 UserRegion = 19;
+        optional uint64 SearchRegion = 20;
+
+        optional NScarabProto.NReport.NRelev.TRelev Relev = 21;
+        optional bytes FullRequest = 22;
+    }
+
+    optional string UserID = 1 [(NYT.key_column_name) = "user_id"];
+    optional string RequestID = 2 [(NYT.key_column_name) = "reqid"];
+    optional string Query = 3 [(NYT.column_name) = "query"];
+    // for now there's no convenient way to map proto map onto yson one
+    // next 4 fields can be obtained via UnpackMessage before use
+    optional bytes Relev = 4 [(NYT.column_name) = "relev"];
+    optional bytes Rearr = 9 [(NYT.column_name) = "rearr"];
+
+    optional bytes Documents = 5 [(NYT.column_name) = "documents"];
+
+    optional bytes CompressedInfo = 10 [(NYT.column_name) = "compressed_info"];
+    // should not be present on YT
+    optional TInfo Info = 11 [(NYT.column_name) = "info"];
+    optional string Codec = 12 [(NYT.column_name) = "codec"];
+
+    optional uint64 NextDelayedEventIndex = 6 [(NYT.column_name) = "next_delayed_event_index", default = 0];
+}

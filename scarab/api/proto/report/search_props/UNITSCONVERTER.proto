@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUNITSCONVERTER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/UNITSCONVERTER";
+// Props definitions
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string WizardSubtypeBeforeBlending = 1 [(_split_size_limit) = 5];
+}

@@ -1,0 +1,1363 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NRearr;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/rearr";
+
+// Props definitions
+
+message TPropAchievement {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string HostNamespace = 1;
+    optional string OwnerNamespace = 2;
+    optional string UrlNamespace = 3;
+}
+
+message TPropAdditionalFormulaCalculator {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropAntiDup {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string GlueMainContentUrl = 1;
+    optional string GlueRelCanonical = 2;
+    optional bool Info = 3;
+}
+
+message TPropAntiDup0 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Info = 1;
+}
+
+message TPropAppSearchViewport {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool EasyBlendEnable = 1;
+}
+
+//deprecated
+message TPropApplyAdsBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string TargetGrouping = 1;
+}
+
+message TPropApplyBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, double> BlenderCfgIntentPriorities = 1 [(_compat_renamed_prefix) = "blender/cfg/intent_priorities/"];
+    map<string, string> BlenderCfgLandingsDisabledReasons = 2 [(_compat_renamed_prefix) = "blender/cfg/landings/DisabledReasons/"];
+    map<string, uint64> BlenderCommandsAfterBlend = 3 [(_compat_renamed_prefix) = "blender/commands/after_blend/"];
+    optional bool CollectDataWizardGeoAddrRouteAviaCompany = 4 [(_compat_renamed_from) = "collect_data/Wizard/GeoAddrRoute/AviaCompany"];
+    optional string CommerciallyTrustedRules = 5;
+    optional bool CommerciallyTrustedRulesQdWizards = 6 [(_compat_renamed_from) = "CommerciallyTrustedRules/QdWizards"];
+    optional string CommerciallyTrustedRulesTalents = 7 [(_compat_renamed_from) = "CommerciallyTrustedRules/Talents"];
+    optional bool DumpAllCommercialDynamic = 8;
+    optional bool DumpAllDynamicFeatures = 9;
+    optional string DumpFactors = 10;
+    optional bool DumpFactorsAsBin = 11;
+    optional bool DumpFactorsAsText = 12;
+    optional string ExpandNewsWizard = 13;
+    map<string, string> IntentCacheByIntent = 14 [(_compat_renamed_prefix) = "IntentCache/ByIntent/"];
+    map<string, string> IntentMetaInfo = 15 [(_compat_renamed_prefix) = "IntentMetaInfo/"];
+    optional bool IsAbControl = 16;
+    map<string, string> LocalRandom = 17 [(_compat_renamed_prefix) = "LocalRandom/"];
+    map<string, bool> RequestScoresForThompsonSampling = 18 [(_compat_renamed_prefix) = "RequestScoresForThompsonSampling/"];
+    map<string, uint64> SerpResolverFmlRequestParams = 19 [(_compat_renamed_prefix) = "SerpResolver/FmlRequestParams/"];
+    map<string, bool> SmartPriorityDisabledIntents = 20 [(_compat_renamed_prefix) = "SmartPriority/DisabledIntents/"];
+    optional string TargetGrouping = 21;
+    optional string VerticalFactorsConfigGrpDoc2GroupYGames = 22 [(_compat_renamed_from) = "VerticalFactors/Config/grp/Doc2Group_y_games"];
+    map<string, string> VerticalFactorsConfigSrc = 23 [(_compat_renamed_prefix) = "VerticalFactors/Config/src/"];
+    optional string CommerciallyTrustedRulesAvia = 24 [(_compat_renamed_from) = "CommerciallyTrustedRules/Avia"];
+}
+
+message TPropApplyImagesBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool DumpFactors = 1;
+    map<string, string> LocalRandom = 2 [(_compat_renamed_prefix) = "LocalRandom/"];
+}
+
+message TPropApplyVideoBlender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> BlenderCommandsAfterBlend = 1 [(_compat_renamed_prefix) = "blender/commands/after_blend/"];
+    optional bool DumpFactors = 2;
+    map<string, string> LocalRandom = 3 [(_compat_renamed_prefix) = "LocalRandom/"];
+}
+
+message TPropAssistant {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool ClientCanShowSerp = 1;
+    optional string ClientId = 2;
+    optional string ClientIdBase64 = 3;
+}
+
+message TPropBanner {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string BnoBnoFlag = 1;
+    optional string DirectNavFavicon = 2;
+    optional bool DirectTurboCrutch = 3 [(_compat_renamed_from) = "direct_turbo_crutch"];
+    optional bool EnableHighlighting = 4;
+    optional bool ExpCalloutsHighlighting = 5;
+    optional bool ExpHighlighting = 6;
+    optional string Favicon = 7;
+    optional bool NoReport = 8 [(_compat_renamed_from) = "no_report"];
+    optional bool ExpFullBodyHighlighting = 9;
+}
+
+message TPropBannerBigB {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropBannerTurbo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+    optional bool SpecialMerge = 2;
+}
+
+message TPropBigNavAnswerUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool InWhiteList = 1;
+    optional bool MaintainPosition = 2;
+    optional bool OnlyTopPosition = 3;
+    optional bool UseBlackList = 4;
+    optional bool UseWhiteList = 5;
+}
+
+message TPropBlenderDssmFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> DataCollector = 1 [(_compat_renamed_prefix) = "DataCollector/"];
+    map<string, bool> GenericCalculator = 2 [(_compat_renamed_prefix) = "GenericCalculator/"];
+    optional bool UsePreliminaryWeb = 3;
+}
+
+message TPropBlenderFmls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> ExpFlags = 1 [(_compat_renamed_prefix) = "ExpFlags/"];
+    map<string, string> FmlConfig = 2 [(_compat_renamed_prefix) = "FmlConfig/"];
+}
+
+message TPropBlenderMetaFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropBlenderOnlineLearning {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ApplyModelsHealthEncyclopediasB1Lr003V1 = 1 [(_compat_renamed_from) = "ApplyModels/health_encyclopedias_b1_lr003_v1"];
+    optional double ApplyModelsHealthEncyclopediasB1Lr003V1ApplyPriority = 2 [(_compat_renamed_from) = "ApplyModels/health_encyclopedias_b1_lr003_v1/ApplyPriority"];
+}
+
+message TPropBlenderSnippetFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Calculators = 1 [(_compat_renamed_prefix) = "Calculators/"];
+}
+
+message TPropBlenderWebFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CalculatorsRealtyHostPairwiseAllDisabled = 1 [(_compat_renamed_from) = "Calculators/realty_host_pairwise_all/Disabled"];
+    optional bool CalculatorsRealtyHostWebProdAllDisabled = 2 [(_compat_renamed_from) = "Calculators/realty_host_web_prod_all/Disabled"];
+    optional bool CalculatorsRealtyUrlPairwiseAllDisabled = 3 [(_compat_renamed_from) = "Calculators/realty_url_pairwise_all/Disabled"];
+    optional bool CalculatorsRealtyUrlWebProdAllDisabled = 4 [(_compat_renamed_from) = "Calculators/realty_url_web_prod_all/Disabled"];
+}
+
+message TPropCollectionsBoardsSerpData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string CustomViewType = 1;
+    optional string DirectPositions = 2;
+    optional bool Enabled = 3;
+}
+
+message TPropCompoundEasyBlend {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string IntentWeightFml = 1;
+}
+
+message TPropCoronavirus {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AjaxLoadTabs = 1;
+    optional bool Enabled = 2;
+    optional bool IsAjax = 3;
+}
+
+message TPropDirectMarket {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool DirectIfNoRightMarketModel = 1;
+    optional bool DisableConditions = 2;
+    optional bool Enabled = 3;
+    optional double FilterThreshold = 4;
+    optional string IfExpression = 5;
+    optional bool MarketIfNoDirectGuarantee = 6;
+    optional bool MarketIfNoDirectPremium = 7;
+    optional uint64 MarketImplicitModelOffersTopSize = 8 [(_compat_renamed_from) = "market_implicit_model/OffersTopSize"];
+    optional uint64 MarketModelOffersTopSize = 9 [(_compat_renamed_from) = "market_model/OffersTopSize"];
+    optional uint64 MarketOffersWizardOffersTopSize = 10 [(_compat_renamed_from) = "market_offers_wizard/OffersTopSize"];
+    optional uint64 MinDirectShowcaseSize = 11;
+    optional uint64 MinImplicitModelIncutSize = 12;
+    optional uint64 MinOnlyDirectSize = 13;
+    optional uint64 MinOnlyMarketSize = 14;
+    optional double OnlyDirectFilterThreshold = 15;
+    optional double OnlyMarketFilterThreshold = 16;
+    optional bool ShowImplicitModel = 17;
+    optional bool UniversalModel = 18;
+}
+
+//deprecated 
+message TPropDirectVerticalBlending {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropDirectWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AdsToDirect = 1 [(_compat_renamed_from) = "ads_to_direct"];
+    optional bool EnableHighlighting = 2;
+    map<string, string> Queries2 = 3 [(_compat_renamed_prefix) = "Queries2/"];
+    optional string SetSnippet = 4;
+    optional string SetSnippetCounterText = 5 [(_compat_renamed_from) = "SetSnippetCounter/Text"];
+    optional string SetTitle = 6;
+    optional string SetTitleCounterText = 7 [(_compat_renamed_from) = "SetTitleCounter/Text"];
+}
+
+message TPropDoc2Group {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DocConfigsDDetectOrganicNews = 1 [(_compat_renamed_from) = "DocConfigs/d/detect_organic_news"];
+    optional string DocConfigsYandexTierYGames = 2 [(_compat_renamed_from) = "DocConfigs/yandex_tier/y_games"];
+}
+
+message TPropDumper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DataMarketOfferCount = 1 [(_compat_renamed_from) = "Data/MarketOfferCount"];
+    optional string FormulasMarketCarouselFilter = 2 [(_compat_renamed_from) = "Formulas/market_carousel_filter"];
+}
+
+message TPropEcomOffers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+
+}
+
+message TPropEda {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CheckLemmaSize = 1;
+    optional string DestinationGroupingRestaurantCarousel = 2 [(_compat_renamed_from) = "DestinationGrouping/RestaurantCarousel"];
+    optional bool EdaExtraRule = 3;
+    optional bool EdaRule = 4;
+    optional bool HasDeliveryIntent = 5;
+    optional bool RestaurantCarouselAddCategoryIntoTitle = 6 [(_compat_renamed_from) = "RestaurantCarousel/AddCategoryIntoTitle"];
+    optional bool RestaurantCarouselAddTitle = 7 [(_compat_renamed_from) = "RestaurantCarousel/AddTitle"];
+    optional string RestaurantCarouselCategoryTitleTemplate = 8 [(_compat_renamed_from) = "RestaurantCarousel/CategoryTitleTemplate"];
+    optional string SerpInfoSubtype = 9 [(_compat_renamed_from) = "serp_info/subtype"];
+    optional bool UnknownCoordinates = 10;
+    optional bool DisableWizplace = 11;
+}
+
+message TPropEntitySearch {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool BanVIDEOWIZOnExplicitCollection = 1;
+    optional bool BanVIDEOWIZOnPlayerAvailable = 2;
+    optional string CarouselEasyBlendIntentMetaInfoFeatureInfoPlaceAvailibleValues = 3 [(_compat_renamed_from) = "CarouselEasyBlend/IntentMetaInfo/FeatureInfo/Place/AvailibleValues"];
+    optional bool CarouselUnderBlender = 4;
+    optional string CompoundEasyBlendIntentWeightFml = 5 [(_compat_renamed_from) = "CompoundEasyBlend/IntentWeightFml"];
+    optional bool DoNotMoveThumbFromEntitySearch = 6;
+    optional bool EasyBlendExpr = 7;
+    optional string EasyBlendIntentFilterFml = 8 [(_compat_renamed_from) = "EasyBlend/IntentFilterFml"];
+    optional string EasyBlendIntentFilterThreshold = 9 [(_compat_renamed_from) = "EasyBlend/IntentFilterThreshold"];
+    optional string EasyBlendIntentMetaInfoFeatureInfoPlaceAvailibleValues = 10 [(_compat_renamed_from) = "EasyBlend/IntentMetaInfo/FeatureInfo/Place/AvailibleValues"];
+    optional bool IsTrackToCenterMovingEnabled = 11;
+    optional bool Lol = 12 [(_compat_renamed_from) = "lol"];
+    optional bool MoveAfishaScheduleToCenter = 13;
+    optional bool MoveCarouselToWizplaces = 14;
+    optional bool MoveVideoWizard = 15 [(_compat_renamed_from) = "move_video_wizard"];
+    optional string PromotedVideoEasyBlendIntentWeightFml = 16 [(_compat_renamed_from) = "PromotedVideoEasyBlend/IntentWeightFml"];
+    optional bool RemoveFreeVideo = 17;
+    optional bool RtxEnable = 18 [(_compat_renamed_from) = "Rtx/Enable"];
+    optional bool UsePlayerFml = 19;
+    optional bool UsePromotedFml = 20;
+    optional bool UseTrackFml = 21;
+}
+
+message TPropFacts {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AddFactSnippetByEasyBlend = 1;
+    optional bool CheckForPorno = 2;
+    optional bool ChildSearchCheckConfidence = 3 [(_compat_renamed_from) = "ChildSearch/CheckConfidence"];
+    optional double ChildSearchConfidence = 4 [(_compat_renamed_from) = "ChildSearch/Confidence"];
+    optional string CreateEntityAsFactFlag = 5 [(_compat_renamed_from) = "Create/EntityAsFactFlag"];
+    optional bool CreateFeaturedSnippet = 6 [(_compat_renamed_from) = "Create/FeaturedSnippet"];
+    optional bool CreateListFeaturedSnippet = 7 [(_compat_renamed_from) = "Create/ListFeaturedSnippet"];
+    optional bool CreateQuerydataFact = 8 [(_compat_renamed_from) = "Create/QuerydataFact"];
+    optional bool CreateSuggestFact = 9 [(_compat_renamed_from) = "Create/SuggestFact"];
+    optional bool CreateWikipediaFact = 10 [(_compat_renamed_from) = "Create/WikipediaFact"];
+    optional string DirtyLanguageCheckQuery = 11 [(_compat_renamed_from) = "DirtyLanguage/CheckQuery"];
+    optional string DirtyLanguageCheckVoicedText = 12 [(_compat_renamed_from) = "DirtyLanguage/CheckVoicedText"];
+    optional string DirtyLanguageUseStrongFilter = 13 [(_compat_renamed_from) = "DirtyLanguage/UseStrongFilter"];
+    optional bool DumpBlenderFactors = 14;
+    optional bool Enabled = 15;
+    map<string, bool> Experiments = 16 [(_compat_renamed_prefix) = "Experiments/"];
+    optional string FactExperiment = 17;
+    optional bool FactExperimentControl = 18;
+    optional bool FactSnippetApplySummarizationQueryFormula = 19 [(_compat_renamed_from) = "FactSnippet/ApplySummarizationQueryFormula"];
+    optional bool FactSnippetDumpFactors = 20 [(_compat_renamed_from) = "FactSnippet/DumpFactors"];
+    optional string FactSnippetIntentWeightFml = 21 [(_compat_renamed_from) = "fact_snippet/IntentWeightFml"];
+    optional string FeaturedSnippetIntentWeightFml = 22 [(_compat_renamed_from) = "featured_snippet/IntentWeightFml"];
+    optional bool ForceFactsOverAds = 23;
+    optional string ListFeaturedSnippetBestByFormulaFormulaConfig = 24 [(_compat_renamed_from) = "ListFeaturedSnippet/BestByFormula/FormulaConfig"];
+    optional int64 ListFeaturedSnippetBestByFormulaFormulaScoreThreshold = 25 [(_compat_renamed_from) = "ListFeaturedSnippet/BestByFormula/FormulaScoreThreshold"];
+    optional uint64 ListFeaturedSnippetBestByFormulaMaxCandidateCountForFormula = 26 [(_compat_renamed_from) = "ListFeaturedSnippet/BestByFormula/MaxCandidateCountForFormula"];
+    optional bool ListFeaturedSnippetDebug = 27 [(_compat_renamed_from) = "ListFeaturedSnippet/Debug"];
+    optional bool ListFeaturedSnippetDumpAnswers = 28 [(_compat_renamed_from) = "ListFeaturedSnippet/DumpAnswers"];
+    optional bool ListFeaturedSnippetDumpFactors = 29 [(_compat_renamed_from) = "ListFeaturedSnippet/DumpFactors"];
+    optional string ListFeaturedSnippetListClassifier = 30 [(_compat_renamed_from) = "ListFeaturedSnippet/ListClassifier"];
+    optional bool ListFeaturedSnippetLogMore = 31 [(_compat_renamed_from) = "ListFeaturedSnippet/LogMore"];
+    optional string ListFeaturedSnippetSourceSnippetPluginName = 32 [(_compat_renamed_from) = "ListFeaturedSnippet/SourceSnippetPluginName"];
+    optional string QueryFmlConfigIntentWeightFml = 33 [(_compat_renamed_from) = "QueryFmlConfig/IntentWeightFml"];
+    optional string QueryFmlConfigIntentWeightThreshold = 34 [(_compat_renamed_from) = "QueryFmlConfig/IntentWeightThreshold"];
+    optional string RelatedFactsDictName = 35 [(_compat_renamed_from) = "RelatedFacts/DictName"];
+    reserved 36;
+    optional bool ShowFirstSnippet = 37;
+    optional bool ShowLastSnippet = 38;
+    optional string SnippetFmlConfigIntentWeightFml = 39 [(_compat_renamed_from) = "SnippetFmlConfig/IntentWeightFml"];
+    optional string SnippetFmlConfigIntentWeightThreshold = 40 [(_compat_renamed_from) = "SnippetFmlConfig/IntentWeightThreshold"];
+    optional bool TurnOffFacts = 41;
+    optional bool TurnOffFactsControl = 42;
+    map<string, string> RootEx = 43 [(_compat_renamed_prefix) = ""];
+}
+
+message TPropFilterBanned {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> BansCategBanSrc = 1 [(_compat_renamed_prefix) = "Bans/CategBanSrc/"];
+    optional bool BansDisableBansCache = 2 [(_compat_renamed_from) = "Bans/DisableBansCache"];
+    optional bool BansDisableDocBansOnBasesearch = 3 [(_compat_renamed_from) = "Bans/DisableDocBansOnBasesearch"];
+    optional bool BansDisableOwnerBansOnBasesearch = 4 [(_compat_renamed_from) = "Bans/DisableOwnerBansOnBasesearch"];
+    map<string, bool> BansDocIdBanSrc = 5 [(_compat_renamed_prefix) = "Bans/DocIdBanSrc/"];
+    optional bool BansEnablePronForBan = 6 [(_compat_renamed_from) = "Bans/EnablePronForBan"];
+    map<string, bool> BansMethods = 7 [(_compat_renamed_prefix) = "Bans/Methods/"];
+    optional bool BansNavFmlQueryThreshold = 8 [(_compat_renamed_from) = "Bans/NavFmlQueryThreshold"];
+    optional uint64 BansPessIsNavWeakThr = 9 [(_compat_renamed_from) = "Bans/PessIsNavWeakThr"];
+    optional string BansThreatsFraudMobileSubscribe = 10 [(_compat_renamed_from) = "Bans/Threats/fraud.mobile.subscribe"];
+    optional bool SnippetsCategMaskMarkupSrcFraudMobileTest = 11 [(_compat_renamed_from) = "Snippets/CategMaskMarkupSrc/fraud_mobile_test"];
+}
+
+message TPropFilterBannedVideo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool TvodForAll = 1;
+}
+
+message TPropFresh {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Grouping = 1;
+    optional uint64 MaxQuickAge = 2;
+    optional uint64 MaxQuickDocs = 3;
+    optional bool NoFConsole = 4;
+    optional bool SeparateSamohod = 5;
+}
+
+message TPropFreshManual {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool ZenNewsIntoSport = 1;
+}
+
+message TPropGames {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AllowTagMarkers = 1;
+    optional bool AllowTags = 2;
+    optional bool AllowedRulesGamesAll = 3 [(_compat_renamed_from) = "AllowedRules/games_all"];
+    optional string BegemotData = 4;
+    optional string CompetitorsKey = 5;
+    optional bool EnabledGamesSingleIntent = 6;
+    optional string GamesIntentWeightFml = 7 [(_compat_renamed_from) = "games/IntentWeightFml"];
+    optional bool GamesIsFastModel = 8 [(_compat_renamed_from) = "games/IsFastModel"];
+    optional string GamesSingleIntentWeightFml = 9 [(_compat_renamed_from) = "games_single/IntentWeightFml"];
+    optional bool GamesSingleIsFastModel = 10 [(_compat_renamed_from) = "games_single/IsFastModel"];
+    optional string ReplaceElementsShowcaseParams = 11 [(_compat_renamed_from) = "ReplaceElements/showcase_params"];
+    optional string ReplaceElementsUrl = 12 [(_compat_renamed_from) = "ReplaceElements/url"];
+    optional bool SingleWizardAppStyle = 13;
+    optional bool SingleWizardExtendedAppStyle = 14;
+    optional bool SingleWizardUseNewLayout = 15;
+    optional bool TagWizardOrder = 16;
+    optional bool UseNewLayout = 17;
+    optional string YGames = 18 [(_compat_renamed_from) = "y_games"];
+    optional bool YGamesWizardEnabled = 19;
+}
+
+message TPropGeoVertical {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AdresaIntentWeight = 1 [(_compat_renamed_from) = "adresa/IntentWeight"];
+}
+
+message TPropHealth {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropHighlightDocuments {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AchievementsBaseEnabled = 1;
+    optional bool Enabled = 2;
+}
+
+message TPropHighlightFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Groupings = 1 [(_compat_renamed_prefix) = "Groupings/"];
+}
+
+message TPropHiliter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> ByGrouping = 1 [(_compat_renamed_prefix) = "ByGrouping/"];
+    optional bool Enable = 2;
+    map<string, string> ByIntent = 3 [(_compat_renamed_prefix) = "ByIntent/"];
+}
+
+message TPropImgCommercial {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AllExceptMarketIsSimilar = 1;
+    optional bool MarketAndSchemaOrgAreBasicOffers = 2;
+    optional uint64 MaxOffersCountForOneDocument = 3;
+    optional string MoneySource = 4;
+    optional bool ShowSingleSourcePerDocument = 5;
+    optional bool EnableMultipleTimesOffer = 6;
+    optional bool EnableOfferAttrs = 7;
+    optional string OtherOffersDuplicatesFiltrationType = 8;
+    optional uint64 ParallelValidationRequestsMaxCount = 9;
+    optional string ParallelValidationRequestsMaxCountOverride = 10;
+}
+
+message TPropImgLikesBloomFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropImgLingBoost {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool SwitchToBegemotBundle = 1;
+}
+
+message TPropImgMarketUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MLRanking = 1;
+    optional bool MarketGroupsOnly = 2;
+    optional bool RequestTypeMarket = 3 [(_compat_renamed_from) = "RequestType/Market"];
+    optional uint32 StablePageSize = 4;
+}
+
+message TPropImgMergeTagsUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AutoTopClasses = 1;
+    optional string TagsInserterVersion = 2;
+}
+
+message TPropImgQueryFactors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+    optional bool EnableGenderFactors = 2;
+    optional bool ForceUseFemaleFactors = 3;
+    optional bool ForceUseMaleFactors = 4;
+}
+
+message TPropImgSerpData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CutPage = 1;
+    optional bool EnableAlice = 2;
+    optional uint64 PornoBlurHdLevelParam = 3;
+    optional string Suffix = 4;
+}
+
+message TPropImgSimilarL3 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool BanFaces = 1;
+}
+
+message TPropImgSimilarUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AddBestImg = 1;
+    optional bool RemoveCbirDocs = 2;
+    optional bool RemoveImgDocs = 3;
+}
+
+message TPropIznankaDivFormat {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropLanding {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> LandingConfig = 1 [(_compat_renamed_prefix) = "LandingConfig/"];
+}
+
+message TPropLingBoost {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool SwitchToBegemotBundle = 1;
+}
+
+message TPropLua {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AspamTime = 1 [(_compat_renamed_from) = "Aspam/time"];
+}
+
+message TPropMarket {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool BanIfCalculatorOrUnitsConverter = 1;
+    optional bool Enabled = 2;
+}
+
+message TPropMediaFreshPolirovka {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool LifeTime = 1;
+}
+
+message TPropMetricSignalDumper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropMiniappGrouping {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool BoostHalfNav = 1;
+    optional uint64 Cm2Treshold = 2;
+    optional string CustomL3Formula = 3;
+    optional string CustomPredicateComponents = 4;
+    optional uint64 DssmRandomLogQueryAvgQueriesAvgCM2Treshold = 5;
+    optional bool Enabled = 6;
+    optional bool MaxParthnersFromCateg = 7;
+    optional double PayDetectorPredictTreshold = 8;
+    optional uint64 QueryCommercialityMxTreshold = 9;
+    optional bool SuperAppOnly = 10;
+    optional bool UseHasTurboApp = 11;
+}
+
+message TPropMiniappMixer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 DefaultValueV1 = 1;
+    optional bool Enabled = 2;
+    optional bool ProximaTresholdV2 = 3;
+    optional uint64 ProximaTresholdV3 = 4;
+    optional uint64 Version = 5;
+}
+
+message TPropMiniappMixerUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool BoostHalfNav = 1;
+    optional bool CopyOnTopV3 = 2;
+    optional bool DontAllowIncreaseMetric = 3;
+    optional bool Enabled = 4;
+    map<string, bool> ForcedFeatures = 5 [(_compat_renamed_prefix) = "ForcedFeatures/"];
+    optional double ProximaTresholdV3 = 6;
+    optional bool StopOnFirstFail = 7;
+    optional uint64 Version = 8;
+}
+
+message TPropMisspell {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double Discounter = 1;
+    optional bool DumpSpellCheckerFeatures = 2;
+    optional bool FakeMisspell = 3;
+    optional bool FakeWeb = 4;
+    optional string MergeRelevances = 5;
+    optional bool MergeSilent = 6;
+}
+
+message TPropNewsFromQuickMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 MakeFirstTitleOptionsMaxLen = 1 [(_compat_renamed_from) = "MakeFirstTitleOptions/MaxLen"];
+    optional bool MakeFirstTitleOptionsPixelCut = 2 [(_compat_renamed_from) = "MakeFirstTitleOptions/PixelCut"];
+    optional uint64 MakeTitleOptionsMaxLen = 3 [(_compat_renamed_from) = "MakeTitleOptions/MaxLen"];
+    optional bool MakeTitleOptionsPixelCut = 4 [(_compat_renamed_from) = "MakeTitleOptions/PixelCut"];
+    optional bool NoneAsSingleOptsEnabled = 5 [(_compat_renamed_from) = "NoneAsSingleOpts/Enabled"];
+    optional bool ReplacingDocsWithClustersOptionsEnabled = 6 [(_compat_renamed_from) = "ReplacingDocsWithClustersOptions/Enabled"];
+    optional bool ShowSingleStory = 7;
+    optional string SingleStoryOptionsAutoPlayBrowserRestrictionsAllowed = 8 [(_compat_renamed_from) = "SingleStoryOptions/AutoPlay/BrowserRestrictions/Allowed"];
+    optional string SingleStoryOptionsLargeVideoThumbMode = 9 [(_compat_renamed_from) = "SingleStoryOptions/LargeVideoThumbMode"];
+    optional uint64 WizardDocumentsCount = 10;
+}
+
+message TPropNewsFromQuickUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool DocsLoggingOptionsDocsPropertiesToLogEntityIds = 1 [(_compat_renamed_from) = "DocsLoggingOptions/DocsPropertiesToLog/entity_ids"];
+    optional string NewswizardIntentFilterFml = 2 [(_compat_renamed_from) = "newswizard/IntentFilterFml"];
+    optional uint64 WizardDocumentsCount = 3;
+}
+
+message TPropNewsWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool DocsWiz = 1;
+    optional uint64 PictureHeight = 2;
+    optional uint64 PictureWidth = 3;
+}
+
+message TPropOrgWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AddressSnippetRegime = 1;
+    optional bool DisableFilter = 2;
+    optional bool DisableTurkishOrgMn = 3;
+    optional string DiscussionsEnabled = 4 [(_compat_renamed_from) = "Discussions/Enabled"];
+    optional string EnableEnrichDocuments = 5;
+    map<string, string> IntentFilterFml = 6 [(_compat_renamed_suffix) = "/IntentFilterFml"];
+    optional bool IznankaFilterByUrls = 7;
+    optional uint64 MinCarouselSize = 8;
+    optional uint64 NotOrgToBestOtherThreshold = 9;
+    optional string PossibleOwnersCurrentUserIsOwner = 10 [(_compat_renamed_from) = "PossibleOwners/CurrentUserIsOwner"];
+    optional double QuorumThreshold = 11;
+    optional bool SelectWizardSourceByViewType = 12;
+    optional double TolokaIsGeoThreshold = 13;
+    optional bool UseOrgMnCarousel = 14;
+    optional uint64 WebRelatedOrgsScoreThreshold = 15;
+}
+
+message TPropPersonalization {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Mainformula = 1 [(_compat_renamed_from) = "mainformula"];
+}
+
+message TPropPhoneNumberCheck {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropPorno {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Ipq1Pl1 = 1;
+    optional uint64 LoggedTop = 2;
+    optional bool NavFmlTopSize = 3;
+    optional uint64 Pl = 4;
+}
+
+message TPropPornoUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool SkipImagePF = 1;
+}
+
+message TPropPrettySerpFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> DefaultValues = 1 [(_compat_renamed_prefix) = "DefaultValues/"];
+    map<string, bool> ForbiddenFeatures = 2 [(_compat_renamed_prefix) = "ForbiddenFeatures/"];
+    optional string ForbiddenFeaturesExps = 3;
+    optional bool ForcedFeaturesCollections = 4 [(_compat_renamed_from) = "ForcedFeatures/collections"];
+    optional bool ForcedFeaturesEcommerceImagesExp5Images = 5 [(_compat_renamed_from) = "ForcedFeatures/ecommerce_images_exp_5_images"];
+    optional bool ForcedFeaturesEdaMushroomLandings = 6 [(_compat_renamed_from) = "ForcedFeatures/eda_mushroom_landings"];
+    optional bool ForcedFeaturesGamesSnippet = 7 [(_compat_renamed_from) = "ForcedFeatures/games_snippet"];
+    optional bool ForcedFeaturesGamesSnippetNew = 8 [(_compat_renamed_from) = "ForcedFeatures/games_snippet_new"];
+    optional bool ForcedFeaturesHealthLandings = 9 [(_compat_renamed_from) = "ForcedFeatures/health_landings"];
+    optional bool ForcedFeaturesNewsRubricsExpLandings = 10 [(_compat_renamed_from) = "ForcedFeatures/news_rubrics_exp_landings"];
+    optional bool ForcedFeaturesQuestionAllLandings = 11 [(_compat_renamed_from) = "ForcedFeatures/question_all_landings"];
+    optional bool ForcedFeaturesQuestionLandings = 12 [(_compat_renamed_from) = "ForcedFeatures/question_landings"];
+    optional bool ForcedFeaturesShinyserpYoutubecardsV1 = 13 [(_compat_renamed_from) = "ForcedFeatures/shinyserp_youtubecards_v1"];
+    optional bool ForcedFeaturesStopTurbo = 14 [(_compat_renamed_from) = "ForcedFeatures/stop_turbo"];
+    optional bool ForcedFeaturesTurboListingSnippetExp = 15 [(_compat_renamed_from) = "ForcedFeatures/turbo_listing_snippet_exp"];
+    optional bool ForcedFeaturesWeatherLandingsPq = 16 [(_compat_renamed_from) = "ForcedFeatures/weather_landings_pq"];
+    optional bool ForcedFeaturesWikipediaArticle = 17 [(_compat_renamed_from) = "ForcedFeatures/wikipedia_article"];
+    optional bool ForcedFeaturesZnatokiAllLandings = 18 [(_compat_renamed_from) = "ForcedFeatures/znatoki_all_landings"];
+    optional bool ForcedFeaturesZnatokiLandings = 19 [(_compat_renamed_from) = "ForcedFeatures/znatoki_landings"];
+    map<string, string> UpdatePlugin = 20 [(_compat_renamed_prefix) = "UpdatePlugin/"];
+    optional bool ForcedFeaturesEcomOffersEcommerce = 21 [(_compat_renamed_from) = "ForcedFeatures/ecom_offers_ecommerce"];
+    optional bool ForcedFeaturesEcomOffersGallery = 22 [(_compat_renamed_from) = "ForcedFeatures/ecom_offers_gallery"];
+    optional bool ForcedFeaturesEcomOffersImage = 23 [(_compat_renamed_from) = "ForcedFeatures/ecom_offers_image"];
+    optional bool ForcedFeaturesEcomOffersInfo = 24 [(_compat_renamed_from) = "ForcedFeatures/ecom_offers_info"];
+    optional bool ForcedFeaturesEcomOffersRating = 25 [(_compat_renamed_from) = "ForcedFeatures/ecom_offers_rating"];
+    optional bool ForcedFeaturesEcomOffersSnippet = 26 [(_compat_renamed_from) = "ForcedFeatures/ecom_offers_snippet"];
+}
+
+message TPropPrismBigBLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropProximaPredict {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CalcOnDoRearrangeAfterMerge = 1;
+}
+
+message TPropQdWizards {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ConfigExtraVerticalIntentWeight = 1 [(_compat_renamed_from) = "Config/extra/Vertical/IntentWeight"];
+}
+
+message TPropRabota {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string EasyBlendIntentFilterFml = 1 [(_compat_renamed_from) = "EasyBlend/IntentFilterFml"];
+    optional string EasyBlendIntentFilterThreshold = 2 [(_compat_renamed_from) = "EasyBlend/IntentFilterThreshold"];
+}
+
+message TPropRandomLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool ForceFactors = 1;
+    optional bool ForceFactorsWeb = 2;
+    optional bool ForceVideoFactors = 3;
+    optional uint64 WebDocsToDump = 4;
+}
+
+message TPropRapidClicksFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropRasp {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool FromRaspOrganic = 1 [(_compat_renamed_from) = "From_rasp_organic"];
+    optional bool FromTutu = 2 [(_compat_renamed_from) = "From_tutu"];
+}
+
+message TPropRightColumnTransport {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MarketImplicitModelPreserveMarket = 1 [(_compat_renamed_from) = "market_implicit_model/PreserveMarket"];
+}
+
+message TPropSerpObject {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double ShowBadgeThreshold = 1;
+}
+
+message TPropShinyDiscovery {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AppendRefRuntime = 1;
+    optional bool BanPornoRef = 2;
+    optional bool BanPornoWiz = 3;
+    optional bool CheckSaasInRef = 4;
+    optional string EasyBlendCfgIntentMetaInfoFeatureInfoPlaceAvailibleValues = 5 [(_compat_renamed_from) = "EasyBlendCfg/IntentMetaInfo/FeatureInfo/Place/AvailibleValues"];
+    optional string EasyBlendCfgIntentWeightFml = 6 [(_compat_renamed_from) = "EasyBlendCfg/IntentWeightFml"];
+    optional bool EasyBlendCfgIsFastModel = 7 [(_compat_renamed_from) = "EasyBlendCfg/IsFastModel"];
+    optional bool Enabled = 8;
+    optional string InsertMethod = 9;
+    optional uint64 InsertPos = 10;
+    optional uint64 MaxDjRecommendations = 11;
+    optional string SaasNamespace = 12;
+    optional bool UseRefRuntime = 13;
+    optional bool UseRuntime = 14;
+    optional bool BanEmptySerp = 15;
+    optional bool BanEuTld = 16;
+}
+
+message TPropSitelinks {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CustomGta = 1;
+    optional bool Enabled = 2;
+    optional bool ForbiddenHosts = 3;
+}
+
+message TPropSportWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AjaxFullTables = 1;
+    optional bool AjaxLoadFullTables = 2;
+    optional bool SpecialEventTabs = 3;
+}
+
+message TPropSwapN {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool Cnt = 1;
+    optional bool Enabled = 2;
+    optional bool From = 3;
+    optional string Grouping = 4;
+    reserved 5;
+    optional uint64 To = 6;
+    map<string, string> RootEx = 7 [(_compat_renamed_prefix) = ""];
+}
+
+message TPropTalents {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AllowedHardMatchRegions = 1;
+    optional string OwnSourceEnabled = 2;
+    optional string VerticalConfigIntentWeightFml = 3 [(_compat_renamed_from) = "VerticalConfig/IntentWeightFml"];
+    optional bool VerticalConfigIsFastModel = 4 [(_compat_renamed_from) = "VerticalConfig/IsFastModel"];
+}
+
+message TPropTaxi {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Enabled = 1;
+    optional bool FakeDocEnabled = 2;
+    optional bool FallbackRegion = 3;
+}
+
+message TPropToponymWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool TransitUrlWithRouteId = 1 [(_compat_renamed_from) = "Transit/UrlWithRouteId"];
+}
+
+message TPropTurboAppManualUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AddTurboLabel = 1;
+    optional bool Enabled = 2;
+    optional string ReplaceUrl = 3;
+}
+
+message TPropTurboPageChecker {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CheckTurboPlusSafeShopping = 1;
+}
+
+message TPropTurboSnippetRight {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string BanPluginName = 1;
+    optional string EasyBlendCfgIntentMetaInfoFeatureInfoPlaceAvailibleValues = 2 [(_compat_renamed_from) = "EasyBlendCfg/IntentMetaInfo/FeatureInfo/Place/AvailibleValues"];
+    optional string EasyBlendCfgIntentWeightFml = 3 [(_compat_renamed_from) = "EasyBlendCfg/IntentWeightFml"];
+}
+
+message TPropTurboUrls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AllowBeautyUrl = 1;
+    optional bool AllowPublisherDomain = 2;
+    optional bool AllowTurbopagesDomain = 3;
+}
+
+message TPropTutor {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string TutorIntentMetaInfoFeatureInfoPlaceAvailibleValues = 1 [(_compat_renamed_from) = "tutor/IntentMetaInfo/FeatureInfo/Place/AvailibleValues"];
+}
+
+message TPropUgc {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> ContextParams = 1 [(_compat_renamed_prefix) = "Context/Params/"];
+    optional bool DryRun = 2;
+    optional bool EnableESSocRecFilter = 3;
+    optional string UgcBlock = 4;
+    optional bool UseUgcdb2ForObjectRating = 5;
+    optional bool UseWizOnlyOrgGrouping = 6;
+    optional string UserId = 7;
+}
+
+message TPropUniAnswer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> ConfigBlocks = 1 [(_compat_renamed_prefix) = "Config/Blocks/"];
+    map<string, string> ConfigCombinations = 2 [(_compat_renamed_prefix) = "Config/Combinations/"];
+    map<string, bool> ConfigFlags = 3 [(_compat_renamed_prefix) = "Config/Flags/"];
+    map<string, string> ConfigPlugins = 4 [(_compat_renamed_prefix) = "Config/Plugins/"];
+    optional bool Enabled = 5;
+}
+
+message TPropUserGroupingsLoad {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string GroupingSourceMiniapps = 1 [(_compat_renamed_from) = "GroupingSource/miniapps"];
+}
+
+message TPropVertical {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Auto2 = 1 [(_compat_renamed_from) = "auto2"];
+    optional bool DgqDisabledRestrictionsSameHostDuplicate = 2 [(_compat_renamed_from) = "dgq/DisabledRestrictions/same_host_duplicate"];
+    optional bool DgqDisabledRestrictionsWeakSecondDoc = 3 [(_compat_renamed_from) = "dgq/DisabledRestrictions/weak_second_doc"];
+    map<string, string> Doc2Group = 4 [(_compat_renamed_prefix) = "Doc2Group_"];
+    map<string, string> Filter = 5 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/Filter"];
+    map<string, string> IntentFilter = 6 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IntentFilter"];
+    map<string, string> IntentFilterFml = 7 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IntentFilterFml"];
+    map<string, string> IntentFilterThreshold = 8 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IntentFilterThreshold"];
+    map<string, bool> IntentWeight = 9 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IntentWeight"];
+    map<string, string> IntentWeightFml = 10 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IntentWeightFml"];
+    map<string, bool> IsAttractive = 11 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IsAttractive"];
+    map<string, bool> IsFastModel = 12 [(_compat_renamed_prefix) = "Doc2Group_", (_compat_renamed_suffix) = "/IsFastModel"];
+    map<string, bool> IsMainDoc = 13 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/IsMainDoc"];
+    optional double IwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcParamsShowScoreThreshold = 14 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/Params/ShowScoreThreshold"];
+    optional string IwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsDocRelevsIndexes = 15 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/DocRelevsIndexes"];
+    optional double IwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsRelevDCGCoef = 16 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/RelevDCGCoef"];
+    optional double IwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsSurplusCoef = 17 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/SurplusCoef"];
+    optional string IwizIntentMetaInfoCalcerPatchPosrandomParamsDistributionName = 18 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/CalcerPatch/posrandom/Params/DistributionName"];
+    optional double IwizIntentMetaInfoCalcerPatchPosrandomParamsUniformProba = 19 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/CalcerPatch/posrandom/Params/UniformProba"];
+    optional string IwizIntentMetaInfoFeatureInfoViewTypeAvailibleValues = 20 [(_compat_renamed_from) = "iwiz/IntentMetaInfo/FeatureInfo/ViewType/AvailibleValues"];
+    optional double LandingQIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsRelevDCGCoef = 21 [(_compat_renamed_from) = "Landing_q/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/RelevDCGCoef"];
+    optional double LandingQIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsSurplusCoef = 22 [(_compat_renamed_from) = "Landing_q/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/SurplusCoef"];
+    optional bool LandingQIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsUseYandexTierRelevance = 23 [(_compat_renamed_from) = "Landing_q/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/UseYandexTierRelevance"];
+    optional string Market = 24 [(_compat_renamed_from) = "market"];
+    optional string MarketIntentMetaInfoFeatureInfoViewTypeAvailibleValues = 25 [(_compat_renamed_from) = "market/IntentMetaInfo/FeatureInfo/ViewType/AvailibleValues"];
+    map<string, bool> MinDocCount = 26 [(_compat_renamed_suffix) = "/MinDocCount"];
+    map<string, string> Name = 27 [(_compat_renamed_suffix) = "/name"];
+    map<string, bool> Pretty = 28 [(_compat_renamed_suffix) = "/Pretty"];
+    optional string RealtyWizard = 29 [(_compat_renamed_from) = "realty_wizard"];
+    map<string, string> Relevance = 30 [(_compat_renamed_suffix) = "/Relevance"];
+    map<string, string> Storage = 31 [(_compat_renamed_suffix) = "/Storage"];
+    optional string Vpapp = 32 [(_compat_renamed_from) = "vpapp"];
+    optional double VwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcParamsShowScoreThreshold = 33 [(_compat_renamed_from) = "vwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/Params/ShowScoreThreshold"];
+    optional string VwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsDocRelevsIndexes = 34 [(_compat_renamed_from) = "vwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/DocRelevsIndexes"];
+    optional double VwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsRelevDCGCoef = 35 [(_compat_renamed_from) = "vwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/RelevDCGCoef"];
+    optional double VwizIntentMetaInfoCalcerPatchMultifeatureWinlossMcRelevBoostParamsSurplusCoef = 36 [(_compat_renamed_from) = "vwiz/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/RelevBoostParams/SurplusCoef"];
+    optional string VwizIntentMetaInfoFeatureInfoViewTypeAvailibleValues = 37 [(_compat_renamed_from) = "vwiz/IntentMetaInfo/FeatureInfo/ViewType/AvailibleValues"];
+    optional string VideoExtraItemsChannelIntentFilter = 38 [(_compat_renamed_from) = "VideoExtraItems_channel/IntentFilter"];
+    optional bool BusProxyIntentWeight = 39 [(_compat_renamed_from) = "bus_proxy/IntentWeight"];
+    optional string BusProxyIntentWeightFml = 40 [(_compat_renamed_from) = "bus_proxy/IntentWeightFml"];
+    optional string HealthEncyclopediaIntentWeightFml = 41 [(_compat_renamed_from) = "health_encyclopedia/IntentWeightFml"];
+    optional string VpafishaFilter = 42 [(_compat_renamed_from) = "vpafisha/Filter"];
+}
+
+message TPropVerticalCardConfig {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> CardConfigs = 1 [(_compat_renamed_prefix) = "CardConfigs/"];
+    optional string Enabled = 2;
+}
+
+message TPropVerticalCardUpperValidation {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Configs = 1 [(_compat_renamed_prefix) = "Configs/"];
+}
+
+message TPropVideo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool BlendVideo = 1;
+    map<string, string> ExpFlags = 2 [(_compat_renamed_prefix) = "ExpFlags/"];
+    optional bool FaviconHost = 3 [(_compat_renamed_from) = "favicon_host"];
+    optional string Fml = 4 [(_compat_renamed_from) = "fml"];
+    optional uint64 GetVhRelatedUrl = 5;
+    optional bool HiliteRawTitle = 6;
+    optional uint64 LongTitleWords = 7;
+    optional bool LowWizPos = 8;
+    optional bool NoWizard = 9;
+    optional bool PrettyGreenHosts = 10 [(_compat_renamed_from) = "pretty_green_hosts"];
+    optional bool SetBlndrViewTypeMarker = 11;
+    optional bool Trackwiz = 12 [(_compat_renamed_from) = "trackwiz"];
+    optional bool WizTitleDeleteNResults = 13;
+    optional uint64 XLWizCheckPlayerInTopNDocs = 14;
+    optional bool XLWizMoveToTopMCA = 15;
+}
+
+message TPropVideoAntiobject {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropVideoBlenderFmls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FactoriesQuickPath = 1 [(_compat_renamed_from) = "Factories/quick/Path"];
+}
+
+message TPropVideoChatsData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string CustomRulesPath = 1;
+}
+
+message TPropVideoDynamicTopSizes {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AddIntrelev = 1;
+    optional bool CalcMetaEmb = 2;
+}
+
+message TPropVideoFastDeliveryMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool EnableVhsSvod = 1 [(_compat_renamed_from) = "enable_vhs_svod"];
+    optional bool EnableVhsTvod = 2 [(_compat_renamed_from) = "enable_vhs_tvod"];
+}
+
+message TPropVideoJointViewing {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropVideoRandom {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 BottomIndex = 1;
+    optional double Delta = 2;
+    optional string RearrangeOnlyPorno = 3;
+    optional uint64 Salt = 4;
+    optional uint64 TopIndex = 5;
+    optional string Type = 6;
+}
+
+message TPropVideoSerpdata {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HiliteRawTitle = 1;
+}
+
+message TPropVideoSubscriptionData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropVideoSvodUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool SvodMaxCount = 1;
+}
+
+message TPropVideohostingWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool DumpAllFactors = 1;
+    optional bool DumpAllVideoFactors = 2;
+    map<string, string> IntentFilterFml = 3 [(_compat_renamed_suffix) = "/IntentFilterFml"];
+    map<string, string> IntentWeightFml = 4 [(_compat_renamed_suffix) = "/IntentWeightFml"];
+    optional bool IsAjax = 5;
+    map<string, bool> IsFastModel = 6 [(_compat_renamed_suffix) = "/IsFastModel"];
+    optional string UseSitelinks = 7;
+}
+
+message TPropVideohubBlogger {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+    optional bool FillBloggers = 2;
+}
+
+message TPropWebCacheSBS {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropWebFormulaChooser {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ForceRuleSet = 1;
+}
+
+message TPropWebSinsigCalculator {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool Enabled = 1;
+    map<string, string> Formulas = 2 [(_compat_renamed_prefix) = "Formulas/"];
+    map<string, string> Verticals = 3 [(_compat_renamed_prefix) = "Verticals/"];
+}
+
+message TPropWizardCarousel {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool UseEnrichDocumentsPhase = 1;
+}
+
+message TPropWizardRulesLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string EntityFinder = 1;
+    optional bool RearrMarkerProject = 2 [(_compat_renamed_from) = "RearrMarker/project"];
+}
+
+message TPropYTutorPdfWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1;
+}
+
+message TPropYabsProxy {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool ExpHighlighting = 1;
+    optional bool ExpFullBodyHighlighting = 2;
+}
+
+message TPropYdo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double CallPenaltyPower = 1;
+    optional string DontUseCallStatRTMR = 2;
+    optional string Randomize = 3;
+    optional double RandomizeStddev = 4;
+}
+
+message TPropYdoWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> IntentWeightFml = 1 [(_compat_renamed_suffix) = "/IntentWeightFml"];
+    map<string, bool> IsFastModel = 2 [(_compat_renamed_suffix) = "/IsFastModel"];
+    optional bool MinWorkersWithAvatars = 3;
+    optional bool ShowOneWorkerFromProxy = 4;
+    optional string YdoWizardIntentMetaInfoCalcerPatchMultifeatureWinlossMcParams = 5 [(_compat_renamed_from) = "ydo_wizard/IntentMetaInfo/CalcerPatch/multifeature_winloss_mc/Params"];
+}
+
+message TPropZen {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AddDocAsFirstCard = 1;
+    optional string DoNotMoveOrganicDocs = 2;
+    optional bool GetSerpDataFromAllSnippets = 3;
+    optional string IgnoreDocumentsWithoutSnippet = 4;
+    map<string, string> IntentWeightFml = 5 [(_compat_renamed_suffix) = "/IntentWeightFml"];
+    map<string, bool> IsFastModel = 6 [(_compat_renamed_suffix) = "/IsFastModel"];
+    optional uint64 MaxCardTitleLength = 7;
+    optional uint64 MinMushroomCards = 8;
+    reserved 9;
+    optional bool ShowChannelLogo = 10;
+    optional bool ShowChannelName = 11;
+    optional string ShowSnippet = 12;
+    optional string UseDocTitleInCardMode = 13;
+    optional bool UseLandingsAsSource = 14;
+    map<string, string> RootEx = 15 [(_compat_renamed_prefix) = ""];
+}
+
+message TPropGenerativeAnswer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool Enabled = 1;
+    optional bool EnableDegradation = 2;
+    optional bool EnableGenesisBans = 3;
+    optional bool ScheduleNow = 4;
+    optional bool ScheduleInDrills = 5;
+    optional bool CancelBlenderBans = 6;
+    map<string, string> BlendingSettings = 7 [(_compat_renamed_prefix) = "BlendingSettings/"];
+    map<string, string> EcomBlendingSettings = 8 [(_compat_renamed_prefix) = "EcomBlendingSettings/"];
+    map<string, string> Conflicts = 9 [(_compat_renamed_prefix) = "Conflicts/"];
+    map<string, string> AggregatsProperties = 10 [(_compat_renamed_prefix) = "AggregatsProperties/"];
+    map<string, string> DocProperties = 11 [(_compat_renamed_prefix) = "Properties/"];
+    map<string, string> SnippetProperties = 12 [(_compat_renamed_prefix) = "SnippetProperties/"];
+    map<string, string> GenExpParams = 13 [(_compat_renamed_prefix) = "GenExpParams/"];
+    map<string, string> SearchGenExpParams = 14 [(_compat_renamed_prefix) = "SearchGenExpParams/"];
+    map<string, string> EcomGenExpParams = 15 [(_compat_renamed_prefix) = "EcomGenExpParams/"];
+    optional bool ForceEcomMode = 16;
+    optional bool ForceGoodDocs = 17;
+    optional bool ForceGoodQuery = 18;
+    optional bool ForceInfoMode = 19;
+    optional bool ForceSPropOnly = 20;
+    optional bool OnlyStrictWebSources = 21;
+    optional bool SkipFreshTiers = 22;
+    optional bool EnrichVideos = 23;
+    optional bool EnableStubAnswer = 24;
+    optional bool EcomEnabled = 25;
+    // XXX insert new props before this line
+    map<string, string> Unmatched = 1000 [(_compat_is_default_container) = true, (_split_size_limit) = 0];
+}
+
+// Source definition
+message TRearrSchemeLocal {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropAchievement Achievement = 1 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropAdditionalFormulaCalculator AdditionalFormulaCalculator = 2 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropAntiDup AntiDup = 3 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropAntiDup0 AntiDup0 = 4 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropAppSearchViewport AppSearchViewport = 5 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropApplyAdsBlender ApplyAdsBlender = 6 [(_compat_path_separator) = "/", (_split_size_limit) = 5];//deprecated
+    optional TPropApplyBlender ApplyBlender = 7 [(_compat_path_separator) = "/", (_split_size_limit) = 160];
+    optional TPropApplyImagesBlender ApplyImagesBlender = 8 [(_compat_path_separator) = "/", (_split_size_limit) = 40];
+    optional TPropApplyVideoBlender ApplyVideoBlender = 9 [(_compat_path_separator) = "/", (_split_size_limit) = 40];
+    optional TPropAssistant Assistant = 10 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBanner Banner = 11 [(_compat_path_separator) = "/", (_split_size_limit) = 25];
+    optional TPropBannerTurbo BannerTurbo = 12 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBigNavAnswerUpper BigNavAnswerUpper = 13 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBlenderDssmFeatures BlenderDssmFeatures = 14 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBlenderFmls BlenderFmls = 15 [(_compat_path_separator) = "/", (_split_size_limit) = 630];
+    optional TPropBlenderMetaFeatures BlenderMetaFeatures = 16 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBlenderOnlineLearning BlenderOnlineLearning = 17 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBlenderSnippetFeatures BlenderSnippetFeatures = 18 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBlenderWebFeatures BlenderWebFeatures = 19 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropCollectionsBoardsSerpData CollectionsBoardsSerpData = 20 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropCompoundEasyBlend CompoundEasyBlend = 21 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropCoronavirus Coronavirus = 22 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropDirectMarket DirectMarket = 23 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropDirectVerticalBlending DirectVerticalBlending = 24 [(_compat_path_separator) = "/", (_split_size_limit) = 5];//deprecated
+    optional TPropDirectWizard DirectWizard = 25 [(_compat_path_separator) = "/", (_split_size_limit) = 35];
+    optional TPropDoc2Group Doc2Group = 26 [(_compat_path_separator) = "/", (_split_size_limit) = 170];
+    optional TPropDumper Dumper = 27 [(_compat_path_separator) = "/", (_split_size_limit) =  10];
+    optional TPropEda Eda = 28 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropEntitySearch EntitySearch = 29 [(_compat_path_separator) = "/", (_split_size_limit) = 20];
+    optional TPropFacts Facts = 30 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropFilterBanned FilterBanned = 31 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropFilterBannedVideo FilterBannedVideo = 32 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropFresh Fresh = 33 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropFreshManual FreshManual = 34 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropGames Games = 35 [(_compat_path_separator) = "/", (_split_size_limit) = 27];
+    optional TPropGeoVertical GeoVertical = 36 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropHealth Health = 37 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropHighlightDocuments HighlightDocuments = 38 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropHighlightFeatures HighlightFeatures = 39 [(_compat_path_separator) = "/"];
+    optional TPropHiliter Hiliter = 40 [(_compat_path_separator) = "/", (_split_size_limit) = 25];
+    optional TPropImgCommercial ImgCommercial = 41 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgLingBoost ImgLingBoost = 42 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgSerpData ImgSerpData = 43 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropIznankaDivFormat IznankaDivFormat = 44 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropLanding Landing = 45 [(_compat_path_separator) = "/", (_split_size_limit) = 470];
+    optional TPropLingBoost LingBoost = 46 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropLua Lua = 47 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMarket Market = 48 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMediaFreshPolirovka MediaFreshPolirovka = 49 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMetricSignalDumper MetricSignalDumper = 50 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMiniappGrouping MiniappGrouping = 51 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMiniappMixer MiniappMixer = 52 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMiniappMixerUpper MiniappMixerUpper = 53 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropMisspell Misspell = 54 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropNewsFromQuickMiddle NewsFromQuickMiddle = 55 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropNewsFromQuickUpper NewsFromQuickUpper = 56 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropNewsWizard NewsWizard = 57 [(_compat_path_separator) = "/", (_split_size_limit) = 15];
+    optional TPropOrgWizard OrgWizard = 58 [(_compat_path_separator) = "/", (_split_size_limit) = 20];
+    optional TPropPersonalization Personalization = 59 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropPhoneNumberCheck PhoneNumberCheck = 60 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropPorno Porno = 61 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropPornoUpper PornoUpper = 62 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropPrettySerpFeatures PrettySerpFeatures = 63 [(_compat_path_separator) = "/", (_split_size_limit) = 545];
+    optional TPropProximaPredict ProximaPredict = 64 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropQdWizards QdWizards = 65 [(_compat_path_separator) = "/", (_split_size_limit) = 10];
+    optional TPropRabota Rabota = 66 [(_compat_path_separator) = "/", (_split_size_limit) = 40];
+    optional TPropRandomLog RandomLog = 67 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropRapidClicksFeatures RapidClicksFeatures = 68 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropRasp Rasp = 69 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropRightColumnTransport RightColumnTransport = 70 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropSerpObject SerpObject = 71 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropShinyDiscovery ShinyDiscovery = 72 [(_compat_path_separator) = "/", (_split_size_limit) = 15];
+    optional TPropSitelinks Sitelinks = 73 [(_compat_path_separator) = "/", (_split_size_limit) = 10];
+    optional TPropSportWizard SportWizard = 74 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropSwapN SwapN = 75 [(_compat_path_separator) = "/", (_split_size_limit) = 10];
+    optional TPropTalents Talents = 76 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropTaxi Taxi = 77 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropToponymWizard ToponymWizard = 78 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropTurboAppManualUpper TurboAppManualUpper = 79 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropTurboPageChecker TurboPageChecker = 80 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropTurboSnippetRight TurboSnippetRight = 81 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropTurboUrls TurboUrls = 82 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropTutor Tutor = 83 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropUgc Ugc = 84 [(_compat_path_separator) = "/", (_split_size_limit) = 40];
+    optional TPropUniAnswer UniAnswer = 85 [(_compat_path_separator) = "/", (_split_size_limit) = 810];
+    optional TPropUserGroupingsLoad UserGroupingsLoad = 86 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVertical Vertical = 87 [(_compat_path_separator) = "/", (_split_size_limit) = 220];
+    optional TPropVerticalCardConfig VerticalCardConfig = 88 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVerticalCardUpperValidation VerticalCardUpperValidation = 89 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideo Video = 90 [(_compat_path_separator) = "/", (_split_size_limit) = 90];
+    optional TPropVideoAntiobject VideoAntiobject = 91 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoBlenderFmls VideoBlenderFmls = 92 [(_compat_path_separator) = "/", (_split_size_limit) = 10];
+    optional TPropVideoChatsData VideoChatsData = 93 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoDynamicTopSizes VideoDynamicTopSizes = 94 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoFastDeliveryMiddle VideoFastDeliveryMiddle = 95 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoJointViewing VideoJointViewing = 96 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoRandom VideoRandom = 97 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoSerpdata VideoSerpdata = 98 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoSubscriptionData VideoSubscriptionData = 99 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideoSvodUpper VideoSvodUpper = 100 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideohostingWizard VideohostingWizard = 101 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropVideohubBlogger VideohubBlogger = 102 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropWebCacheSBS WebCacheSBS = 103 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropWebFormulaChooser WebFormulaChooser = 104 [(_compat_path_separator) = "/", (_split_size_limit) = 10];
+    optional TPropWebSinsigCalculator WebSinsigCalculator = 105 [(_compat_path_separator) = "/", (_split_size_limit) = 210];
+    optional TPropWizardCarousel WizardCarousel = 106 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropWizardRulesLog WizardRulesLog = 107 [(_compat_path_separator) = "/", (_split_size_limit) = 25];
+    optional TPropYTutorPdfWizard YTutorPdfWizard = 108 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropYdo Ydo = 109 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropYdoWizard YdoWizard = 110 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropZen Zen = 111 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropBannerBigB BannerBigB = 112 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropEcomOffers EcomOffers = 113 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgLikesBloomFilter ImgLikesBloomFilter = 114 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgMarketUpper ImgMarketUpper = 115 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgMergeTagsUpper ImgMergeTagsUpper = 116 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgQueryFactors ImgQueryFactors = 117 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgSimilarL3 ImgSimilarL3 = 118 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropImgSimilarUpper ImgSimilarUpper = 119 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropPrismBigBLog PrismBigBLog = 120 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropYabsProxy YabsProxy = 121 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+    optional TPropGenerativeAnswer GenerativeAnswer = 122 [(_compat_path_separator) = "/", (_split_size_limit) = 5];
+}

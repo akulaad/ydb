@@ -1,0 +1,296 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/common/generic.proto";
+
+package NScarabProto.NReport.NSearchProps.NVIDEOP;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/VIDEOP";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/filterbanned/web/bans/apply_bans.cpp
+message TPropFilterBanned {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 RKNBanned = 1 [(_compat_renamed_from) = "RKN_banned"];
+    optional uint64 RKNBannedLot = 2 [(_compat_renamed_from) = "RKN_banned_lot"];
+    optional string SentHashes = 3;
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/base/yxs_ctxt.cpp
+message TPropL1 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FormulaIdNewBase = 1 [(_compat_renamed_from) = "L1FormulaId_NewBase"];
+    optional string FormulaNameNewBase = 2 [(_compat_renamed_from) = "L1FormulaName_NewBase"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/lingboost/lingboost.cpp
+message TPropLingBoost {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string BegemotQBundleHash = 1;
+    optional string LightBegemotQBundleHash = 2;
+    map<string, string> Q = 3 [(_compat_renamed_prefix) = "q"];
+    optional string Status = 4;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/querysearch/querysearch_request.cpp
+message TPropQuerySearchRequest {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AggregatedExternalItems = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AggregatedExternalItems"];
+    map<string, string> AggregatedItems = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AggregatedItems"];
+    map<string, uint64> GroupingSize = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/GroupingSize"];
+    map<string, uint64> SentRequests = 4 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/SentRequests"];
+    map<string, string> Misc = 5 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/querysearch/querysearch_response.cpp
+message TPropQuerySearchResponse {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AfterQueryDataMerge = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AfterQueryDataMerge"];
+    map<string, string> BeforeQueryDataMerge = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/BeforeQueryDataMerge"];
+    map<string, uint64> ValidReqHandles = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/ValidReqHandles"];
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = ""];
+}
+
+message TPropRoot {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+
+    optional double Acc = 1;
+    map<string, string> AllFactorsUnanswer = 2 [(_compat_renamed_prefix) = "AllFactorsUnanswer_"];
+    optional string BaseRankingMn = 3;
+    optional string BaseRankingModel = 4;
+    optional string BaseRankingWords = 5;
+    optional bool BsTouched = 6;
+    optional bool Cached = 7;
+    optional uint64 CalcMetaRelevanceMcs = 8;
+    map<uint64, uint64> ClientGroup = 9 [(_compat_renamed_prefix) = "ClientGroup_"];
+    map<string, string> ConfigInfo = 10 [(_compat_renamed_prefix) = "ConfigInfo_"];
+    optional string ExtModelsaddition = 11 [(_compat_renamed_from) = "ExtModels|addition"];
+    optional string ExtModelsFreshintent = 12 [(_compat_renamed_from) = "ExtModels|freshintent"];
+    optional string ExtensionsRankModel = 13;
+    optional string HostName = 14;
+    optional uint64 Ig = 15;
+    optional uint64 MetaRankDocs = 16;
+    optional uint64 MetaRankGroups = 17;
+    optional double MetaRankSuperMindMult = 18;
+    optional uint64 Nctx = 19;
+    map<string, NScarabProto.NCommon.TListOfDouble> NumDocs = 20 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_numdocs"];
+    optional double QueryFreshintent = 21;
+    optional string RankingIntMn = 22;
+    optional string RankingMn = 23;
+    optional string RankingModel = 24;
+    optional bool RankingTopHandJobBoosts = 25;
+    optional string RankingWords = 26;
+    map<string, string> RemovedDoc = 27 [(_compat_renamed_prefix) = "RemovedDoc_"];
+    optional string RequestedRankingModel = 28;
+    map<string, string> ResultDocIds = 29;
+    map<string, string> SnippetUnanswer = 30 [(_compat_renamed_prefix) = "SnippetUnanswer_"];
+    optional uint64 SourceTimestamp = 31;
+    optional double SuperMindMult = 32;
+    map<string, string> Unanswer = 33 [(_compat_renamed_prefix) = "Unanswer_"];
+    map<string, string> BestLRSyn = 34 [(_compat_renamed_prefix) = "BestLRSyn_"];
+    map<string, string> WebPassageLegacyTR = 35 [(_compat_renamed_prefix) = "WebPassageLegacyTR_"];
+    map<string, string> WebTRp1 = 36 [(_compat_renamed_prefix) = "WebTRp1_"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videoassess/videoassess.cpp
+message TPropVideoAssess {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Filtered = 1 [(_compat_renamed_from) = "filtered"];
+    optional double Mult404 = 2 [(_compat_renamed_from) = "mult_404"];
+    optional double MultNotrel = 3 [(_compat_renamed_from) = "mult_notrel"];
+    optional double MultRel = 4 [(_compat_renamed_from) = "mult_rel"];
+    optional string Type = 5 [(_compat_renamed_from) = "type"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_cheat_urls/video_cheat_urls.cpp
+message TPropVideoCheatUrls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Cheated = 1 [(_compat_renamed_from) = "cheated"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videofastdelivery/middle/videofastdelivery_middle.cpp
+message TPropVideoFastDeliveryMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool GaussianDeviation = 1;
+    optional uint64 MarkedUrlCount = 2 [(_compat_renamed_from) = "marked_url_count"];
+    optional string ShiftTypes = 3 [(_compat_renamed_from) = "shift_types"];
+    map<string, string> Log = 4 [(_compat_renamed_prefix) = "log_"];
+}
+
+message TPropVideoAdsMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 AdsCount = 1 [(_compat_renamed_from) = "adscount"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videofmls/videofmls.cpp
+message TPropVideoFmls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 VideoFmlsDocscount = 1 [(_compat_renamed_from) = "VideoFmls.docscount"];
+    optional double Videorelevance = 2 [(_compat_renamed_from) = "videorelevance"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/videokids/videokids.cpp
+message TPropVideoKids {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Notkids = 1 [(_compat_renamed_from) = "notkids"];
+    optional string Notsuperkids = 2 [(_compat_renamed_from) = "notsuperkids"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videoplayers/videoplayers.cpp
+message TPropVideoPlayers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 PlayersGenerated = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videoporno/videoporno.cpp
+message TPropVideoPorno {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AfterFetch = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_AfterFetch"];
+    map<uint64, string> AfterFetchBan = 2 [(_compat_renamed_prefix) = "after_fetch_ban_"];
+    map<string, string> AfterMerge = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_AfterMerge"];
+    optional string Factors = 4 [(_compat_renamed_from) = "factors"];
+    optional uint64 Filtered = 5 [(_compat_renamed_from) = "filtered"];
+    optional string FmlId = 6 [(_compat_renamed_from) = "fml_id"];
+    optional bool FmlIpqResult = 7 [(_compat_renamed_from) = "fml_ipq_result"];
+    optional string FmlOnlineResult = 8 [(_compat_renamed_from) = "fml_online_result"];
+    optional double FmlValue = 9 [(_compat_renamed_from) = "fml_value"];
+    optional uint64 HeadGroupCount = 10;
+    optional string LabelsToBan = 11;
+    optional uint64 PornDocsInTop = 12 [(_compat_renamed_from) = "porn_docs_in_top"];
+    optional double Porniness = 13 [(_compat_renamed_from) = "porniness"];
+    optional uint64 RequestedGroups = 14;
+    optional uint64 SearchRestarted = 15 [(_compat_renamed_from) = "search_restarted"];
+    optional bool UseDefaultAd = 16 [(_compat_renamed_from) = "use_default_ad"];
+    optional string Vidprn = 17 [(_compat_renamed_from) = "vidprn", (_infinite_ttl) = true];
+    optional uint64 VidprnFilterType = 18 [(_compat_renamed_from) = "vidprn_filter_type"];
+    optional bool ClassQueryIsPorno = 19 [(_compat_renamed_from) = "class_query_is_porno"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videorandom/videorandom.cpp
+message TPropVideoRandom {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AF = 1;
+    optional string AM = 2;
+    optional string BlendLastClickedDeep = 3;
+    optional string FactorSort = 4;
+    optional string RandomBlend = 5;
+    optional string RandomDelta = 6;
+    optional string RandomPushup = 7;
+    optional string RandomShuffle = 8;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videoserial/videoserial.cpp
+message TPropVideoSerial {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Docs = 1 [(_compat_renamed_from) = "docs"];
+    optional bool FreshMarkInQuery = 2;
+    optional bool IsRearrangeNeeded = 3;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videosnippets/videosnippets.cpp
+message TPropVideoSnippets {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string VhDups = 1;
+    optional uint64 DedupedByThumb = 2 [(_compat_renamed_from) = "dedupedByThumb"];
+    optional uint64 DedupedByI2T = 3 [(_compat_renamed_from) = "dedupedByI2T"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videotop/videotop.cpp
+message TPropVideoTopMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MbuUrls = 1 [(_compat_renamed_from) = "mbu_urls"];
+    optional bool UUrls = 2 [(_compat_renamed_from) = "u_urls"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/extsearch/video/meta/rearrs/videouserdata/videouserdata.cpp
+message TPropVideoUserdata {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Vidmetashard = 1 [(_compat_renamed_from) = "vidmetashard"];
+}
+
+message TPropVideoQuickTier0 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> BestLRSyn = 1 [(_compat_renamed_prefix) = "BestLRSyn_"];
+    map<string, string> WebTRp1 = 2 [(_compat_renamed_prefix) = "WebTRp1_"];
+    map<string, string> WebPassageLegacyTR = 3 [(_compat_renamed_prefix) = "WebPassageLegacyTR_"];
+}
+
+message TPropVideoTier0 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> BestLRSyn = 1 [(_compat_renamed_prefix) = "BestLRSyn_"];
+    map<string, string> WebTRp1 = 2 [(_compat_renamed_prefix) = "WebTRp1_"];
+    map<string, string> WebPassageLegacyTR = 3 [(_compat_renamed_prefix) = "WebPassageLegacyTR_"];
+}
+
+message TPropVideoPlatinum {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> BestLRSyn = 1 [(_compat_renamed_prefix) = "BestLRSyn_"];
+    map<string, string> WebTRp1 = 2 [(_compat_renamed_prefix) = "WebTRp1_"];
+    map<string, string> WebPassageLegacyTR = 3 [(_compat_renamed_prefix) = "WebPassageLegacyTR_"];
+}
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional TPropFilterBanned FilterBanned = 1;
+    optional TPropL1 L1 = 2 [(_compat_renamed_from) = ""];
+    optional TPropLingBoost LingBoost = 3;
+    optional TPropQuerySearchRequest QuerySearchRequest = 4;
+    optional TPropQuerySearchResponse QuerySearchResponse = 5;
+    optional TPropRoot Root = 6 [(_compat_renamed_from) = ""];
+    optional TPropVideoAssess VideoAssess = 7;
+    optional TPropVideoCheatUrls VideoCheatUrls = 8;
+    optional TPropVideoFastDeliveryMiddle VideoFastDeliveryMiddle = 9;
+    optional TPropVideoFmls VideoFmls = 10;
+    optional TPropVideoKids VideoKids = 11;
+    optional TPropVideoPlayers VideoPlayers = 12;
+    optional TPropVideoPorno VideoPorno = 13;
+    optional TPropVideoRandom VideoRandom = 14;
+    optional TPropVideoSerial VideoSerial = 15;
+    optional TPropVideoSnippets VideoSnippets = 16;
+    optional TPropVideoTopMiddle VideoTopMiddle = 17;
+    optional TPropVideoUserdata VideoUserdata = 18;
+    optional TPropVideoQuickTier0 VideoQuickTier0 = 19 [(_compat_path_separator) = "/"];
+    map<string, string> WebTRp1 = 20 [(_compat_renamed_prefix) = "WebTRp1_"];
+    optional TPropVideoTier0 VideoTier0 = 21 [(_compat_path_separator) = "/"];
+    optional TPropVideoPlatinum VideoPlatinum = 22 [(_compat_path_separator) = "/"];
+    optional TPropVideoAdsMiddle VideoAdsMiddle = 23;
+    optional bool SubtypeCyborg = 24;
+    optional string PersclickprefStats = 25 [(_compat_renamed_from) = "persclickpref_stats", (_split_size_limit) = 0, (_owner_fld) = "abc:videoquality"];
+}

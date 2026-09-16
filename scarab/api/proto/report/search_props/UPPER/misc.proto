@@ -1,0 +1,2008 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+import "scarab/api/proto/common/generic.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/ecom_neuro_h/ecom_neuro_h.cpp
+message TPropEcomNeuroH {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomNeuroHSaasData = 1;
+    optional bool HasEcomNeuroHFinalDoc = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/ecom_neuro_g/ecom_neuro_g.cpp
+message TPropEcomNeuroG {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomNeuroGSaasData = 1;
+    optional bool HasEcomNeuroGFinalDoc = 2;
+}
+
+message TAdsOrganicRTExcluded {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    repeated string Banners = 1;
+    repeated string Urls = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/history/search/web/extensions/rearrange/ads_organic/ads_organic.cpp
+message TPropAdsOrganic {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 AdsOrganicNumDocsWithChangedRelevance = 1;
+    optional uint64 AdsOrganicNumChangedPositions = 2 [(_rt_required) = true];
+    repeated string AdsOrganicUrlInfo = 3;
+    optional uint64 AdsOrganicNumJoinedDocs = 4 [(_rt_required) = true];
+    optional uint64 AdsOrganicNumDocsLargerSplitBertLowBorder = 5;
+    repeated string AdsOrganicOrgUrlInfo = 6 [(_owner_fld) = "abc:search_ml_predictors", (_ttl) = 90];
+    optional uint64 AdsOrganicGroupingSize = 7;
+    repeated double AdsOrganicPredictedPctrCorrections = 8;
+    optional string AdsOrganicCandidatesInfo = 9 [(_owner_fld) = "abc:search_ml_predictors", (_ttl) = 90];
+    optional bool   AdsOrganicAuxReqSent = 10;
+    optional bool   AdsOrganicRegularReqSent = 11;
+    optional bool   AdsOrganicAuxGotAnswer = 12;
+    optional bool   AdsOrganicAuxAnswerEmpty = 13;
+    optional bool   AdsOrganicAuxRespNull = 14;
+    optional bool   AdsOrganicAuxRespCopied = 15;
+    optional bool   AdsOrganicAuxNoReqRef = 16;
+    optional bool   AdsOrganicPatchReqNull = 17 [(_split_size_limit) = 0, (_ttl) = 0]; // deprecated
+    optional bool   AdsOrganicPatchRespNull = 18 [(_split_size_limit) = 0, (_ttl) = 0]; // deprecated
+    optional bool   AdsOrganicPatched = 19 [(_split_size_limit) = 0, (_ttl) = 0]; //deprecated
+    map<string, uint64> AdsOrganicDbg = 20 [(_compat_renamed_prefix) = "AdsOrganicDbg", (_split_size_limit) = 0, (_ttl) = 0]; // deprecated
+    optional TAdsOrganicRTExcluded AdsOrganicRTExcluded = 21 [(_compat_path_separator) = "_", (_split_size_limit) = 0, (_ttl) = 90]; // deprecated
+    repeated string AdsOrganicExcludedViaABConvFilter = 22 [(_ttl) = 45];
+    optional bool AdsOrganicIsExcludedUrlsViaABConvFilter = 23 [(_ttl) = 45];
+}
+
+message TPropAdsOrganicPatchDocs {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AdsOrganicPatchReqNull = 1;
+    optional bool AdsOrganicPatchRespNull = 2;
+    optional bool AdsOrganicPatched = 3;
+    map<string, uint64> AdsOrganicDbg = 4 [(_compat_renamed_prefix) = "AdsOrganicDbg", (_split_size_limit) = 0, (_ttl) = 90]; // always in fat
+    optional TAdsOrganicRTExcluded AdsOrganicRTExcluded = 5 [(_compat_path_separator) = "_", (_split_size_limit) = 90, (_ttl) = 90];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/history/search/web/extensions/rearrange/ads_unisearch/ads_unisearch.cpp
+message TPropAdsUnisearch {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AdsUnisearchCandidatesInfo = 1;
+    optional uint32 AdsUnisearchJoinedCandidates = 2;
+    optional uint32 AdsUnisearchBoostedOffers = 3;
+    optional bool AdsUnisearchSRMirror = 4;
+    optional bool AdsUnisearchSpecialPlaces = 5;
+    optional bool AdsFinsearchOfpBanner = 6;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/afisha_highlight/afisha_highlight.cpp
+message TPropAfishaHighlight {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FallbackReason = 1 [(_compat_renamed_from) = "fallback_reason", (_split_size_limit) = 5];
+    optional string WizardType = 2 [(_compat_renamed_from) = "wizardType", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/antidup/antidup.cpp
+message TPropAntiDup {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AntidupUpper = 1 [(_compat_renamed_from) = "antidup_upper", (_split_size_limit) = 5];
+    optional uint64 CheckedDocsCountUpper = 2 [(_compat_renamed_from) = "CheckedDocsCount_upper"];
+    optional uint64 CloneFound = 3;
+    optional string DupsInTop10Upper = 4 [(_compat_renamed_from) = "DupsInTop10_upper", (_split_size_limit) = 10];
+    optional uint64 FirstDupUpper = 5 [(_compat_renamed_from) = "FirstDup_upper"];
+    optional string InfoUpperBase64 = 6 [(_compat_renamed_from) = "info_upper_base64", (_split_size_limit) = 50];
+    optional string Upper = 7 [(_compat_renamed_from) = "upper", (_split_size_limit) = 5];
+    optional uint64 UpperBanned = 8 [(_compat_renamed_from) = "upper_banned"];
+    optional string UpperDataDir = 9 [(_compat_renamed_from) = "upper_data_dir", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/arknight/arknight.cpp
+message TPropArknight {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Memorandum = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/avia/avia.cpp
+message TPropAvia {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AddOffersError = 1 [(_split_size_limit) = 5];
+    optional string AviaCommonDataError = 2 [(_split_size_limit) = 5];
+    optional bool BlendSource = 3;
+    optional bool FromAviasales = 4;
+    optional string FromOrganicHost = 5;
+    optional bool FromOrganicWithOffers = 6;
+    optional bool FromSource = 7;
+    optional bool FromYandexAviaMorda = 8;
+    optional string HostList = 9;
+    optional uint64 MissingGeoid = 10;
+    optional string MissingIATAcode = 11;
+    optional bool NoMinPrice = 12;
+    optional uint64 NumberOfCompetitors = 13;
+    optional uint64 NumberOfFlightCompetitors = 14;
+    optional string ReasonOfAbsence = 15;
+    // All root snake_case props should be written here
+    // https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/avia/avia.cpp?rev=5988683#L160
+    map<string, string> SearchPropsFromSource = 16 [(_compat_renamed_prefix) = "", (_split_size_limit) = 50];
+    optional string Status = 17;
+    optional string UnsupportedLanguage = 18;
+    optional bool UsedPages = 19;
+    optional string WizardType = 20 [(_split_size_limit) = 5];
+    optional string WrongCondition = 21 [(_split_size_limit) = 10];
+    optional bool IsCharter = 22;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/big_nav_answer_upper/big_nav_answer_upper.cpp
+message TPropBigNavAnswerUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasNavData = 1 [(_compat_renamed_from) = "has_nav_data"];
+    optional bool InWhiteList = 2 [(_compat_renamed_from) = "in_white_list"];
+    optional bool OrgWizardTweak = 3 [(_compat_renamed_from) = "org_wizard_tweak"];
+    optional bool Show = 4 [(_compat_renamed_from) = "show"];
+    optional uint64 UrlsNm = 5 [(_compat_renamed_from) = "urls_nm"];
+    optional string ViewType = 6 [(_compat_renamed_from) = "view_type"];
+    optional uint64 HasDataBnoOrgPos = 7 [(_compat_renamed_from) = "has_data_bno_org_pos"];
+    optional bool ShowBnoAnySource = 8 [(_compat_renamed_from) = "show_bno_any_source"];
+    optional string DataFrom = 9;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/chat_filter/chat_filter.cpp
+message TPropChatFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> Pos = 1 [(_compat_renamed_prefix) = "Pos_", (_split_size_limit) = 50];
+    optional string Result = 2 [(_split_size_limit) = 10];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/collections_boards_serp_data/collections_boards_serp_data.cpp
+message TPropCollectionsBoardsSerpData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string BoardIds = 1 [(_split_size_limit) = 15];
+    optional bool CollectionsBoardsSerpData = 2;
+    optional uint64 DirectCollectionsCount = 3;
+    optional string EmptyIntent = 4 [(_split_size_limit) = 5];
+    optional bool FilteredByPornoRule = 5 [(_compat_renamed_from) = "filtered_by_porno_rule"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/competitor_filter/competitor_filter.cpp
+message TPropCompetitorFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool EdaCompetitors = 1 [(_compat_renamed_from) = "eda_competitors"];
+    optional bool EdadealConcurents = 2 [(_compat_renamed_from) = "edadeal_concurents"];
+    optional bool EdadealPartners = 3 [(_compat_renamed_from) = "edadeal_partners"];
+    optional bool EtherCompetitors = 4 [(_compat_renamed_from) = "ether_competitors"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/context_verticals/context_verticals.cpp
+message TPropContextVerticals {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Active = 1 [(_compat_renamed_from) = "active", (_split_size_limit) = 25];
+    optional bool HasError = 2 [(_compat_renamed_from) = "has_error"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/coronavirus/coronavirus.cpp
+message TPropCoronavirus {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Inserted = 1 [(_compat_renamed_from) = "inserted"];
+    optional string InsertedKey = 2 [(_split_size_limit) = 10];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/direct_market/direct_market.cpp
+message TPropDirectMarket {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AddDocToGrouping = 1;
+    optional bool CarouselFiltered = 2;
+    optional uint64 DirectBottomShowcaseSize = 3;
+    optional uint64 DirectShowcaseSize = 4;
+    optional bool HasCarousel = 5;
+    optional double MarketCarouselFilter1Value = 6 [(_compat_renamed_from) = "market_carousel_filter_1_value"];
+    optional double MarketCarouselFilter2Value = 7 [(_compat_renamed_from) = "market_carousel_filter_2_value"];
+    optional string MarketDocType = 8 [(_split_size_limit) = 5];
+    optional bool OnlyDirect = 9 [(_infinite_ttl) = true];
+    optional bool OnlyDirectCarouselFiltered = 10;
+    optional bool OnlyMarket = 11;
+    optional bool OnlyMarketCarouselFiltered = 12;
+    optional uint64 ImplicitCount = 13 [(_compat_renamed_from) = "market_ImplicitCount"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/history/search/web/rearrange/ecom_adv_owner_boost/ecom_adv_owner.cpp
+message TPropEcomAdvOwner {
+    optional uint64 EcomAdvNumRearrange = 1;
+    optional uint64 EcomAdvChangedPosition = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/ecom_offline_generative_answer/ecom_offline_generative_answer.cpp
+message TPropEcomOfflineGenerativeAnswer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomOfflineGenesisAnswerSaasData = 1;
+    optional bool HasEcomOfflineGenesisAnswerFinalDoc = 2;
+    optional bool QueryHasGeoIntent = 3;
+    optional bool IsAnswerCase2 = 4;
+    optional string EcomGenesisAnswerType = 5;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/ecom_comparator/ecom_comparator.cpp
+message TPropEcomComparator {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomComparatorSaasData = 1;
+    optional bool HasEcomComparatorFinalDoc = 2;
+    optional uint64 FetchedModelsForCompare = 3;
+    optional uint64 ComparisonCategory = 4;
+    optional bool FetchedCompareSummary = 5;
+    optional bool QueryHasModelIds = 6;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/ecom_filters/ecom_filters.cpp
+message TPropEcomFilters {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AreGptFiltersAllowed = 1;
+    optional bool HasGptFiltersFinalDoc = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/ecom_complex_choice/ecom_complex_choice.cpp
+message TPropEcomComplexChoice {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomComplexChoiceSaasData = 1;
+    optional bool HasEcomComplexChoiceFinalDoc = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/ecom_promos/ecom_promos.cpp
+message TPropEcomPromos {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomPromosSaasData = 1;
+    optional bool HasEcomPromosFinalDoc = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/products_vendors/products_vendors.cpp
+message TPropEcomVendors {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasEcomVendorsFinalDoc = 1;
+}
+
+message TPropEcomResearch {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string SaaSNamespace = 1 [(_split_size_limit) = 50];
+    optional string Source = 2 [(_split_size_limit) = 40];
+    optional string WizId = 3 [(_split_size_limit) = 10];
+    map<string, string> SaaSHasWiz = 4 [(_compat_renamed_prefix) = "SaaSHasWiz_", (_split_size_limit) = 50];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/history/search/web/extensions/rearrange/ecom_trafaret/ecom_trafaret.cpp
+message TPropEcomTrafaret {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    repeated uint64 EcomTrafaretFilteredIndexes = 1;
+    optional uint64 EcomTrafaretGroupingSize = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/eda/eda.cpp
+message TPropEda {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CannotCreateTextWizardFromGeo = 1;
+    optional bool EdaExtraRule = 2;
+    optional bool EdaGroupingHasDocs = 3 [(_compat_renamed_from) = "EdaGrouping.HasDocs"];
+    optional bool EdaRule = 4;
+    optional bool EmptyOrBannedLanding = 5;
+    optional bool HasDeliveryIntent = 6;
+    optional bool HasEdaYandexOrganic = 7;
+    optional bool InsertRestaurantCarousel = 8;
+    optional bool InsertTextWizardFromGeo = 9;
+    optional string ReasonOfAbsence = 10 [(_split_size_limit) = 5];
+    optional bool WhitelistOrg = 11;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/election/election.cpp
+message TPropElection {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Inserted = 1 [(_compat_renamed_from) = "inserted"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/entity_search/entity_search.cpp
+message TPropEntitySearch {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+
+    optional bool AVOD = 1;
+    optional bool Accept = 2 [(_infinite_ttl) = true];
+    optional string AntiobjectResponseStatus = 3 [(_compat_renamed_from) = "Antiobject/ResponseStatus", (_split_size_limit) = 10];
+    optional string CandidateFact = 4 [(_split_size_limit) = 5];
+    map<uint64, NScarabProto.NCommon.TListOfDouble> CardContentFeatures = 5 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 1100];
+    optional bool CenterPromotedThumb = 6;
+    optional bool Collection = 7;
+    optional bool CompoundThumb = 8;
+    optional bool Deny = 9;
+    optional bool EST = 10;
+    optional bool EasyBlend = 11;
+    optional bool Forcefold = 12 [(_compat_renamed_from) = "forcefold"];
+    optional bool HasCenterTrailer = 13;
+    optional bool HasFilmReleaseDateFact = 14;
+    optional bool HasFilmThumb = 15 [(_infinite_ttl) = true];
+    map<uint64, bool> HasGeoInfo = 16 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 20];
+    map<uint64, bool> IsExplicit = 17 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 20];
+    reserved 18;
+    optional bool IsTrackDataOkForMovingToCenter = 19;
+    optional string ListOntoids = 20 [(_infinite_ttl) = true, (_split_size_limit) = 85];
+    optional string ListOntoidsOrig = 21 [(_infinite_ttl) = true, (_split_size_limit) = 5];
+    optional uint64 ListSize = 22 [(_infinite_ttl) = true];
+    optional uint64 ListSizeOrig = 23;
+    optional string ListSorting = 24 [(_split_size_limit) = 5];
+    optional string ListType = 25 [(_infinite_ttl) = true, (_split_size_limit) = 5];
+    map<uint64, string> Log = 26 [(_compat_default_value_wo_underscore) = true, (_infinite_ttl) = true, (_split_size_limit) = 90];
+    optional uint64 MobileSerpPosition = 27;
+    optional bool MoveVideoWizardAfterBlend = 28;
+    optional bool MoveVideoWizardAfterIW = 29;
+    optional double NORM_ES_WEIGHT = 30;
+    optional bool NewSeriesThumb = 31;
+    map<uint64, string> Ontoid = 32 [(_compat_default_value_wo_underscore) = true, (_infinite_ttl) = true, (_split_size_limit) = 15];
+    map<uint64, string> Osubtype = 33 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) =  10];
+    map<uint64, string> Otype = 34 [(_compat_default_value_wo_underscore) = true, (_infinite_ttl) = true, (_split_size_limit) = 10];
+    optional bool PlayerAvailable = 35;
+    optional string QueryObjExtractionInfoB64 = 36 [(_split_size_limit) = 340];
+    optional bool ReviewsFastVersion = 37;
+    optional double RtxAddAlpha = 38;
+    optional bool RtxFixedPositions = 39;
+    optional bool RtxLazyRearrange = 40;
+    optional string RtxRTMRKey0 = 41 [(_compat_renamed_from) = "RtxRTMRKey_0", (_split_size_limit) = 5];
+    optional string RtxRTMRKey1 = 42 [(_compat_renamed_from) = "RtxRTMRKey_1", (_split_size_limit) = 5];
+    optional string RtxRankerId = 43 [(_split_size_limit) = 5];
+    optional uint64 RtxRearrangedTop = 44;
+    optional string SVOD = 45 [(_split_size_limit) = 5];
+    optional string SeriesMarker = 46 [(_split_size_limit) = 5];
+    map<uint64, double> SerpFactScore = 47 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 15];
+    map<uint64, string> SerpFeatures = 48 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 500];
+    map<uint64, double> SerpIntentScore = 49 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 10];
+    optional string SerpObjExtractionInfoB64 = 50 [(_split_size_limit) = 400];
+    map<uint64, double> SerpScore = 51 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 15];
+    map<uint64, double> SerpTouchScore = 52 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 15];
+    map<uint64, bool> SkippingUpperFilters = 53 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 5];
+    optional bool TVOD = 54;
+    map<string, bool> Tag = 55 [(_split_size_limit) = 5];
+    map<string, bool> UseWizards = 56 [(_compat_renamed_prefix) = "use_wizards_", (_split_size_limit) = 5];
+    optional string UserFilmMonetizationModel = 57 [(_split_size_limit) = 5];
+    optional uint64 UserFilmPrice = 58;
+    optional uint64 UserFilmPricePromocode = 59;
+    optional bool WizplaceFilmThumb = 60;
+    optional bool WizplacePromotedThumb = 61;
+    map<uint64, bool> IsSticky = 62 [(_compat_default_value_wo_underscore) = true, (_infinite_ttl) = true, (_split_size_limit) = 20];
+    map<uint64, string> YsrOrgId = 63 [(_compat_default_value_wo_underscore) = true];
+    optional string ListMachineClassifierResultB64 = 64 [(_split_size_limit) = 500, (_ttl) = 90];
+    map<string, string> Aux = 65 [(_compat_renamed_prefix) = "Aux_", (_split_size_limit) = 10];
+    optional string OttContentType = 66 [(_split_size_limit) = 5];
+    optional string ListMachineClass = 67 [(_split_size_limit) = 10];
+    optional bool HasTracks = 68;
+    optional bool HasSocialReviews = 69;
+    optional bool HasMetadocData = 70;
+    optional bool MetadocMayBeInjected = 71;
+    optional string SubscribtionVideoOnDemand = 72 [(_compat_renamed_from) = "SVOD"];
+    optional string TransactionalVideoOnDemand = 73 [(_compat_renamed_from) = "TVOD", (_split_size_limit) = 5];
+    optional string AdvertisingVideoOnDemand = 74 [(_compat_renamed_from) = "AVOD"];
+    optional string ElectronicSellThrough = 75 [(_compat_renamed_from) = "EST", (_split_size_limit) = 5];
+    optional string ActiveTab = 76 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string ListTabs = 77 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string IntentType = 78 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional bool HasEcomCandidate = 79 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool HasTrack = 80 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool HasClip = 81 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool HasLyrics = 82 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool HasLyricsTranslation = 83 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool IsHomonymsList = 84 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional string ListTabNames = 85 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional uint64 ReviewsCnt = 86 [(_owner_fld) = "abc:unisearch", (_infinite_ttl) = true];
+    optional uint64 GoodsNumOffers = 87 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional uint64 GoodsTotalOffers = 88 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional uint64 NumModelVideos = 89 [(_owner_fld) = "abc:videoquality", (_infinite_ttl) = true];
+    optional bool MoveTeaserGeo = 90 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool MoveTeaserMusic = 91 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool MoveTeaserHum = 92 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional bool MoveTeaserEcom = 93 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional string CardBlocks = 94 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string DeletedBlock = 95 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string ExistedCardBlocks = 96 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string ListBlockTypes = 97 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional uint64 NumVideosFromSaas = 98 [(_owner_fld) = "abc:videoquality", (_infinite_ttl) = true];
+    optional string ShuffleMethod = 99 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string ShuffledBlock = 100 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string ShuffledCardBlocks = 101 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string ShuffledExistedCardBlocks = 102 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional bool MoveEntityCardToWizplaces = 103 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true];
+    optional uint64 AspectsCnt = 104 [(_owner_fld) = "abc:ecom_entity_search", (_infinite_ttl) = true];
+    optional bool PriceRatioFilterAffectedResult = 105 [(_owner_fld) = "abc:ecom_entity_search", (_ttl) = 60];
+    optional bool PriceRatioFilterCouldAffectResult = 106 [(_owner_fld) = "abc:ecom_entity_search", (_ttl) = 60];
+    optional string VideosFromSaasType = 107 [(_owner_fld) = "abc:videoquality", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional uint64 PhotosInReviewsCnt = 108 [(_owner_fld) = "abc:ecom_entity_search", (_infinite_ttl) = true];
+    optional string CardSerpType = 109 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string Language = 110 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional string DescriptionType = 111 [(_owner_fld) = "abc:entitysearch", (_infinite_ttl) = true, (_split_size_limit) = 0];
+    optional bool IsFilmSeriesScenarioBuilt = 112 [(_owner_fld) = "abc:videoquality", (_ttl) = 90];
+    optional bool TagProduct = 113 [(_compat_renamed_from) = "Tag/Product", (_ttl) = 730, (_owner_fld)="abc:ecom_entity_search"];
+    optional uint32 ViewedToPercentage = 114 [(_owner_fld) = "abc:videoquality", (_ttl) = 90];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/erase_right_column/erase_right_column.cpp
+message TPropEraseRightColumn {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool EraseRightColumn = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/facts/facts.cpp
+message TPremiumLengthFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Applied = 1;
+    optional uint64 BannersDropped = 2;
+    optional bool AllDroppedForGallery = 3;
+    optional bool NoAnswerText = 4;
+}
+
+message TPropFacts {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> AddedFact = 1 [(_split_size_limit) = 25];
+    optional string AnswerFactors = 2 [(_split_size_limit) = 5];
+    optional string AnswersHeadlines = 3 [(_split_size_limit) = 5];
+    optional string AnswersUrls = 4 [(_split_size_limit) = 5];
+    optional bool ApplyFmlConfigDone = 5;
+    optional bool ApplyFmlConfigFailed = 6;
+    optional bool ApplyFmlConfigHasErrors = 7;
+    optional string BannedBadTopicFactFeaturedSnippet = 8 [(_compat_renamed_from) = "BannedBadTopicFact_featured_snippet", (_split_size_limit) = 5];
+    optional bool BannedByAnswerUrlPair = 9;
+    optional bool BannedByFactsnipAliceAnswerFilter = 10;
+    optional bool BannedByFactsnipAliceQueryFilter = 11;
+    map<string, bool> BannedConfictingGalleryIntent = 12 [(_compat_renamed_prefix) = "BannedConfictingGalleryIntent_", (_split_size_limit) = 5];
+    optional bool BannedDirtyLanguageFact = 13;
+    optional bool BannedDirtyLanguageQuery = 14;
+    map<string, bool> BannedDirtyVoicedTextFact = 15 [(_compat_renamed_prefix) = "BannedDirtyVoicedTextFact_", (_split_size_limit) = 5];
+    optional string BannedFactSnippetText = 16 [(_split_size_limit) = 5];
+    optional string BannedFactSnippetUrl = 17 [(_split_size_limit) = 5];
+    optional bool BannedGallery = 18;
+    repeated double BestAnswerFactors = 19;
+    optional bool BigMediaWikiPosition = 20;
+    optional uint64 BigMediaWikiPositionToReplaceSuggest = 21;
+    optional string Content = 22 [(_split_size_limit) = 1100];
+    map<string, bool> Denied = 23 [(_compat_renamed_prefix) = "Denied_", (_split_size_limit) = 5];
+    map<string, bool> ERROR_CONTEXT = 24 [(_compat_renamed_prefix) = "ERROR-CONTEXT-", (_split_size_limit) = 5];
+    optional bool ESConflict = 25;
+    optional bool EntityAsFact = 26;
+    optional string EntityAsFactError = 27 [(_split_size_limit) = 5];
+    optional string EntityAsFactFormula = 28 [(_split_size_limit) = 5];
+    optional double EntityAsFactScore = 29 [(_split_size_limit) = 5];
+    optional bool ExperimentControlDiff = 30;
+    optional string FactControl = 31 [(_split_size_limit) = 10];
+    optional string FactExperiment = 32 [(_split_size_limit) = 5];
+    optional double FeaturedSnippetMaxAnswerMx = 33;
+    optional double FeaturedSnippetRelevances = 34;
+    optional bool HasExtendedText = 35;
+    optional bool HasGallery = 36;
+    optional bool HasImage = 37;
+    optional bool HasRelatedFacts = 38;
+    optional bool HasTurbo = 39;
+    optional string HostIsForbidden = 40 [(_split_size_limit) =5];
+    optional bool IsIndirect = 41;
+    optional bool IsRuntimeAliases = 42;
+    optional bool ListFeaturedSnippetCreated = 43;
+    optional double MaxAnswerMx = 44;
+    optional string OriginalQuery = 45 [(_split_size_limit) = 5];
+    repeated double PredictFactors = 46;
+    repeated double QueryFactors = 47;
+    optional bool QueryIsBad = 48;
+    optional string QueryIsBadBadClass = 49 [(_compat_renamed_from) = "QueryIsBad_BadClass", (_split_size_limit) = 5];
+    optional bool QueryIsBadBigNav = 50 [(_compat_renamed_from) = "QueryIsBad_BigNav"];
+    optional bool QueryIsBadCommercial = 51 [(_compat_renamed_from) = "QueryIsBad_Commercial"];
+    optional bool QueryIsBadDigitsOnlyOrSingleToken = 52 [(_compat_renamed_from) = "QueryIsBad_DigitsOnlyOrSingleToken"];
+    optional string QueryIsBadForbiddenSerp = 53 [(_compat_renamed_from) = "QueryIsBad_ForbiddenSerp", (_split_size_limit) = 5];
+    optional bool QueryIsBadForbiddenSubstr = 54 [(_compat_renamed_from) = "QueryIsBad_ForbiddenSubstr"];
+    optional bool QueryIsBadForbiddenWords = 55 [(_compat_renamed_from) = "QueryIsBad_ForbiddenWords"];
+    optional string QueryIsBadMismatchUilAndQmpl = 56 [(_compat_renamed_from) = "QueryIsBad_MismatchUilAndQmpl", (_split_size_limit) = 5];
+    optional bool QueryIsBadNoFilterDataForLang = 57 [(_compat_renamed_from) = "QueryIsBad_NoFilterDataForLang"];
+    optional bool QueryIsBadPorno = 58 [(_compat_renamed_from) = "QueryIsBad_Porno"];
+    optional bool QueryIsGood = 59;
+    optional double QueryMx = 60;
+    optional double QueryMxFeaturedSnippet = 61;
+    optional double QueryMxVoicedSnippet = 62;
+    optional double Relevances = 63;
+    optional string Snippets = 64 [(_split_size_limit) = 5];
+    reserved 65;
+    optional bool SuggestFactIsPlaceholderForWikifact = 66;
+    optional bool SummarizationQueryIsGood = 67;
+    optional double SummarizationQueryMx = 68;
+    optional string SummarizationQueryMxError = 69 [(_split_size_limit) = 5];
+    optional string TrieKey = 70 [(_split_size_limit) = 15];
+    map<string, bool> UnstableAddedFact = 71 [ (_split_size_limit) = 5];
+    optional string UnstableContent = 72 [(_split_size_limit) = 5];
+    optional bool UnstableHasExtendedText = 73;
+    optional bool UnstableHasTurbo = 74;
+    map<string, bool> UnstableSource = 75 [(_compat_disabled) = true, (_split_size_limit) = 5];
+    optional bool UnstableWithoutSourceYanswerFact = 76 [(_compat_renamed_from) = "UnstableWithoutSource_yanswer_fact"];
+    optional string UserRequest = 77 [(_split_size_limit) = 125];
+    optional bool WikiIndirectShouldBeShown = 78;
+    optional bool WikifactIsRestrictedWithSuggestFact = 79;
+    map<string, bool> WithoutSource = 80 [(_compat_default_value_wo_underscore) = true, (_split_size_limit) = 5];
+    optional bool TurnOffFactsHasFactCandidate = 81;
+    map<string, bool> SourceValues = 82 [(_compat_renamed_prefix) = "Source_", (_compat_default_value_wo_underscore) = true, (_split_size_limit) = 20];
+    optional string SourceType = 83 [(_compat_renamed_from) = "Source", (_split_size_limit) = 15];
+    optional double QueryMx2 = 84;
+    optional double MaxInfoRelevance = 85;
+    optional string SnippetFmlConfigIntentWeightFml = 86 [(_compat_renamed_from) = "SnippetFmlConfig/IntentWeightFml", (_split_size_limit) = 70];
+    optional double InfoRelevances = 87;
+    optional uint64 BertScoresFound = 88;
+    optional uint64 BertScoresNotFound = 89;
+    optional string Type = 90 [(_split_size_limit) = 15];
+    optional string SerpInfoType = 91 [(_split_size_limit) = 10];
+    optional string SerpDataType = 92;
+    optional double ReplacedRelevance = 93;
+    optional uint64 NumberOfPhonesInAnswer = 94;
+    optional double OfflineSnippetScore = 95;
+    optional string FactSnipPredictFactors = 96 [(_split_size_limit) = 10]; // container todo protobufize
+    optional string FactSnipBestAnswerFactors = 97 [(_split_size_limit) = 10]; //container todo protobufize
+    optional bool DescriptionESConflict = 98;
+    optional bool QueryESTitleConflict = 99;
+    map<string, string> AssuredByMedicalHostCatalogue = 100 [(_compat_renamed_prefix) = "AssuredByMedicalHostsCatalogue_", (_split_size_limit) = 5];
+    optional string FactTypeRemovedByESConflict = 101 [(_split_size_limit) = 10];
+    optional bool AchievementConfigEmpty = 102;
+    optional bool FindPhoneInAnswer = 103;
+    map<string, double> BannedByMedicineFilter = 104 [(_compat_renamed_prefix) = "BannedByMedicineFilter_", (_split_size_limit) = 5];
+    optional string SerpInfoTypesAdditional = 105 [(_split_size_limit) = 5]; //container todo protobufize
+    optional string SourcesAdditional = 106 [(_split_size_limit) = 5]; //container todo protobufize
+    optional string TypesAdditional = 107 [(_split_size_limit) = 5]; //container todo protobufize
+    map<string, double> BannedByPolitotaFilter = 108 [(_compat_renamed_prefix) = "BannedByPolitotaFilter_", (_split_size_limit) = 5];
+    optional double ListFeaturedSnippetFormulaScore = 109;
+    optional bool DirectPremiumFound = 110;
+    map<string, bool> SaasMissingSource = 111 [(_compat_renamed_prefix) = "SaaS_MissingSource_", (_split_size_limit) = 5];
+    map<string, double> BannedByUnethicalFilter = 112 [(_compat_renamed_prefix) = "BannedByUnethicalFilter_", (_split_size_limit) = 5];
+    map<string, string> BannedByCompoundFilter = 113 [(_compat_renamed_prefix) = "BannedByCompoundFilter_", (_split_size_limit) = 5];
+    optional bool UrlESConflict = 114;
+    optional bool AppliedBertlessFormula = 115;
+    optional string BertlessSnippetFmlConfigIntentWeightFml = 116 [(_compat_renamed_from) = "BertlessSnippetFmlConfig/IntentWeightFml", (_split_size_limit) = 35];
+    optional bool BannedByUrl = 117;
+    map<string, string> BannedBySubstringsFilter = 118 [(_compat_renamed_prefix) = "BannedBySubstringsFilter_", (_split_size_limit) = 5];
+    map<string, double> BannedBySosFilter = 119 [(_compat_renamed_prefix) = "BannedBySosFilter_", (_split_size_limit) = 5];
+    optional bool QueryWPTitleConflict = 120;
+    optional bool WPConflict = 121;
+    optional bool CallButtonFound = 122;
+    map<string, string> EnrichedWith = 123 [(_compat_renamed_prefix) = "EnrichedWith", (_split_size_limit) = 50];
+    optional string UnstableSerpDataType = 124 [(_split_size_limit) = 5];
+    optional string UnstableSourceStr = 125 [(_compat_renamed_from) = "UnstableSource", (_split_size_limit) = 5];
+    optional string UnstableType = 126 [ (_split_size_limit) = 5];
+    map<string, bool> SaaSHasData = 127 [(_compat_renamed_prefix) = "SaaS_HasData_", (_owner_fld) = "abc:serppolishing", (_split_size_limit) = 5];
+    map<string, bool> SaaSInserted = 128 [(_compat_renamed_prefix) = "SaaS_Inserted_", (_owner_fld) = "abc:serppolishing", (_split_size_limit) = 5];
+    optional double UrlOfsScore = 129 [(_owner_fld) = "abc:facts"];
+    map<string, bool> BannedByQueryIsBad = 130 [(_compat_renamed_prefix) = "BannedByQueryIsBad_", (_owner_fld) = "abc:facts", (_split_size_limit) = 5];
+    map<string, bool> BannedByUkraineWarV2Filter = 131 [(_compat_renamed_prefix) = "BannedByUkraineWarV2Filter_", (_owner_fld) = "abc:facts", (_split_size_limit) = 5];
+    optional bool FactSourceIsSpecial = 132;
+    map<string, bool> BackendValues = 133 [(_compat_renamed_prefix) = "Backend_", (_owner_fld) = "abc:facts", (_compat_default_value_wo_underscore) = true, (_split_size_limit) = 20];
+    optional string BackendType = 134 [(_compat_renamed_from) = "Backend", (_owner_fld) = "abc:facts", (_split_size_limit) = 15];
+    optional bool ExperimentControlDiffAdded = 135;
+    optional bool ExperimentControlDiffDeleted = 136;
+    optional string ExperimentControlDiffSrcMain = 137 [(_split_size_limit) = 0];
+    optional string ExperimentControlDiffSrcCtrl = 138 [(_split_size_limit) = 0];
+    optional bool HasGenesisBannedUrl = 139 [(_owner_fld) = "abc:facts"];
+    optional bool HasGenesisBannedUrlSerp = 140 [(_owner_fld) = "abc:facts"];
+    optional bool HasGenesisBannedUrlOffline = 141 [(_owner_fld) = "abc:facts"];
+    optional bool HasGenesisBannedUrlOnline = 142 [(_owner_fld) = "abc:facts"];
+    optional uint64 GenAnswerAbsentUrlCnt = 143 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional uint64 GenAnswerGoodUrlCnt = 144 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional uint64 GenAnswerOutdatedUrlCnt = 145 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional double GenAnswerAbsentUrlCoverage = 146 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional double GenAnswerGoodUrlCoverage = 147 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional double GenAnswerOutdatedUrlCoverage = 148 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional bool OfflineNeuroEnrichedByBanner = 149 [(_owner_fld) = "abc:facts", (_rt_required) = true];
+    optional bool BannedByHeuristicTooManyFreshResults = 150 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional int64 FreshSamohodUrlsCount = 151 [(_owner_fld) = "abc:facts", (_rt_required) = true, (_ttl) = 90];
+    optional int64 FreshSamohodUrlsCountThreshold = 152 [(_owner_fld) = "abc:facts", (_rt_required) = true, (_ttl) = 90];
+    map<string, bool> WizardsExperimentControlDiff = 153 [(_owner_fld) = "abc:facts", (_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_ExperimentControlDiff", (_split_size_limit) = 0];
+    optional bool OfflineNeuroBannerSaaSDataFound = 154 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool OfflineBsaAnswerFound = 155 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool BannedByPoorVideo = 156 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool HaveYabsSaasData = 157 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool YabsSaasExtensionsTransactionSectionUsed = 158 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool YabsSaasExtensionsBannerUsed = 159 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool TransactionSectionWasInserted = 160 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional TPremiumLengthFilter PremiumLengthFilter = 161 [(_compat_path_separator) = "_", (_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool BackendFactBase = 162 [(_compat_renamed_from) = "Backend_fact_base", (_owner_fld) = "abc:facts", (_split_size_limit) = 20];
+    optional bool BackendFactSnippet = 163 [(_compat_renamed_from) = "Backend_fact_snippet", (_owner_fld) = "abc:facts", (_split_size_limit) = 20];
+    optional bool BackendQuerySaas = 164 [(_compat_renamed_from) = "Backend_query_saas", (_owner_fld) = "abc:facts", (_split_size_limit) = 20];
+    optional bool BackendUrlSaas = 165 [(_compat_renamed_from) = "Backend_url_saas", (_owner_fld) = "abc:facts", (_split_size_limit) = 20];
+    optional bool AddedFactDefault = 166 [(_compat_renamed_from) = "AddedFact", (_split_size_limit) = 25];
+    optional bool AddedFactUnitsConverter = 167 [(_compat_renamed_from) = "AddedFact_UNITS_CONVERTER", (_split_size_limit) = 25];
+    optional bool AddedFactFactSnippet = 168 [(_compat_renamed_from) = "AddedFact_fact_snippet", (_split_size_limit) = 25];
+    optional bool AddedFactSuggestFact = 169 [(_compat_renamed_from) = "AddedFact_suggest_fact", (_split_size_limit) = 25];
+    optional bool SourceUnitsConverter = 170 [(_compat_renamed_from) = "Source_UNITS_CONVERTER", (_split_size_limit) = 20];
+    optional bool SourceFactSnippet = 171 [(_compat_renamed_from) = "Source_fact_snippet", (_split_size_limit) = 20];
+    optional bool AddedFactUrlOfs = 172 [(_compat_renamed_from) = "AddedFact_url_ofs", (_split_size_limit) = 25];
+    optional bool AddedFactWizcolors = 173 [(_compat_renamed_from) = "AddedFact_WIZCOLORS", (_split_size_limit) = 25];
+    optional bool SourceTime = 174 [(_compat_renamed_from) = "Source_time", (_split_size_limit) = 20];
+    optional bool SourceGenAnswer = 175 [(_compat_renamed_from) = "Source_gen_answer", (_split_size_limit) = 20];
+    optional bool SourceCalculator = 176 [(_compat_renamed_from) = "Source_calculator", (_split_size_limit) = 20];
+    optional bool SourceWizcolors = 177 [(_compat_renamed_from) = "Source_WIZCOLORS", (_split_size_limit) = 20];
+    optional bool AddedFactCachedFact = 178 [(_compat_renamed_from) = "AddedFact_cached_fact", (_split_size_limit) = 25];
+    optional bool SourceCachedFacts = 179 [(_compat_renamed_from) = "Source_cached_facts", (_split_size_limit) = 20];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/family_filter/family_filter.cpp
+message TPropFamilyFilter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Aue = 1 [(_compat_renamed_from) = "aue"];
+    optional string BadQuery = 2 [(_compat_renamed_from) = "badQuery", (_split_size_limit) = 5];
+    optional bool Drugs = 3 [(_compat_renamed_from) = "drugs"];
+    optional bool DrugsNav = 4 [(_compat_renamed_from) = "drugs_nav"];
+    optional uint64 RemovedByIsNarco = 5 [(_compat_renamed_from) = "removedByIsNarco"];
+    optional bool Suicide = 6 [(_compat_renamed_from) = "suicide"];
+    optional bool ForceClean = 7 [(_compat_renamed_from) = "force_clean"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/formula_log/formula_log.cpp
+message TPropFormulaLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Fmls = 1 [(_compat_renamed_prefix) = "fmls_", (_split_size_limit) = 445];
+    optional string FmlsD = 2 [(_compat_renamed_from) = "fmls_d", (_split_size_limit) = 445];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/fresh/fresh.cpp
+message TPropFresh {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FreshUrls = 1 [(_infinite_ttl) = true, (_split_size_limit) = 525];
+    optional double IntentProbability = 2 [(_infinite_ttl) = true, (_rt_required) = true];
+    optional double QuickShowsDoppLastDayDecay = 3;
+    optional string WebUrls = 4 [(_split_size_limit) = 550];
+    optional uint64 FreshDocsInRearranging = 5;
+    optional uint64 Filter = 6;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/fresh_manual/fresh_manual.cpp
+message TPropFreshManual {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool BanNewsIfSpecialEvent = 1;
+    optional bool IPBoost = 2;
+    optional uint64 LimitFreshForNavQueries = 3;
+    optional bool NewsIntoSpecialEventSimple = 4;
+    optional bool NewsIntoSport = 5;
+    optional uint64 SpecialEventColumns = 6;
+    optional bool SpecialEventWizard = 7;
+    optional string SportWizardNewsUrls = 8 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/games/games.cpp
+message TPropGames {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AcceptedRule = 1 [(_split_size_limit)  =5];
+    map<string, bool> AllowedRule = 2 [(_compat_renamed_prefix) = "AllowedRule_", (_split_size_limit) = 5];
+    map<string, bool> BegemotRule = 3 [(_compat_renamed_prefix) = "BegemotRule_", (_split_size_limit) = 5];
+    optional uint64 ConcurentsCount = 4;
+    optional string InsertedWizard = 5 [(_split_size_limit) = 15];
+    optional double OnlineGames = 6 [(_compat_renamed_from) = "online_games"];
+    optional double OnlineGamesConcurentsModel = 7 [(_compat_renamed_from) = "online_games_concurents_model"];
+    optional string ReasonOfAbsense = 8 [(_split_size_limit) = 5];
+    optional double VideoGames = 9 [(_compat_renamed_from) = "video_games"];
+    optional string WizardSubtypeIs = 10 [(_split_size_limit) = 5];
+    optional bool CannotInsertGeneralWizard = 11;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/health/health.cpp
+message TPropHealth {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string BothHealthGeoResults = 1 [(_compat_renamed_from) = "Both_Health_Geo_Results", (_split_size_limit) = 5];
+    optional string HealthArticles = 2 [(_compat_renamed_from) = "!Health_Articles", (_split_size_limit) = 5];
+    optional double MaxRelev = 3 [(_compat_renamed_from) = "Max_Relev"];
+    optional double MinRelev = 4 [(_compat_renamed_from) = "Min_Relev"];
+    optional uint64 TotalDocuments = 5 [(_compat_renamed_from) = "Total_Documents"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/highlight_documents/highlight_documents.cpp
+message TPropHighlightDocuments {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional double DocNavPred0 = 1 [(_compat_renamed_from) = "doc_nav_pred_0"];
+    map<string, string> Pos = 2 [(_compat_min_key_width) = 2, (_split_size_limit) = 30];
+    optional double QueryNavPred = 3 [(_compat_renamed_from) = "query_nav_pred"];
+    optional string UserConfig = 4 [(_split_size_limit) = 22];
+    optional uint64 Highlighted = 5;
+    optional string Pos00Official = 6 [(_compat_renamed_from) = "Pos00_official", (_split_size_limit) = 30];
+    optional string Pos01CbrfInfo = 7 [(_compat_renamed_from) = "Pos01_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos02Tasix = 8 [(_compat_renamed_from) = "Pos02_tasix", (_split_size_limit) = 30];
+    optional string Pos03CbrfInfo = 9 [(_compat_renamed_from) = "Pos03_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos03Official = 10 [(_compat_renamed_from) = "Pos03_official", (_split_size_limit) = 30];
+    optional string Pos04CbrfInfo = 11 [(_compat_renamed_from) = "Pos04_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos05CbrfInfo = 12 [(_compat_renamed_from) = "Pos05_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos06CbrfInfo = 13 [(_compat_renamed_from) = "Pos06_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos06Official = 14 [(_compat_renamed_from) = "Pos06_official", (_split_size_limit) = 30];
+    optional string Pos07CbrfInfo = 15 [(_compat_renamed_from) = "Pos07_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos07Official = 16 [(_compat_renamed_from) = "Pos07_official", (_split_size_limit) = 30];
+    optional string Pos08Official = 17 [(_compat_renamed_from) = "Pos08_official", (_split_size_limit) = 30];
+    optional string Pos09CbrfInfo = 18 [(_compat_renamed_from) = "Pos09_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos09Official = 19 [(_compat_renamed_from) = "Pos09_official", (_split_size_limit) = 30];
+    optional string Pos10CbrfInfo = 20 [(_compat_renamed_from) = "Pos10_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos11CbrfInfo = 21 [(_compat_renamed_from) = "Pos11_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos12CbrfInfo = 22 [(_compat_renamed_from) = "Pos12_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos13CbrfInfo = 23 [(_compat_renamed_from) = "Pos13_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos13Official = 24 [(_compat_renamed_from) = "Pos13_official", (_split_size_limit) = 30];
+    optional string Pos13KzBank = 25 [(_compat_renamed_from) = "Pos13_kz_bank", (_split_size_limit) = 30];
+    optional string Pos00CbrfInfo = 26 [(_compat_renamed_from) = "Pos00_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos01Official = 27 [(_compat_renamed_from) = "Pos01_official", (_split_size_limit) = 30];
+    optional string Pos02CbrfInfo = 28 [(_compat_renamed_from) = "Pos02_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos02Official = 29 [(_compat_renamed_from) = "Pos02_official", (_split_size_limit) = 30];
+    optional string Pos03Tasix = 30 [(_compat_renamed_from) = "Pos03_tasix", (_split_size_limit) = 30];
+    optional string Pos04Official = 31 [(_compat_renamed_from) = "Pos04_official", (_split_size_limit) = 30];
+    optional string Pos05Official = 32 [(_compat_renamed_from) = "Pos05_official", (_split_size_limit) = 30];
+    optional string Pos08CbrfInfo = 33 [(_compat_renamed_from) = "Pos08_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos10Official = 34 [(_compat_renamed_from) = "Pos10_official", (_split_size_limit) = 30];
+    optional string Pos10Tasix = 35 [(_compat_renamed_from) = "Pos10_tasix", (_split_size_limit) = 30];
+    optional string Pos11Official = 36 [(_compat_renamed_from) = "Pos11_official", (_split_size_limit) = 30];
+    optional string Pos11Tasix = 37 [(_compat_renamed_from) = "Pos11_tasix", (_split_size_limit) = 30];
+    optional string Pos12Official = 38 [(_compat_renamed_from) = "Pos12_official", (_split_size_limit) = 30];
+    optional string Pos13Tasix = 39 [(_compat_renamed_from) = "Pos13_tasix", (_split_size_limit) = 30];
+    optional string Pos15CbrfInfo = 40 [(_compat_renamed_from) = "Pos15_cbrf_info", (_split_size_limit) = 30];
+    optional string Pos12Tasix = 41 [(_compat_renamed_from) = "Pos12_tasix", (_split_size_limit) = 30];
+    optional string Pos15Official = 42 [(_compat_renamed_from) = "Pos15_official", (_split_size_limit) = 30];
+    optional string Pos11KzBank = 43 [(_compat_renamed_from) = "Pos11_kz_bank", (_split_size_limit) = 30];
+    optional string Pos07KzBank = 44 [(_compat_renamed_from) = "Pos07_kz_bank", (_split_size_limit) = 30];
+    optional string Pos23Official = 45 [(_compat_renamed_from) = "Pos23_official", (_split_size_limit) = 30];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/hilite_url/hilite_url.cpp
+message TPropHiliteUrl {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HiliteUrlWorked = 1 [(_compat_renamed_from) = "HiliteUrl_worked"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/hiliter/hiliter.cpp
+message TPropHiliter {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> D = 1 [(_compat_renamed_prefix) = "d_", (_split_size_limit) = 5];
+    map<string, bool> Grouping = 2 [(_compat_renamed_prefix) = "grouping_", (_split_size_limit) = 15];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/hostclassifier/hostclassifier.cpp
+message TPropHostClassifier {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double AfishaEvent = 1 [(_compat_renamed_from) = "afisha_event"];
+    optional double Auto = 2 [(_compat_renamed_from) = "auto"];
+    optional double Books = 3 [(_compat_renamed_from) = "books"];
+    optional double Music = 4 [(_compat_renamed_from) = "music"];
+    optional double Vacancy = 5 [(_compat_renamed_from) = "vacancy"];
+    optional double Video = 6 [(_compat_renamed_from) = "video"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/int_discovery_recommender/recommender.cpp
+message TPropIntDiscoveryRecommender {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool added_to_blender = 1 [(_owner_fld) = "abc:int_discovery"];
+    optional string banned_by_rearrange_intent_filter_query = 2 [(_owner_fld) = "abc:int_discovery", (_split_size_limit) = 5];
+    optional bool log_only_mode_worked = 3 [(_owner_fld) = "abc:int_discovery"];
+    optional bool query_saas_has_recommendations_list = 4 [(_owner_fld) = "abc:int_discovery"];
+    optional bool serp_reload = 5 [(_owner_fld) = "abc:int_discovery"];
+    optional bool some_saas_has_recommendations_list = 6 [(_owner_fld) = "abc:int_discovery"];
+    optional bool uid_query_saas_has_recommendations_list = 7 [(_owner_fld) = "abc:int_discovery"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/iznanka_div_format/iznanka_div_format.cpp
+message TPropIznankaDivFormat {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ReasonOfAbsence = 1 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/landing/landing.cpp
+message TPropLanding {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Ban = 1 [(_compat_renamed_prefix) = "ban_", (_split_size_limit) = 20];
+    optional string EmptyIntent = 2 [(_split_size_limit) = 5];
+    map<string, bool> HasData = 3 [(_compat_renamed_prefix) = "has_data_", (_split_size_limit) = 10];
+    map<string, bool> IntentFilter = 4 [(_compat_renamed_prefix) = "IntentFilter/", (_split_size_limit) = 5];
+    map<string, string> Source = 5 [(_compat_renamed_prefix) = "", (_split_size_limit) = 5];
+    map<string, string> UsingIntent = 6 [(_compat_renamed_prefix) = "using_intent_", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/history/search/web/extensions/rearrange/market_exp_blend/market_exp_blend.cpp
+message TPropMarketExpBlend {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MarketExpIsChangedMarketOffer = 1;
+    optional bool MarketExpIsAddedShopInShopOffer = 2;
+    optional bool MarketExpIsShopSaasResponse = 3;
+    optional uint32 MarketExpShopSaasResponseDocumentsCount = 4;
+    optional uint32 MarketExpChangedOrAddedShopDocumentsCount = 5;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/market_upper/market_upper.cpp
+message TPropMarketUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool OffersWizNoItems = 1 [(_compat_renamed_from) = "OffersWiz_NoItems"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/misspell/misspell.cpp
+message TPropMisspell {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 Confidence = 1;
+    map<string, double> Df = 2 [(_compat_renamed_prefix) = "df/", (_split_size_limit) = 5];
+    map<string, bool> ErratumFactors = 3 [(_compat_renamed_prefix) = "ErratumFactors.", (_split_size_limit) = 50];
+    repeated double Factors = 4 [(_compat_renamed_from) = "factors", (_split_size_limit) = 250];
+    optional string Fakesuggest = 5 [(_compat_renamed_from) = "fakesuggest"];
+    optional bool HasMisspellGroupingId = 6;
+    optional string Merged = 7 [(_compat_renamed_from) = "merged", (_infinite_ttl) = true, (_split_size_limit) = 5];
+    optional double MisspellGroupDiscounter = 8;
+    optional uint64 MisspellGroupingSize = 9;
+    optional bool ModelApplied = 10;
+    optional string ModelIncut = 11 [(_split_size_limit) = 5];
+    optional uint64 ModelMspDocs = 12;
+    optional string ModelName = 13 [(_split_size_limit) = 50];
+    optional double ModelRawResult = 14;
+    optional uint64 ModelTopLength = 15;
+    optional string ModelType = 16 [(_split_size_limit) = 5];
+    optional uint64 ModelWebDocs = 17;
+    optional bool SimHackEnabled = 18;
+    optional double SimLevel = 19;
+    optional bool SortGroups = 20;
+    optional bool ErratumFactorsDist = 21 [(_compat_renamed_from) = "ErratumFactors.dist", (_split_size_limit) = 50];
+    optional bool ErratumFactorsOrigPenalty = 22 [(_compat_renamed_from) = "ErratumFactors.origPenalty", (_split_size_limit) = 50];
+    optional bool ErratumFactorsOrigWeight = 23 [(_compat_renamed_from) = "ErratumFactors.origWeight", (_split_size_limit) = 50];
+    optional bool ErratumFactorsWeight = 24 [(_compat_renamed_from) = "ErratumFactors.weight", (_split_size_limit) = 50];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/namaz/namaz.cpp
+message TPropNamazUpper {
+    optional bool IsExactIntent = 1 [(_compat_renamed_from) = "NamazUpperIsExactIntent"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/news_wizard_upper/news_wizard_upper.cpp
+message TPropNewsFromQuickUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MoveTrendingUpExprVal = 1;
+    optional bool MoveVideoUp = 2;
+    optional string NewsWizardDocsProperties = 3 [(_infinite_ttl) = true, (_split_size_limit) = 1170];
+    optional bool SportWizardNewsTabIsOpen = 4 [(_compat_renamed_from) = "SportWizard_NewsTabIsOpen"];
+    optional string UtmTrend = 5 [(_split_size_limit) = 5];
+    optional string UtmTrendClient = 6 [(_compat_renamed_from) = "UtmTrend_client", (_split_size_limit) = 5];
+    optional string UtmTrendExp = 7 [(_compat_renamed_from) = "UtmTrend_exp", (_split_size_limit) = 5];
+    optional uint64 UtmTrendPos = 8 [(_compat_renamed_from) = "UtmTrend_pos", (_split_size_limit) = 5];
+    optional string UtmTrendR = 9 [(_compat_renamed_from) = "UtmTrend_r", (_split_size_limit) = 5];
+    optional string UtmTrendRanker = 10 [(_compat_renamed_from) = "UtmTrend_ranker", (_split_size_limit) = 5];
+    optional uint64 UtmTrendRaonker = 11 [(_compat_renamed_from) = "UtmTrend_raonker", (_split_size_limit) = 5];
+    optional string UtmTrendSource = 12 [(_compat_renamed_from) = "UtmTrend_source", (_split_size_limit) = 5];
+    optional string UtmTrendSplit = 13 [(_compat_renamed_from) = "UtmTrend_split", (_split_size_limit) = 5];
+    optional string UtmTrendTestid = 14 [(_compat_renamed_from) = "UtmTrend_testid", (_split_size_limit) = 5];
+    optional string UtmTrendTs = 15 [(_compat_renamed_from) = "UtmTrend_ts", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/news_personal_feed/news_personal_feed.cpp
+message TPropNewsPersonalFeed {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Done = 1 [(_compat_renamed_from) = "done"];
+    optional bool EmptyPersonalFeed = 2 [(_compat_renamed_from) = "empty_personal_feed"];
+    optional uint64 FetchedPersonalDocsCount = 3 [(_compat_renamed_from) = "fetched_personal_docs_count"];
+    optional string InvalidImageUrl = 4 [(_compat_renamed_from) = "invalid_image_url", (_split_size_limit) = 5];
+    optional string LocaleCheckFailure = 5 [(_compat_renamed_from) = "locale_check_failure", (_split_size_limit) = 5];
+    optional string NewsReqid = 6 [(_compat_renamed_from) = "news_reqid", (_split_size_limit) = 5];
+    optional bool NoNewsPersonalFeed = 7 [(_compat_renamed_from) = "no_news_personal_feed"];
+    optional bool NoRubricNewsWizard = 8 [(_compat_renamed_from) = "no_rubric_news_wizard"];
+    optional string NotEnoughDocs = 9 [(_compat_renamed_from) = "not_enough_docs", (_split_size_limit) = 5];
+    optional uint64 PersonalDocsCount = 10 [(_compat_renamed_from) = "personal_docs_count"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/oscar/oscar.cpp
+message TPropOscar {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Inserted = 1 [(_compat_renamed_from) = "inserted"];
+    optional bool NoDataFromQuerysearch = 2 [(_compat_renamed_from) = "no_data_from_querysearch"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/personalization/personalization.cpp
+message TPropPersonalization {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Ag = 1 [(_compat_renamed_from) = "ag", (_split_size_limit) = 5];
+    optional uint64 CgiHashNonameD = 2 [(_compat_renamed_from) = "CgiHash_noname_d"];
+    optional double ClickAdditionMultiplier = 3;
+    optional double Effect = 4 [(_infinite_ttl) = true];
+    optional uint64 FirstTouched = 5 [(_infinite_ttl) = true];
+    map<string, string> FoNoname = 6 [(_compat_renamed_prefix) = "fo_noname_", (_split_size_limit) = 5];
+    optional string Formula = 7 [(_split_size_limit) = 5];
+    optional bool HaveGroupingProblem = 8;
+    optional bool HaveLongUserProfile = 9;
+    optional bool HaveRTProfile = 10;
+    optional bool HaveRtUserData = 11;
+    optional bool HaveUserProfile = 12;
+    repeated double NewOrder = 13 [(_infinite_ttl) = true];
+    optional bool PersonalizationFailure = 14;
+    optional uint64 RerankedDocCnt = 15;
+    optional uint64 StartFrom = 16;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/phone_number_check/phone_number_check.cpp
+message TPropPhoneNumberCheck {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Doc2GroupYDistrict = 1 [(_compat_renamed_from) = "Doc2Group_y_district", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/porno_upper/porno_upper.cpp
+message TPropPornoUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 ApproxPlX100 = 1 [(_compat_renamed_from) = "approx_pl_x100"];
+    map<uint64, string> BanWizard = 2 [(_compat_renamed_prefix) = "ban_wizard_", (_split_size_limit) = 5];
+    map<uint64, string> BanYandex = 3 [(_compat_renamed_prefix) = "ban_yandex_", (_split_size_limit) = 5];
+    optional bool Clean = 4 [(_compat_renamed_from) = "clean"];
+    optional uint64 Dl = 5 [(_compat_renamed_from) = "dl"];
+    optional bool EraseAll = 6 [(_compat_renamed_from) = "erase_all"];
+    optional uint64 FilteredAfterMergeUpper = 7 [(_compat_renamed_from) = "filtered_after_merge_upper"];
+    optional double NewFml = 8 [(_compat_renamed_from) = "new_fml"];
+    optional uint64 Pl = 9 [(_compat_renamed_from) = "pl", (_infinite_ttl) = true];
+    optional uint64 PlFilter = 10 [(_compat_renamed_from) = "pl_filter"];
+    optional uint64 PlFixlist = 11 [(_compat_renamed_from) = "pl_fixlist", (_infinite_ttl) = true];
+    map<uint64, string> PosForced = 12 [(_compat_renamed_prefix) = "pos_forced_", (_split_size_limit) = 60];
+    optional string SkipPornoFilter = 13 [(_compat_renamed_from) = "skip_porno_filter", (_split_size_limit) = 5];
+    optional bool UseDefaultAd = 14 [(_compat_renamed_from) = "use_default_ad"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/pressportret/pressportret.cpp
+message TPropPressportret {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Pp = 1 [(_compat_renamed_from) = "pp"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/pretty_serp_features/pretty_serp_features.cpp
+message TPropPrettySerpFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AllowedPositions = 1 [(_compat_renamed_from) = "allowed_positions"];
+    map<string, bool> Denied = 2 [(_compat_renamed_prefix) = "Denied_", (_split_size_limit) = 870];
+    map<string, bool> Duplicated = 3 [(_compat_renamed_prefix) = "Duplicated_", (_split_size_limit) = 70];
+    map<string, bool> Filtered = 4 [(_compat_renamed_prefix) = "Filtered_", (_split_size_limit) = 50];
+    map<string, bool> HasData = 5 [(_compat_renamed_prefix) = "HasData_", (_split_size_limit) = 1720];
+    map<uint64, bool> IgnoredExtendedSnippet = 6 [(_compat_renamed_prefix) = "Ignored_extended_snippet", (_compat_default_value_wo_underscore) = true, (_split_size_limit) = 10];
+    map<string, bool> Incompatible = 7 [(_compat_renamed_prefix) = "Incompatible_", (_split_size_limit) = 90];
+    map<string, bool> Invalid = 8 [(_compat_renamed_prefix) = "Invalid_", (_split_size_limit) = 5];
+    map<string, bool> MissingAttrs = 9 [(_compat_renamed_prefix) = "MissingAttrs_", (_split_size_limit) = 15];
+    map<string, bool> NotAllowed = 10 [(_compat_renamed_prefix) = "NotAllowed_", (_split_size_limit) = 95];
+    map<string, bool> Plugins = 11 [(_compat_renamed_prefix) = "Plugins_", (_infinite_ttl) = true, (_split_size_limit) = 490];
+    optional bool UpdatePluginByCgi = 12;
+    map<string, bool> Control = 13 [(_compat_renamed_prefix) = "Control_", (_split_size_limit) = 5];
+    map<string, bool> CostPlus = 14 [(_compat_renamed_prefix) = "CostPlus_", (_split_size_limit) = 5];
+    optional bool AllowedPositionsNoWiz = 15 [(_compat_renamed_from) = "allowed_positions_no_wiz"];
+    map<string, bool> WizplaceDoc = 16 [(_owner_fld) = "abc:snippets", (_compat_renamed_prefix) = "WizplaceDoc_", (_split_size_limit) = 0];
+    map<string, bool> SmartCut = 17 [(_owner_fld) = "abc:snippets", (_compat_renamed_prefix) = "SmartCut_", (_split_size_limit) = 0];
+    map<string, bool> HasRegionData = 18 [(_compat_renamed_prefix) = "HasRegionData_", (_split_size_limit) = 1720];
+    optional bool DuplicatedFastwiki = 19 [(_compat_renamed_from) = "Duplicated_fastwiki", (_split_size_limit) = 70];
+    optional bool DuplicatedFastwiki1 = 20 [(_compat_renamed_from) = "Duplicated_fastwiki_1", (_split_size_limit) = 70];
+    optional bool DuplicatedMicrodataSnippetBreadcrumbs = 21 [(_compat_renamed_from) = "Duplicated_microdata_snippet_breadcrumbs", (_split_size_limit) = 70];
+    optional bool DuplicatedMicrodataSnippetBreadcrumbs1 = 22 [(_compat_renamed_from) = "Duplicated_microdata_snippet_breadcrumbs_1", (_split_size_limit) = 70];
+    optional bool DuplicatedStaticSnippetTurkeyExp = 23 [(_compat_renamed_from) = "Duplicated_static_snippet_turkey_exp", (_split_size_limit) = 70];
+    optional bool DuplicatedStaticSnippetTurkeyExp1 = 24 [(_compat_renamed_from) = "Duplicated_static_snippet_turkey_exp_1", (_split_size_limit) = 70];
+    optional bool DuplicatedTopemptysnip = 25 [(_compat_renamed_from) = "Duplicated_topemptysnip", (_split_size_limit) = 70];
+    optional bool DuplicatedTopemptysnip1 = 26 [(_compat_renamed_from) = "Duplicated_topemptysnip_1", (_split_size_limit) = 70];
+    optional bool DuplicatedTopemptysnip2 = 27 [(_compat_renamed_from) = "Duplicated_topemptysnip_2", (_split_size_limit) = 70];
+    optional bool DuplicatedTripadvisor = 28 [(_compat_renamed_from) = "Duplicated_tripadvisor", (_split_size_limit) = 70];
+    optional bool DuplicatedTripadvisor1 = 29 [(_compat_renamed_from) = "Duplicated_tripadvisor_1", (_split_size_limit) = 70];
+    optional bool DuplicatedWatsonSnippetKinohost = 30 [(_compat_renamed_from) = "Duplicated_watson_snippet_kinohost", (_split_size_limit) = 70];
+    optional bool DuplicatedWatsonSnippetKinohost1 = 31 [(_compat_renamed_from) = "Duplicated_watson_snippet_kinohost_1", (_split_size_limit) = 70];
+    optional bool FilteredEcomOffersRating = 32 [(_compat_renamed_from) = "Filtered_ecom_offers_rating", (_split_size_limit) = 50];
+    optional bool FilteredEcomOffersRating1 = 33 [(_compat_renamed_from) = "Filtered_ecom_offers_rating_1", (_split_size_limit) = 50];
+    optional bool FilteredEcomOffersRating3 = 34 [(_compat_renamed_from) = "Filtered_ecom_offers_rating_3", (_split_size_limit) = 50];
+    optional bool FilteredImageSnippetUz = 35 [(_compat_renamed_from) = "Filtered_image_snippet_uz", (_split_size_limit) = 50];
+    optional bool FilteredImageSnippetUz1 = 36 [(_compat_renamed_from) = "Filtered_image_snippet_uz_1", (_split_size_limit) = 50];
+    optional bool FilteredSnipVideothumb = 37 [(_compat_renamed_from) = "Filtered_snip-videothumb", (_split_size_limit) = 50];
+    optional bool FilteredSnipVideothumb1 = 38 [(_compat_renamed_from) = "Filtered_snip-videothumb_1", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd = 39 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd1 = 40 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_1", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd2 = 41 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_2", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd3 = 42 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_3", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd4 = 43 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_4", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd5 = 44 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_5", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd6 = 45 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_6", (_split_size_limit) = 50];
+    optional bool FilteredTrSnippetsUrlLabelDefinitionProd8 = 46 [(_compat_renamed_from) = "Filtered_tr_snippets_url_label_definition_prod_8", (_split_size_limit) = 50];
+    optional bool MissingAttrsRobotDate = 47 [(_compat_renamed_from) = "MissingAttrs_robot_date", (_split_size_limit) = 15];
+    optional bool HasRegionDataEcomOffersInfoV3Reg = 48 [(_compat_renamed_from) = "HasRegionData_ecom_offers_info_v3_reg", (_split_size_limit) = 1720];
+    optional bool HasRegionDataEcomOffersInfoV3Reg1 = 49 [(_compat_renamed_from) = "HasRegionData_ecom_offers_info_v3_reg_1", (_split_size_limit) = 1720];
+    optional bool HasRegionDataEcomOffersPromoDirect = 50 [(_compat_renamed_from) = "HasRegionData_ecom_offers_promo_direct", (_split_size_limit) = 1720];
+    optional bool HasRegionDataEcomOffersPromoDirect1 = 51 [(_compat_renamed_from) = "HasRegionData_ecom_offers_promo_direct_1", (_split_size_limit) = 1720];
+    optional bool HasRegionDataEcomOffersPromoDirect2 = 52 [(_compat_renamed_from) = "HasRegionData_ecom_offers_promo_direct_2", (_split_size_limit) = 1720];
+    optional bool IncompatibleEcomOffersRatingByUrlMask = 53 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask1 = 54 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_1", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask2 = 55 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_2", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask3 = 56 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_3", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask4 = 57 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_4", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask5 = 58 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_5", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask6 = 59 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_6", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask7 = 60 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_7", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomOffersRatingByUrlMask8 = 61 [(_compat_renamed_from) = "Incompatible_ecom_offers_rating_by_url_mask_8", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner = 62 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner1 = 63 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner_1", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner2 = 64 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner_2", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner3 = 65 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner_3", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner4 = 66 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner_4", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner5 = 67 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner_5", (_split_size_limit) = 90];
+    optional bool IncompatibleEcomYsclidOwner6 = 68 [(_compat_renamed_from) = "Incompatible_ecom_ysclid_owner_6", (_split_size_limit) = 90];
+    optional bool IncompatibleImageSnippetKzExp = 69 [(_compat_renamed_from) = "Incompatible_image_snippet_kz_exp", (_split_size_limit) = 90];
+    optional bool IncompatibleImageSnippetKzExp1 = 70 [(_compat_renamed_from) = "Incompatible_image_snippet_kz_exp_1", (_split_size_limit) = 90];
+    optional bool IncompatibleImageSnippetTurkey = 71 [(_compat_renamed_from) = "Incompatible_image_snippet_turkey", (_split_size_limit) = 90];
+    optional bool IncompatibleImageSnippetTurkey1 = 72 [(_compat_renamed_from) = "Incompatible_image_snippet_turkey_1", (_split_size_limit) = 90];
+    optional bool IncompatibleImageSnippetUz = 73 [(_compat_renamed_from) = "Incompatible_image_snippet_uz", (_split_size_limit) = 90];
+    optional bool IncompatibleImageSnippetUz1 = 74 [(_compat_renamed_from) = "Incompatible_image_snippet_uz_1", (_split_size_limit) = 90];
+    optional bool IncompatibleShinyserpTelegramSocsnippetPosts = 75 [(_compat_renamed_from) = "Incompatible_shinyserp_telegram_socsnippet_posts", (_split_size_limit) = 90];
+    optional bool IncompatibleShinyserpTelegramSocsnippetPosts1 = 76 [(_compat_renamed_from) = "Incompatible_shinyserp_telegram_socsnippet_posts_1", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsSummarization = 77 [(_compat_renamed_from) = "Incompatible_snippets_summarization", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsSummarization1 = 78 [(_compat_renamed_from) = "Incompatible_snippets_summarization_1", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsUrlLabelDefinition = 79 [(_compat_renamed_from) = "Incompatible_snippets_url_label_definition", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsUrlLabelDefinition1 = 80 [(_compat_renamed_from) = "Incompatible_snippets_url_label_definition_1", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsUrlLabelDefinition3 = 81 [(_compat_renamed_from) = "Incompatible_snippets_url_label_definition_3", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsUrlLabelDefinition6 = 82 [(_compat_renamed_from) = "Incompatible_snippets_url_label_definition_6", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsUrlLabelDefinition7 = 83 [(_compat_renamed_from) = "Incompatible_snippets_url_label_definition_7", (_split_size_limit) = 90];
+    optional bool IncompatibleSnippetsUrlLabelDefinition9 = 84 [(_compat_renamed_from) = "Incompatible_snippets_url_label_definition_9", (_split_size_limit) = 90];
+    optional bool IncompatibleUrlmenuSnippetBreadcrumbs = 85 [(_compat_renamed_from) = "Incompatible_urlmenu_snippet_breadcrumbs", (_split_size_limit) = 90];
+    optional bool IncompatibleUrlmenuSnippetBreadcrumbs1 = 86 [(_compat_renamed_from) = "Incompatible_urlmenu_snippet_breadcrumbs_1", (_split_size_limit) = 90];
+    optional bool IncompatibleUrlmenuSnippetBreadcrumbs2 = 87 [(_compat_renamed_from) = "Incompatible_urlmenu_snippet_breadcrumbs_2", (_split_size_limit) = 90];
+    optional bool NotAllowedBnaUzExp = 88 [(_compat_renamed_from) = "NotAllowed_bna_uz_exp", (_split_size_limit) = 95];
+    optional bool NotAllowedBnaUzExp1 = 89 [(_compat_renamed_from) = "NotAllowed_bna_uz_exp_1", (_split_size_limit) = 95];
+    optional bool NotAllowedBnaUzExp2 = 90 [(_compat_renamed_from) = "NotAllowed_bna_uz_exp_2", (_split_size_limit) = 95];
+    optional bool NotAllowedBnaUzExp3 = 91 [(_compat_renamed_from) = "NotAllowed_bna_uz_exp_3", (_split_size_limit) = 95];
+    optional bool NotAllowedBno = 92 [(_compat_renamed_from) = "NotAllowed_bno", (_split_size_limit) = 95];
+    optional bool NotAllowedBno1 = 93 [(_compat_renamed_from) = "NotAllowed_bno_1", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkey = 94 [(_compat_renamed_from) = "NotAllowed_bno_turkey", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkey1 = 95 [(_compat_renamed_from) = "NotAllowed_bno_turkey_1", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkey2 = 96 [(_compat_renamed_from) = "NotAllowed_bno_turkey_2", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkey3 = 97 [(_compat_renamed_from) = "NotAllowed_bno_turkey_3", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkeyExp = 98 [(_compat_renamed_from) = "NotAllowed_bno_turkey_exp", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkeyExp1 = 99 [(_compat_renamed_from) = "NotAllowed_bno_turkey_exp_1", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkeyExp2 = 100 [(_compat_renamed_from) = "NotAllowed_bno_turkey_exp_2", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoTurkeyExp3 = 101 [(_compat_renamed_from) = "NotAllowed_bno_turkey_exp_3", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoUz = 102 [(_compat_renamed_from) = "NotAllowed_bno_uz", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoUz1 = 103 [(_compat_renamed_from) = "NotAllowed_bno_uz_1", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoUz2 = 104 [(_compat_renamed_from) = "NotAllowed_bno_uz_2", (_split_size_limit) = 95];
+    optional bool NotAllowedBnoUz3 = 105 [(_compat_renamed_from) = "NotAllowed_bno_uz_3", (_split_size_limit) = 95];
+    optional bool NotAllowedCustomCosmicImages = 106 [(_compat_renamed_from) = "NotAllowed_custom_cosmic_images", (_split_size_limit) = 95];
+    optional bool NotAllowedCustomCosmicImages1 = 107 [(_compat_renamed_from) = "NotAllowed_custom_cosmic_images_1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp1 = 108 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp11 = 109 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp1_1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp12 = 110 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp1_2", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp13 = 111 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp1_3", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp2 = 112 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp2", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp21 = 113 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp2_1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp22 = 114 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp2_2", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp3 = 115 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp3", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetExp31 = 116 [(_compat_renamed_from) = "NotAllowed_image_snippet_exp3_1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetOne = 117 [(_compat_renamed_from) = "NotAllowed_image_snippet_one", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetOne1 = 118 [(_compat_renamed_from) = "NotAllowed_image_snippet_one_1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetTurbo = 119 [(_compat_renamed_from) = "NotAllowed_image_snippet_turbo", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetTurbo1 = 120 [(_compat_renamed_from) = "NotAllowed_image_snippet_turbo_1", (_split_size_limit) = 95];
+    optional bool NotAllowedImageSnippetTurbo2 = 121 [(_compat_renamed_from) = "NotAllowed_image_snippet_turbo_2", (_split_size_limit) = 95];
+    optional bool NotAllowedMobileAppSnippetsFront = 122 [(_compat_renamed_from) = "NotAllowed_mobile_app_snippets_front", (_split_size_limit) = 95];
+    optional bool NotAllowedMobileAppSnippetsFront1 = 123 [(_compat_renamed_from) = "NotAllowed_mobile_app_snippets_front_1", (_split_size_limit) = 95];
+    optional bool NotAllowedMobileAppSnippetsFrontRustore = 124 [(_compat_renamed_from) = "NotAllowed_mobile_app_snippets_front_rustore", (_split_size_limit) = 95];
+    optional bool NotAllowedMobileAppSnippetsFrontRustore1 = 125 [(_compat_renamed_from) = "NotAllowed_mobile_app_snippets_front_rustore_1", (_split_size_limit) = 95];
+    optional bool NotAllowedNewsBno = 126 [(_compat_renamed_from) = "NotAllowed_news_bno", (_split_size_limit) = 95];
+    optional bool NotAllowedNewsBno1 = 127 [(_compat_renamed_from) = "NotAllowed_news_bno_1", (_split_size_limit) = 95];
+    optional bool NotAllowedNewsBno2 = 128 [(_compat_renamed_from) = "NotAllowed_news_bno_2", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrust = 129 [(_compat_renamed_from) = "NotAllowed_orgs_trust", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrust1 = 130 [(_compat_renamed_from) = "NotAllowed_orgs_trust_1", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrust2 = 131 [(_compat_renamed_from) = "NotAllowed_orgs_trust_2", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrust3 = 132 [(_compat_renamed_from) = "NotAllowed_orgs_trust_3", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrustExp1 = 133 [(_compat_renamed_from) = "NotAllowed_orgs_trust_exp1", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrustExp11 = 134 [(_compat_renamed_from) = "NotAllowed_orgs_trust_exp1_1", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrustExp12 = 135 [(_compat_renamed_from) = "NotAllowed_orgs_trust_exp1_2", (_split_size_limit) = 95];
+    optional bool NotAllowedOrgsTrustExp13 = 136 [(_compat_renamed_from) = "NotAllowed_orgs_trust_exp1_3", (_split_size_limit) = 95];
+    optional bool NotAllowedShinyserpAppBnoExpBad = 137 [(_compat_renamed_from) = "NotAllowed_shinyserp_app_bno_exp_bad", (_split_size_limit) = 95];
+    optional bool NotAllowedShinyserpAppBnoExpBad1 = 138 [(_compat_renamed_from) = "NotAllowed_shinyserp_app_bno_exp_bad_1", (_split_size_limit) = 95];
+    optional bool NotAllowedShinyserpYoutubecardsV3 = 139 [(_compat_renamed_from) = "NotAllowed_shinyserp_youtubecards_v3", (_split_size_limit) = 95];
+    optional bool NotAllowedShinyserpYoutubecardsV31 = 140 [(_compat_renamed_from) = "NotAllowed_shinyserp_youtubecards_v3_1", (_split_size_limit) = 95];
+    optional bool NotAllowedShinyserpYoutubecardsV32 = 141 [(_compat_renamed_from) = "NotAllowed_shinyserp_youtubecards_v3_2", (_split_size_limit) = 95];
+    optional bool NotAllowedUaSocialBlockExpBadShuffled = 142 [(_compat_renamed_from) = "NotAllowed_ua_social_block_exp_bad_shuffled", (_split_size_limit) = 95];
+    optional bool NotAllowedUaSocialBlockExpBadShuffled1 = 143 [(_compat_renamed_from) = "NotAllowed_ua_social_block_exp_bad_shuffled_1", (_split_size_limit) = 95];
+    optional bool NotAllowedWatsonForumSnippet = 144 [(_compat_renamed_from) = "NotAllowed_watson_forum_snippet", (_split_size_limit) = 95];
+    optional bool NotAllowedWatsonForumSnippet1 = 145 [(_compat_renamed_from) = "NotAllowed_watson_forum_snippet_1", (_split_size_limit) = 95];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/pretty_serp_features_prepare/pretty_serp_features_prepare.cpp
+message TPropPrettySerpFeaturesPrepare {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool KillReviews = 1;
+}
+
+message TPropPrismBigBLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasPrism = 1 [(_compat_renamed_from) = "has_prism"];
+    optional uint64 PrismTimestamp = 2 [(_compat_renamed_from) = "prism_timestamp"];
+    optional uint64 PrismWeight = 3 [(_compat_renamed_from) = "prism_weight"];
+    optional uint64 PrismCluster = 4 [(_compat_renamed_from) = "prism_cluster"];
+    optional uint64 PrismSegment = 5 [(_compat_renamed_from) = "prism_segment", (_infinite_ttl) = true];
+    optional bool HasPrismRT = 6 [(_compat_renamed_from) = "has_prism_rt"];
+    optional uint64 PrismRTTimestamp = 7 [(_compat_renamed_from) = "prism_rt_timestamp"];
+    optional uint64 PrismRTWeight = 8 [(_compat_renamed_from) = "prism_rt_weight"];
+    optional uint64 PrismRTCluster = 9 [(_compat_renamed_from) = "prism_rt_cluster"];
+    optional uint64 PrismRTSegment = 10 [(_compat_renamed_from) = "prism_rt_segment"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/rabota/rabota.cpp
+message TPropRabota {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Ins = 1 [(_compat_renamed_from) = "ins"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/random_log/random_log.cpp
+message TPropRandomLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DgFactors = 1 [(_compat_renamed_from) = "dg_factors"];
+    optional uint64 Reasons = 2 [(_compat_renamed_from) = "reasons", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/rasp/rasp.cpp
+message TPropRasp {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string BadOldRaspOrganicUrl = 1 [(_split_size_limit) = 5];
+    optional string BadRaspOrganicUrl = 2 [(_split_size_limit) = 5];
+    optional string EmptyStationInfo = 3 [(_split_size_limit) = 5];
+    optional bool FromRaspOrganic = 4;
+    optional bool FromRaspSource = 5;
+    optional bool FromSource = 6;
+    optional bool FromTrainSource = 7;
+    optional bool FromTutu = 8;
+    map<string, bool> IntentFilter = 9 [(_compat_renamed_prefix) = "IntentFilter/", (_split_size_limit) = 5];
+    optional bool IsSuburbanTransport = 10;
+    optional uint64 NoStationNameFromTutu = 11;
+    optional string NoTutuCode = 12 [(_split_size_limit) = 5];
+    optional bool PossibleFromRasp = 13;
+    optional bool PossibleFromTrains = 14;
+    optional bool PossibleFromTutu = 15;
+    optional uint64 RaspWebUrlPosition = 16;
+    optional string ReasonOfAbsence = 17 [(_split_size_limit) = 5];
+    optional string Status = 18 [(_split_size_limit) = 30];
+    optional string Transports = 19 [(_split_size_limit) = 5];
+    optional uint64 TutuWebUrlPosition = 20;
+    optional string Type = 21 [(_split_size_limit) = 5];
+    optional string UnsupportedLanguage = 22 [(_split_size_limit) = 5];
+    optional string UnsupportedTransport = 23 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/iznanka/iznanka_rule.cpp
+message TPropRearrangeIznanka {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ReasonOfAbsence = 1 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/rep_snip_adresa/adresa.cpp
+message TPropRepSnipAdresa {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 WorkedCount = 1 [(_compat_renamed_from) = "worked_count"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/rep_snip_special_dates/special_dates.cpp
+message TPropRepSnipSpecialDates {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 WorkedCount = 1 [(_compat_renamed_from) = "worked_count"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/rep_wiz_misspell/misspell.cpp
+message TPropRepWizMisspell {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MinusRuleTriggered = 1 [(_compat_renamed_from) = "minus_rule_triggered"];
+    optional bool MisspellGeneric = 2 [(_compat_renamed_from) = "misspell_generic"];
+    optional bool MisspellWeb = 3 [(_compat_renamed_from) = "misspell_web"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/rep_wiz_region/region.cpp
+message TPropRepWizRegion {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool DifferentRegions = 1 [(_compat_renamed_from) = "different_regions"];
+    optional bool IsLocal = 2 [(_compat_renamed_from) = "is_local"];
+    optional bool IsLocalizeable = 3 [(_compat_renamed_from) = "is_localizeable"];
+    optional uint64 LrRegion = 4 [(_compat_renamed_from) = "lr_region"];
+    optional bool NoLrInLr = 5 [(_compat_renamed_from) = "no_lr_in_lr"];
+    optional uint64 NoLrRegion = 6 [(_compat_renamed_from) = "no_lr_region"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/rep_wiz_request_extensions/request_extensions.cpp
+message TPropRepWizRequestExtensions {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool BannedInFreshConsole = 1;
+    optional string DjRecs = 2 [(_compat_renamed_from) = "dj_recs", (_split_size_limit) = 5];
+    optional bool HardcoreBanned = 3 [(_compat_renamed_from) = "hardcore_banned"];
+    optional bool HasAnyRef = 4;
+    optional bool HasDjData = 5 [(_compat_renamed_from) = "has_dj_data"];
+    optional bool HasOldRec = 6;
+    optional bool PornoBanned = 7 [(_compat_renamed_from) = "porno_banned"];
+    optional string RecHash = 8 [(_compat_renamed_from) = "rec_hash", (_split_size_limit) = 20];
+    optional bool ExtendedHardcoreBanned = 9 [(_compat_renamed_from) = "extended_hardcore_banned"];
+    optional bool EmptySerpBanned = 10 [(_compat_renamed_from) = "empty_serp_banned"];
+    optional bool BannedInConsole = 11 [(_compat_renamed_from) = "banned_in_console"];
+    optional bool EuDomainBanned = 12 [(_compat_renamed_from) = "eu_domain_banned"];
+    map<string, bool> HasData = 13 [(_compat_renamed_prefix) = "has_data_", (_rt_required) = false, (_split_size_limit) = 256];
+    optional bool HasDataAbove = 14 [(_compat_renamed_from) = "has_data_above", (_rt_required) = false];
+    optional bool HasDataAboveFull = 15 [(_compat_renamed_from) = "has_data_above_full", (_rt_required) = false];
+    optional bool HasDataBottom = 16 [(_compat_renamed_from) = "has_data_bottom", (_rt_required) = false];
+    optional bool HasDataBottomFull = 17 [(_compat_renamed_from) = "has_data_bottom_full", (_rt_required) = false];
+    optional bool HasDataReturn = 18 [(_compat_renamed_from) = "has_data_return", (_rt_required) = false];
+    optional bool HasDataReturnFull = 19 [(_compat_renamed_from) = "has_data_return_full", (_rt_required) = false];
+    optional bool HasDataSticky = 20 [(_compat_renamed_from) = "has_data_sticky", (_rt_required) = false];
+    optional bool HasDataStickyFull = 21 [(_compat_renamed_from) = "has_data_sticky_full", (_rt_required) = false];
+    optional bool HasDataAny = 22 [(_compat_renamed_from) = "has_data_any", (_rt_required) = false];
+    optional bool HasDataFull = 23 [(_compat_renamed_from) = "has_data_full", (_rt_required) = false];
+    optional bool HasDataNextQueries = 24 [(_compat_renamed_from) = "has_data_next_queries", (_rt_required) = false];
+    optional bool HasDataSuggestAny = 25 [(_compat_renamed_from) = "has_data_suggest_any", (_rt_required) = false];
+    optional bool HasDataSuggestShow = 26 [(_compat_renamed_from) = "has_data_suggest_show", (_rt_required) = false];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/right_column_transport/right_column_transport.cpp
+message TPropRightColumnTransport {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CanHideGallery = 1;
+    optional bool RemoveMarket = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/yanswer/facts_from_serp.cpp
+message TPropSerpFact {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string CandidateFacts = 1 [(_split_size_limit) = 5];
+    optional bool FactShown = 2;
+    optional string Timedout = 3 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/yanswer/objects_from_serp.cpp
+message TPropSerpObject {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Answer = 1 [(_split_size_limit) = 10];
+    optional string BannedByRealtimeSticky = 2 [(_split_size_limit) = 5];
+    optional string BannedBySticky = 3 [(_split_size_limit) = 5];
+    optional string BannedByYanswerFixList = 4 [(_split_size_limit) = 5];
+    optional string Classified = 5 [(_split_size_limit) = 5];
+    optional string ClassifiedAtBackend = 6 [(_split_size_limit) = 5];
+    optional bool NoJson = 7;
+    optional string PossibleAnswer = 8 [(_split_size_limit) = 16];
+    optional string SkipForCollection = 9 [(_split_size_limit) = 5];
+    optional string SkipForExplicit = 10 [(_split_size_limit) = 5];
+    optional string SkipForList = 11 [(_split_size_limit) = 5];
+    optional string SkipForRtSticky = 12 [(_split_size_limit) = 5];
+    optional string SkipForSticky = 13 [(_split_size_limit) = 5];
+    optional bool UrlAnswer = 14 [(_infinite_ttl) = true];
+    map<string, string> WebPossibleSearchProps = 15 [(_compat_renamed_prefix) = "WebPossible", (_split_size_limit) = 5, (_owner_fld) = "abc:entitysearch"];
+    map<string, string> MspPossibleSearchProps = 16 [(_compat_renamed_prefix) = "MspPossible", (_split_size_limit) = 5, (_owner_fld) = "abc:entitysearch"];
+    map<string, string> CurrentSearchProps = 17 [(_compat_renamed_prefix) = "Current", (_split_size_limit) = 5, (_owner_fld) = "abc:entitysearch"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/shiny_discovery/shiny_discovery.cpp
+message TPropShinyDiscovery {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DjSnippetRecs = 1 [(_compat_renamed_from) = "dj_snippet_recs", (_split_size_limit) = 5];
+    optional bool EasyblendInserted = 2 [(_compat_renamed_from) = "easyblend_inserted"];
+    optional bool ErrorNoWizplaceGrouping = 3 [(_compat_renamed_from) = "error_no_wizplace_grouping"];
+    optional bool HardcoreBanned = 4 [(_compat_renamed_from) = "hardcore_banned"];
+    optional bool HasData = 5 [(_compat_renamed_from) = "has_data"];
+    optional bool HasDjData = 6 [(_compat_renamed_from) = "has_dj_data"];
+    optional bool HasKvData = 7 [(_compat_renamed_from) = "has_kv_data"];
+    optional uint64 InsertedPos = 8 [(_compat_renamed_from) = "inserted_pos"];
+    optional bool InsertedRight = 9 [(_compat_renamed_from) = "inserted_right"];
+    optional bool InsertedWizplace = 10 [(_compat_renamed_from) = "inserted_wizplace"];
+    optional string LogHash = 11 [(_compat_renamed_from) = "log_hash", (_split_size_limit) = 10];
+    optional bool PornoBanned = 12 [(_compat_renamed_from) = "porno_banned"];
+    optional bool QueryBanned = 13 [(_compat_renamed_from) = "query_banned"];
+    optional bool EmptySerpBanned = 14 [(_compat_renamed_from) = "empty_serp_banned"];
+    optional bool HardcoreExtendedBanned = 15 [(_compat_renamed_from) = "hardcore_extended_banned"];
+    optional uint64 MetaDocItemsCount = 16 [(_compat_renamed_from) = "metadoc_items_count"];
+    optional uint64 MetaDocCandidatesCount = 17 [(_compat_renamed_from) = "metadoc_candidates_count"];
+    optional string MetaDocContent = 18 [(_compat_renamed_from) = "metadoc_content", (_split_size_limit) = 7150];
+    optional double AvgStupidCatboostPrediction = 19 [(_compat_renamed_from) = "metadoc_avg_stupid_catboost_prediction"];
+    optional double AvgRecLengthQueryLength = 20 [(_compat_renamed_from) = "metadoc_avg_rec_len_query_len"];
+    optional double AvgRecWordsQueryWords = 21 [(_compat_renamed_from) = "metadoc_avg_rec_words_query_words"];
+    optional double AvgShinyDssmScore2 = 22 [(_compat_renamed_from) = "metadoc_avg_shiny_dssm_score_2"];
+    optional double AvgWordJaccard = 23 [(_compat_renamed_from) = "metadoc_avg_word_jaccard"];
+    optional double AvgWordIntersectionQueryWords = 24 [(_compat_renamed_from) = "metadoc_avg_word_intersection_query_words"];
+    optional string Pos1EmbV0 = 25 [(_compat_renamed_from) = "pos1_emb_v0", (_split_size_limit) = 0, (_owner_fld) = "abc:metadocument"];
+    optional string Q1EmbV0 = 26 [(_compat_renamed_from) = "q1_emb_v0", (_split_size_limit) = 0, (_owner_fld) = "abc:metadocument"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/facts_metadoc/facts_metadoc.cpp
+message TPropFactsMetadoc {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string MetaDocContent = 1 [(_compat_renamed_from) = "metadoc_content", (_split_size_limit) = 100];
+    optional bool IsGoodFactMetaDoc = 2 [(_compat_renamed_from) = "is_good_fact_metadoc"];
+}
+
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/single_org_mx/single_org_mx.cpp
+message TPropSingleOrgMx {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double ChainMx = 1;
+    optional double NotDefinedMx = 2;
+    optional double NotOrgMx = 3;
+    optional string OrgMnMxSecondResultType = 4 [(_split_size_limit) = 8];
+    optional string OrgMnMxType = 5 [(_split_size_limit) = 8];
+    optional bool OrgWizardAntiMarkers = 6;
+    optional bool OrgWizardMarkers = 7;
+    optional double RubricMx = 8;
+    optional double SingleOrgMx = 9;
+    optional string SingleOrgMxType = 10 [(_split_size_limit) = 15];
+    optional double TolokaIsGeo = 11;
+    optional string Ull = 12 [(_split_size_limit) = 18];
+    optional double WebHostModel = 13;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/sitelinks/sitelinks.cpp
+message TPropSitelinks {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> DataFrom = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_data_from", (_split_size_limit) = 5];
+    map<string, bool> ForbiddenHostsTouch = 2 [(_compat_renamed_prefix) = "ForbiddenHostsTouch_", (_split_size_limit) = 5];
+    optional uint64 Shown = 3 [(_compat_renamed_from) = "shown"];
+    optional bool HasDataSitelinksAnySource  = 4 [(_compat_renamed_from) = "has_data_sitelinks_any_source"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/snippet_logging/snippet_logging.cpp
+message TPropSnippetLogging {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HasGamesSnippet = 1 [(_compat_renamed_from) = "Has_games_snippet"];
+    optional uint64 MaxGamesSnippet = 2 [(_compat_renamed_from) = "Max_games_snippet"];
+    optional uint64 MinGamesSnippet = 3 [(_compat_renamed_from) = "Min_games_snippet"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/swapn/swapn.cpp
+message TPropSwapN {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Cnt = 1;
+    optional uint64 FirstBegin = 2;
+    optional uint64 FirstEnd = 3;
+    optional string FirstHalf = 4 [(_split_size_limit) = 5];
+    optional uint64 FreshCnt = 5 [(_compat_renamed_from) = "Fresh|Cnt"];
+    optional uint64 FreshFirstBegin = 6 [(_compat_renamed_from) = "Fresh|FirstBegin"];
+    optional uint64 FreshFirstEnd = 7 [(_compat_renamed_from) = "Fresh|FirstEnd"];
+    optional string FreshFirstHalf = 8 [(_compat_renamed_from) = "Fresh|FirstHalf", (_split_size_limit) = 5];
+    optional string FreshGrouping = 9 [(_compat_renamed_from) = "Fresh|Grouping", (_split_size_limit) = 5];
+    optional uint64 FreshSecondBegin = 10 [(_compat_renamed_from) = "Fresh|SecondBegin"];
+    optional uint64 FreshSecondEnd = 11 [(_compat_renamed_from) = "Fresh|SecondEnd"];
+    optional string FreshSecondHalf = 12 [(_compat_renamed_from) = "Fresh|SecondHalf", (_split_size_limit) = 5];
+    optional bool FreshSwappingDone = 13 [(_compat_renamed_from) = "Fresh|SwappingDone"];
+    optional bool FreshSwappingImpossible = 14 [(_compat_renamed_from) = "Fresh|SwappingImpossible"];
+    optional string FreshType = 15 [(_compat_renamed_from) = "Fresh|Type", (_split_size_limit) = 5];
+    optional string Grouping = 16 [(_split_size_limit) = 5];
+    optional uint64 SecondBegin = 17;
+    optional uint64 SecondEnd = 18;
+    optional string SecondHalf = 19 [(_split_size_limit) = 5];
+    optional bool SwappingDone = 20;
+    optional string Type = 21 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/tv_broadcasting/tv_broadcasting.cpp
+message TPropTVTranslations {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool ChannelIsNotOnline = 1 [(_compat_renamed_from) = "channel_is_not_online"];
+    optional string FOREIGN_REGION = 2 [(_split_size_limit) = 5];
+    optional bool NoKvSaasData = 3 [(_compat_renamed_from) = "no_kv_saas_data"];
+    optional bool NotEnoughChannelsForCommonSnippet = 4 [(_compat_renamed_from) = "not_enough_channels_for_common_snippet"];
+    optional bool SpecialEventVideoPresent = 5 [(_compat_renamed_from) = "special_event_video_present"];
+    optional bool TryInsertVhUsingClassifier = 6 [(_compat_renamed_from) = "try_insert_vh_using_classifier"];
+    optional bool TvDisabledFromEntitysearch = 7 [(_compat_renamed_from) = "tv_disabled_from_entitysearch"];
+    optional bool TvShows = 8 [(_compat_renamed_from) = "tv_shows"];
+    optional bool TvShowsChannels = 9 [(_compat_renamed_from) = "tv_shows_channels"];
+    optional bool TvShowsChannelsCarousel = 10 [(_compat_renamed_from) = "tv_shows_channels_carousel"];
+    optional bool TvShowsFromCurrentShow = 11 [(_compat_renamed_from) = "tv_shows_from_current_show"];
+    optional bool TvShowsFromCurrentShowSkipped = 12 [(_compat_renamed_from) = "tv_shows_from_current_show_skipped"];
+    optional bool TvShowsSnippets = 13 [(_compat_renamed_from) = "tv_shows_snippets"];
+    optional bool TvShowsSportCarousel = 14 [(_compat_renamed_from) = "tv_shows_sport_carousel"];
+    optional bool TvShowsVh = 15 [(_compat_renamed_from) = "tv_shows_vh"];
+    optional bool VhFromRegularRules = 16 [(_compat_renamed_from) = "vh_from_regular_rules"];
+    optional bool VhNoDocuments = 17 [(_compat_renamed_from) = "vh_no_documents"];
+    optional string TvBroadcastExpRule = 18 [(_compat_renamed_from) = "tv_broadcast_exp_rule", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/talents/talents.cpp
+message TPropTalents {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool HalfMatchFilteredOutByStop = 1;
+    optional bool OldSnippetsWorked = 2 [(_compat_renamed_from) = "old_snippets_worked"];
+    optional string OwnSourceWorkedKey = 3 [(_split_size_limit) = 5];
+    optional string SkipReason = 4 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/tasix/tasix.cpp
+message TPropTasix {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Filter = 1 [(_compat_renamed_from) = "filter"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/transport/transport.cpp
+message TPropTransport {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AviaTab = 1 [(_compat_renamed_from) = "avia_tab"];
+    optional bool BlendSource = 2;
+    optional bool BusTab = 3 [(_compat_renamed_from) = "bus_tab"];
+    optional string DynamicOk = 4 [(_split_size_limit) = 5];
+    optional string DynamicYak = 5 [(_split_size_limit) = 5];
+    optional string FixListRewriteHeuristicWinner = 6 [(_split_size_limit) = 5];
+    optional string HeuristicWinner = 7 [(_split_size_limit) = 5];
+    optional bool NullSerpData = 8;
+    optional bool RaspTab = 9 [(_compat_renamed_from) = "rasp_tab"];
+    repeated double TabProbabilities = 10;
+    repeated double TabsFeatures = 11;
+    optional string TabsOrder = 12 [(_split_size_limit) = 5] ;
+    optional bool UseParallelTransportSource = 13;
+    optional string Winner = 14 [(_split_size_limit) = 5];
+    optional string AviaError = 15 [(_split_size_limit) = 20, (_owner_fld) = "abc:blndr"];
+    optional bool AviaFromSource = 16 [(_owner_fld) = "abc:blndr"];
+    optional bool AviaNoMinPrice = 17 [(_owner_fld) = "abc:blndr"];
+    optional bool AviaNoVariants = 18 [(_owner_fld) = "abc:blndr"];
+    optional string AviaType = 19 [(_split_size_limit) = 15, (_owner_fld) = "abc:blndr"];
+    optional string AviaWizardType = 20 [(_split_size_limit) = 15, (_owner_fld) = "abc:blndr"];
+    optional bool IsAjax = 21 [(_owner_fld) = "abc:blndr"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/trends/trends.cpp
+message TPropTrends {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Trends = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/tutor/tutor.cpp
+message TPropTutor {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool BlendSource = 1;
+    optional bool PassDocsFilter = 2;
+    optional bool SelectedSubjectWide = 3;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/uni_answer/uni_answer.cpp
+message TPropUniAnswer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Comb = 1 [(_compat_renamed_from) = "comb", (_split_size_limit) = 10];
+    optional bool DefaultUAPlugin = 2;
+    optional bool Done = 3;
+    optional bool HasErrors = 4;
+    map<string, bool> InvalidMetagroup = 5 [(_compat_renamed_prefix) = "invalid_metagroup__", (_split_size_limit) = 5];
+    optional bool UncanonizedInstagramUrl = 6 [(_compat_renamed_from) = "uncanonized_instagram_url"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/user_grouping_transport/user_grouping_transport.cpp
+message TPropUserGroupingsLoad {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Loaded = 1 [(_compat_renamed_from) = "loaded", (_split_size_limit) = 10];
+    map<string, bool> LoadedUserGroupingWithName = 2 [(_compat_renamed_prefix) = "LoadedUserGroupingWithName.", (_split_size_limit) = 15];
+    optional bool LoadedUserGroupingWithNameLandings = 3 [(_compat_renamed_from) = "LoadedUserGroupingWithName.landings", (_split_size_limit) = 15];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/vector_personalization/vector_personalization.cpp
+message TPropVectorPersonalization {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 UserHistoryLength = 1;
+    optional uint64 VectorPersonalizationLag = 2;
+    optional string YandexUid = 3 [(_split_size_limit) = 5];
+    optional bool HaveLoginProfile = 4;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/vertical/vertical.cpp
+message TPropVertical {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string EmptyIntent = 1 [(_split_size_limit) = 20];
+    map<string, bool> IntentFilter = 2 [(_compat_renamed_prefix) = "IntentFilter/", (_split_size_limit) = 20];
+    map<string, bool> SkipWizardForOrganic = 3 [(_compat_renamed_prefix) = "SkipWizardForOrganic/", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/vertical_card_upper_validation/vertical_card_upper_validation.cpp
+message TPropVerticalCardUpperValidation {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Q = 1 [(_compat_renamed_from) = "q", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/web_cache/web_cache.cpp
+message TPropWebCache {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Worked = 1 [(_compat_renamed_from) = "worked"];
+}
+
+message TPropEcomOffers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string,string> Ecom = 1 [(_compat_renamed_prefix) = "ecom_", (_split_size_limit) = 85];
+    optional uint64 RatingCount = 2 [(_compat_renamed_from) = "ecom_rating_count"];
+    optional uint64 ReviewCount = 3 [(_compat_renamed_from) = "ecom_review_count"];
+    optional uint64 OldRatingCount = 4 [(_compat_renamed_from) = "ecom_old_rating_count"];
+    optional uint64 OldReviewCount = 5 [(_compat_renamed_from) = "ecom_old_review_count"];
+    optional uint64 OfferRatingCount = 6 [(_compat_renamed_from) = "ecom_offer_rating_count"];
+    optional uint64 OfferReviewCount = 7 [(_compat_renamed_from) = "ecom_offer_review_count"];
+}
+
+message TPropEcomGroupingUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 OfferFirstPos = 1;
+    optional uint64 ListingFirstPos = 2;
+    optional uint64 MergedEspo = 3;
+
+    map<string,string> DoBlend = 4 [(_compat_renamed_prefix) = "DoBlend_"];
+    map<string,string> SerpDataSize = 5 [(_compat_renamed_prefix) = "SerpDataSize_"];
+};
+
+message TPropEcomMergeUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string GroupingInfos = 1 [(_ttl) = 360, (_split_size_limit) = 0];
+}
+
+message TPropFilterBannedUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = "", (_split_size_limit) = 195];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/znatoki_ask_the_question/znatoki_ask_the_question.cpp
+message TPropZnatokiAskTheQuestion {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> IntentFilter = 1 [(_compat_renamed_prefix) = "IntentFilter/", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/znatoki/teaser.cpp
+message TPropZnatokiTeaser {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Hidden = 1;
+}
+
+message TPropVideoUgc {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> MergeRtxCtrAware = 1 [(_compat_renamed_prefix) = "MergeRtxCtrAware_", (_split_size_limit) = 5];
+    map<string, string> Passed = 2 [(_compat_renamed_suffix) = "_passed", (_split_size_limit) = 5];
+}
+
+message TPropTrash {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    map<uint64, uint64> PessimizedCount = 1 [(_compat_renamed_prefix) = "trash_pessimized_count_", (_split_size_limit) = 5];
+}
+
+message TPropFreshVideoClassifier {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional float IntentWeight = 1;
+    optional uint64 ChangeWiz = 2;
+}
+
+message TPropTurboPageChecker {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool HasDesktopTurbo = 1;
+}
+
+message TPropExternal {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 FreshTop = 1;
+}
+
+message TPropUserSurveys {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool HasSurvey = 1;
+    optional string Survey = 2 [(_split_size_limit) = 22, (_owner_fld) = "abc:pollonium"];
+}
+
+message TPropMergeDocsIntoWiz {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> Blended = 1 [(_compat_renamed_prefix) = "Blended_", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/lua/lua.cpp
+message TPropLuaUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string CrudeFetchAffectedDocs = 1 [(_compat_renamed_from) = "crude_fetch_affected_docs", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/mark_doc_age/mark_doc_age.cpp
+message TPropMarkDocAge {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool CanShow = 1;
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/stocks
+// TPropStocksWizzardMiddle is located in wizards.proto
+message TPropStocks {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string MatchingInstrumentId = 1 [(_compat_renamed_from) = "matched_instrument_id", (_split_size_limit) = 5];
+    optional string InstrumentIdFromMiddle = 2 [(_split_size_limit) = 100];
+    optional bool AddToBlend = 3 [(_compat_renamed_from) = "add_to_blend"];
+    optional bool HasDataFromMiddle = 4;
+    optional bool NoDataFromRTMR = 5 [(_compat_renamed_from) = "no_data_from_rtmr"];
+    optional bool NoDataFromRTMRForCarousel = 6 [(_compat_renamed_from) = "no_data_from_rtmr_for_carousel"];
+    optional bool FailedToAddPersonalization = 7 [(_compat_renamed_from) = "failed_to_add_personalization"];
+    optional string FilteredByType = 8 [(_split_size_limit) = 100];
+    optional string Type = 9 [(_compat_renamed_from) = "type", (_split_size_limit) = 100];
+    optional bool CarouselAdded = 10 [(_compat_renamed_from) = "carousel_added"];
+    optional string ChartActive = 11 [(_compat_renamed_from) = "chartActive", (_split_size_limit) = 100];
+    optional string Instrument = 12 [(_split_size_limit) = 100];
+    optional string NoKeyInResponse = 13 [(_split_size_limit) = 100];
+    optional string BrokenRTMRResponse = 14 [(_split_size_limit) = 100];
+    optional string ShownInstrument = 15 [(_split_size_limit) = 25, (_ttl) = 90];
+}
+
+message TPropOlympusOsago {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool FoundRelevanUrlInBanner = 1 [(_compat_renamed_from) = "found_relevant_url_in_banner"];
+    optional string BlockType = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/market_shop_in_shop/market_shop_in_shop.cpp
+message TPropMarketShopInShop {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> ShowWizard = 1 [(_compat_renamed_prefix) = "ShowWizard_", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/avia_middle/avia_middle.cpp
+message TPropAviaMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 NumberOfFlightCompetitors = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/same_services_checker/same_services_checker.cpp
+message TPropSameServicesChecker {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool HasRusProfile = 1 [(_compat_renamed_from) = "has_rusprofile"];
+    optional bool HasScientificArticlesTop30Host = 2 [(_compat_renamed_from) = "has_scientific_articles_top30_host"];
+    optional bool HasScientificArticles = 3 [(_compat_renamed_from) = "has_scientific_articles"];
+    optional bool HasTop100Forum = 4 [(_compat_renamed_from) = "has_top_100_forum"];
+    optional bool HasFandom = 5 [(_compat_renamed_from) = "has_fandom"];
+    optional bool HasRuHpFandom = 6 [(_compat_renamed_from) = "has_ruhp_fandom"];
+    optional bool HasCounterparty = 7 [(_compat_renamed_from) = "has_counterparty", (_owner_fld) = "abc:rtx"];
+    optional bool HasSport = 8 [(_compat_renamed_from) = "has_sport", (_owner_fld) = "abc:sport"];
+    optional bool HasNews = 9 [(_compat_renamed_from) = "has_news", (_owner_fld) = "abc:freshness"];
+    optional bool HasStocks = 10 [(_compat_renamed_from) = "has_stocks", (_owner_fld) = "abc:blndr"];
+    optional bool HasAviaHost = 11 [(_compat_renamed_from) = "has_avia_2_host", (_owner_fld) = "abc:unisearch"];
+    optional bool HasAviaFlightHost = 12 [(_compat_renamed_from) = "has_avia_flight_host", (_owner_fld) = "abc:unisearch"];
+}
+
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/vmbp/vmbp.cpp
+message TPropVMBP {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool IsWideEcomQuery = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/host_boost/host_boost.cpp
+message TPropHostBooster {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool HostBoosed = 1 [(_compat_renamed_from) = "host_boosted"];
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/bonds
+message TPropBonds {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ShownInstrument = 1 [(_split_size_limit) = 25, (_ttl) = 90];
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/currency_converter_upper/currency_converter_upper.cpp
+// TPropCurrencyConverterMiddle is located in wizards.proto
+message TPropCurrencyConverterUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FromTo = 1 [(_split_size_limit) = 100];
+    optional string InsertedFrom = 2 [(_split_size_limit) = 100];
+    optional bool AddToBlender = 3;
+    optional string From = 4 [(_compat_disabled) = true];
+    optional string FilteredByType = 5 [(_split_size_limit) = 100];
+    optional string ErrorWithUpdateTemplate = 6 [(_split_size_limit) = 100];
+    optional uint64 AmountFromData = 7;
+    optional uint64 AmountFromRequest = 8;
+    optional string CurrencyFromAdjuster = 9 [(_split_size_limit) = 100];
+    optional string Type = 10 [(_split_size_limit) = 100];
+    optional string ChartActive = 11 [(_compat_renamed_from) = "chartActive", (_split_size_limit) = 100];
+    optional string ShownInstrument = 12 [(_split_size_limit) = 25, (_ttl) = 90];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/cards_ranking/cards_ranking.cpp
+message TPropCardsRanking {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string SkippedDoc = 1 [(_owner_fld) = "abc:poo"];
+    map<string, bool> FailedToProcessPlugin = 2 [(_compat_renamed_prefix) = "FailedToProcessPlugin_", (_owner_fld) = "abc:poo", (_split_size_limit) = 5];
+    map<string, bool> ProcessedPlugin = 3 [(_compat_renamed_prefix) = "ProcessedPlugin_", (_owner_fld) = "abc:poo", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/pira_filtering/pira_filtering.cpp
+message TPropPiraFiltering {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> HasData = 1 [(_compat_renamed_suffix) = "_has_data", (_owner_fld) = "abc:poo", (_split_size_limit) = 5];
+    map<string, bool> Filtered = 2 [(_compat_renamed_suffix) = "_filtered", (_owner_fld) = "abc:poo", (_split_size_limit) = 5];
+    map<string, uint64> HasDataAmount = 3 [(_compat_renamed_prefix) = "HasDataAmount_", (_owner_fld) = "abc:poo", (_split_size_limit) = 10];
+    optional uint64 HasDataAmountAll = 4 [(_compat_renamed_from) = "HasDataAmount_all", (_owner_fld) = "abc:poo"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/mobile_app/mobile_app.cpp
+message TPropMobileAppRearrangeRule {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool DeleteTbAdBecauseOfDeduplication = 1 [(_compat_renamed_from) = "delete_tb_ad_because_of_deduplication"];
+    optional bool DeleteSerpAdBecauseOfDeduplication = 2 [(_compat_renamed_from) = "delete_serp_ad_because_of_deduplication"];
+    optional bool InsertedRmp = 3 [(_compat_renamed_from) = "inserted_rmp"];
+    optional bool RmpDryRun = 4 [(_compat_renamed_from) = "rmp_dry_run"];
+    optional bool CropTbBecauseOfAd = 5 [(_compat_renamed_from) = "crop_tb_because_of_ad"];
+    optional bool CouldnBuildSnippetFromRmp = 6 [(_compat_renamed_from) = "couldnt_build_snippet_from_rmp"];
+    optional bool HasRmpData = 7 [(_compat_renamed_from) = "has_rmp_data"];
+    optional uint64 MoveIntentUnderOrganic = 8 [(_compat_renamed_from) = "move_intent_under_organic"];
+    optional string RemovedByOrganic = 9 [(_compat_renamed_from) = "removed_by_organic"];
+    optional uint64 NotEnoughDocuments = 10 [(_compat_renamed_from) = "not_enough_documents"];
+    optional string SourceWinner = 11 [(_compat_renamed_from) = "source_winner"];
+}
+
+message TPropSpellchecker {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    message TAutoccLogs {
+        option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+        message TThresholds {
+            optional float NoCorrectionThreshold = 1;
+            optional float HintThreshold = 2;
+            optional float CorrectionThreshold = 3;
+        }
+
+        optional string EvaluatedQuery = 1;
+        optional int32 Relev = 2;
+        optional string AutoccType = 3;
+        optional float Score = 4;
+        optional TThresholds Thresholds = 5;
+    }
+
+    message TPornoQueryInfo {
+        option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+        optional bool OriginalQueryIsPorno = 1;
+        optional bool MisspellQueryIsPorno = 2;
+    }
+
+    message TLangDetector {
+        option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+        optional string SerpLang = 1;
+        optional string PrefLang = 2;
+        optional string DetectedLangs = 3;
+    }
+
+    message TOrganizationsInfo {
+        option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+        optional bool RequestInList = 1;
+        optional bool RequestFixlisted = 2;
+    }
+
+
+    optional string CompressedLog = 1 [(_split_size_limit) = 0];
+    optional string ShardName = 2 [(_rt_required) = true];
+    optional string CorrectedQuery = 3;
+
+    optional TAutoccLogs AutoccLogs = 5 [(_split_size_limit) = 0];
+    optional TLangDetector LangDetector = 6 [(_split_size_limit) = 0];
+    optional TPornoQueryInfo PornoQueryInfo = 7 [(_split_size_limit) = 0];
+    optional TOrganizationsInfo OrganizationsInfo = 8 [(_split_size_limit) = 0];
+
+
+    // Do not use, deprecated
+    optional string AutoCCEvaluatedQuery = 4;
+} //next tag 9
+
+message TPropProgrammingWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string SnippetName = 1 [(_split_size_limit) = 20];
+    optional bool HasCSSource = 2;
+}
+
+message TPropMoneySource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> Top10DocCount = 1 [(_compat_renamed_prefix) = "money_source_", (_compat_renamed_suffix) = "_top10_docs_count"];
+    map<string, uint64> TotalDocCount = 2 [(_compat_renamed_prefix) = "money_source_", (_compat_renamed_suffix) = "_total_docs_count"];
+}
+
+message TGenerativeAnswerWizardBans {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool FilteredByFreshSamohodUrlsCount = 1 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool BannedForPoorVideos = 2 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional bool BannedForGenesis = 3 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+}
+
+message TPropGenerativeAnswer {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool Button = 1 [(_compat_renamed_from) = "button", (_ttl) = 30];
+    optional bool DisabledByWaitlist = 2 [(_ttl) = 30];
+    optional bool Inserted = 3 [(_compat_renamed_from) = "inserted", (_ttl) = 30];
+    optional bool InsertedType = 4 [(_compat_renamed_from) = "inserted.type", (_ttl) = 30];
+    map<string, string> ApprovedBy = 5 [(_compat_renamed_prefix) = "ApprovedBy", (_ttl) = 30];
+    map<string, string> BannedBy = 6 [(_compat_renamed_prefix) = "BannedBy", (_ttl) = 30];
+    optional string FiosExtractedFromQuery = 7 [(_ttl) = 30];
+    optional string ForcedSendData = 8 [(_split_size_limit) = 0, (_ttl) = 30];
+    optional string FirstNameInQuery = 9 [(_ttl) = 30];
+    optional double IsQueryAboutPersonPrediction = 10 [(_ttl) = 30];
+    optional string WaitlistFeatureStatus = 11 [(_ttl) = 30];
+    optional bool StubAnswer = 12 [(_ttl) = 30];
+    optional bool DegradationRemoved = 13 [(_ttl) = 30];
+    map<string, string> EvaluateIs = 14 [(_compat_renamed_prefix) = "EvaluateIs", (_ttl) = 30];
+    map<string, string> DocMarkers = 15 [(_compat_renamed_prefix) = "DocMarker_", (_ttl) = 30];
+    map<string, bool> IntentFilter = 16 [(_compat_renamed_prefix) = "IntentFilter/", (_split_size_limit) = 512, (_ttl) = 30];
+
+    optional TGenerativeAnswerWizardBans OfflineBsaBans = 17 [(_compat_renamed_from) = "OFFLINE_BSA", (_compat_path_separator) = "_", (_owner_fld) = "abc:facts", (_split_size_limit) = 0, (_ttl) = 90];
+    optional TGenerativeAnswerWizardBans OfflineBsaEcomBans = 18 [(_compat_renamed_from) = "OFFLINE_BSA_ECOM", (_compat_path_separator) = "_", (_owner_fld) = "abc:facts", (_split_size_limit) = 0, (_ttl) = 90];
+    optional double DocMarkerRestoreConditionsDocBadClsPriorityMax = 19 [(_compat_renamed_from) = "DocMarker_RestoreConditionsDocBadClsPriority_max", (_ttl) = 30];
+    optional double DocMarkerRestoreConditionsDocBadClsPriorityMin = 20 [(_compat_renamed_from) = "DocMarker_RestoreConditionsDocBadClsPriority_min", (_ttl) = 30];
+    optional double DocMarkerSearchGPTDocBadClsPriorityMax = 21 [(_compat_renamed_from) = "DocMarker_SearchGPTDocBadClsPriority_max", (_ttl) = 30];
+    optional double DocMarkerSearchGPTDocBadClsPriorityMin = 22 [(_compat_renamed_from) = "DocMarker_SearchGPTDocBadClsPriority_min", (_ttl) = 30];
+    optional double DocMarkerSearchGPTDocBadClsThresholdMax = 23 [(_compat_renamed_from) = "DocMarker_SearchGPTDocBadClsThreshold_max", (_ttl) = 30];
+    optional double DocMarkerSearchGPTDocBadClsThresholdMin = 24 [(_compat_renamed_from) = "DocMarker_SearchGPTDocBadClsThreshold_min", (_ttl) = 30];
+
+    // XXX insert new props before this line
+    map<string, string> Unmatched = 1000 [(_compat_is_default_container) = true, (_split_size_limit) = 0, (_ttl) = 30]; // always in fat
+    // Данные для профицита/блендера у офлайнов
+    optional string OFFLINE_BSA_ECOM_SurplusTransmitData = 1001 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+    optional string OFFLINE_BSA_SurplusTransmitData = 1002 [(_owner_fld) = "abc:facts", (_ttl) = 90];
+}
+
+message TPropUgcSerpPolls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AddedHypothesesToShopsHosts = 1;
+    optional string AddedHypothesisToDoctor = 2;
+    optional string AddedHypothesesToFinance = 3;
+    optional string AddedHypothesesForProductsMode = 4;
+    optional string AddedHypothesesToServicesHosts = 5;
+}
+
+message TPropDynamicTabs {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string DynamicTabToShow = 1;
+}
+
+message TPropSocialDemography {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint32 Age = 1;
+    optional uint32 Gender = 2;
+    optional uint32 Income = 3;
+}
+
+message TPropLogSearchProps {
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropSocialDemography SocialDemography = 1 [(_compat_path_separator) = "/", (_split_size_limit) = 0];
+}
+
+message TPropShopsHostsRatings {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ProcessedRating = 1;
+}

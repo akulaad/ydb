@@ -1,0 +1,64 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NImagesDocMarkers;
+
+message TSize {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint32 Height = 1 [(_compat_renamed_from) = "h"];
+    optional uint32 Width = 2 [(_compat_renamed_from) = "w"];
+}
+
+message TSnipDebug {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 CbirDups = 1 [(_compat_renamed_from) = "cbirdups"];
+    optional uint64 CbirDupsSat = 2 [(_compat_renamed_from) = "cbirdupssat"];
+    repeated string Exps = 3 [(_compat_renamed_from) = "exps"];
+    optional string FNavHack = 4 [(_compat_renamed_from) = "fNavHack"];
+    optional TSize Frame = 5 [(_compat_renamed_from) = "frame", (_compat_path_separator) = ""];
+    optional uint64 FsDups = 6 [(_compat_renamed_from) = "fsdups"];
+    optional TSize FsFrame = 7 [(_compat_renamed_from) = "fsframe", (_compat_path_separator) = ""];
+    optional uint64 FspvDups = 8 [(_compat_renamed_from) = "fspvdups"];
+    optional string Highlight = 9 [(_compat_renamed_from) = "hl"];
+    optional uint64 PvDups = 10 [(_compat_renamed_from) = "pvdups"];
+    optional string Report = 11 [(_compat_renamed_from) = "report"];
+    optional uint64 RsDups = 12 [(_compat_renamed_from) = "rsdups"];
+    optional TSize Screen = 13 [(_compat_renamed_from) = "screen", (_compat_path_separator) = ""];
+    optional uint64 SnipGeo = 14 [(_compat_renamed_from) = "snipgeo"];
+    optional uint64 SzDups = 15 [(_compat_renamed_from) = "szdups"];
+    optional bool Tel = 16 [(_compat_renamed_from) = "tel"];
+    optional string Tld = 17 [(_compat_renamed_from) = "tld"];
+    optional string UiLanguage = 18 [(_compat_renamed_from) = "uil"];
+    reserved 19; // morehl
+    reserved 20; // regphrase
+}
+
+message TDocMarkers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional NScarabProto.NReport.NImagesDocMarkers.TSnipDebug Snipdebug = 1 [(_compat_renamed_from) = "SnipDebug"];
+    optional string SnipImageRanker = 2;
+    optional string SnipTextFastRanker = 3;
+    optional string SnipTextRanker = 4;
+    repeated string MoneyIdFromQuerySearch = 5;
+    repeated string MoneyIdToValidate = 6;
+    optional string NativeAdsId = 7;
+    optional uint64 NativeAdsSource = 8;
+    optional bool HasCommercialFactor = 9;
+    optional string Rule = 10;
+    optional string Slices = 11;
+    optional string UsedSources = 12;
+    optional string RandomLog = 13;
+    reserved 14; // L3Parts
+    optional bool UnmergedQuickAnswer = 15;
+    optional bool HasCommercialCrop = 16;
+    optional bool HasGreenUrlOffer = 17;
+    optional string ImagesModelsInputs = 33 [(_compat_renamed_from) = "ImagesModelsDocumentInputs", (_owner_fld) = "abc:images", (_infinite_ttl) = true, (_split_size_limit) = 0];
+}

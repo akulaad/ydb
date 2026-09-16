@@ -1,0 +1,15 @@
+syntax = "proto2";
+import "google/protobuf/descriptor.proto";
+option go_package = "a.yandex-team.ru/scarab/api/proto/common;scarab_proto";
+option java_package = "NScarabProto.NCommon";
+extend google.protobuf.FieldOptions {
+    optional bool _compat_disabled = 500101;
+    optional string _compat_renamed_from = 500102;
+    optional string _compat_renamed_prefix = 500103;
+    optional string _compat_renamed_suffix = 500104;
+    optional bool _compat_is_default_container = 500105;
+    optional string _compat_path_separator = 500106;
+    optional bool _compat_default_value_wo_underscore = 500107;
+    optional uint32 _compat_min_key_width = 500108;
+    optional string _compat_repeated_field_separator = 500109 [default = " "];
+}

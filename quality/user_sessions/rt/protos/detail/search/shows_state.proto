@@ -1,0 +1,147 @@
+package NUserSessions.NRT;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+import "quality/user_sessions/rt/protos/common/misc.proto";
+
+
+message TBlockAttrs {
+    optional bool Organic = 1;
+    optional bool Dynamic = 2;
+    optional uint32 Position = 3;
+    optional bool Turbo = 4;
+    optional string DocumentUrl = 5;
+    optional string ShowUid = 11;
+
+    optional string Type = 6;
+    optional string WizardName = 7;
+    optional string Ui = 8;
+    optional string Url = 9;
+
+    optional string FullJson = 10;
+    optional TExternalId ExternalId = 12;
+    optional string Subtype = 13;
+    optional string Crc = 14; // deprecated
+    repeated string Crcs = 15;
+    optional string Path = 16;
+    repeated string ImagesDocIds = 17;
+    optional string YSClidExternalService = 18;
+    optional string ItemTitle = 19;
+    optional string OmniTitle = 20;
+    optional string Source = 21;
+    optional string FullDocID = 22;
+    optional string MainContentUrl = 23;
+}
+
+message TBlockMessage {
+    optional string Name = 1;
+    optional string ID = 2;
+    optional string ParentID = 3;
+    optional string TriggerEventID = 7;
+    optional TBlockAttrs Attrs = 4;
+    optional bool IsRoot = 5;
+    optional bool IsWebService = 6;
+    optional bool IsResultShowCandidate = 8;
+}
+
+message TTreeMessage {
+    optional string RequestID = 1;
+    optional fixed32 Timestamp = 2;
+    repeated TBlockMessage Blocks = 3;
+    optional bool ProcessedResultBlocks = 4;
+    optional EAntifraudVerdict AntifraudVerdict = 5;
+    optional fixed32 PrepareStateTimestamp = 6;
+    optional EAntifraudVerdict FastAntifraudVerdict = 7;
+    optional bytes AntifraudRestInfo = 8;
+    optional uint64 OriginWriteTimeMs = 9;
+}
+
+
+message TTreesMessage {
+    repeated TTreeMessage Trees = 1;
+}
+
+message TWeakTie {
+    optional string EventID = 1;
+    optional string BlockID = 2;
+    optional fixed32 Timestamp = 3;
+}
+
+message TWeakTiesMessage {
+    repeated TWeakTie Data = 1;
+}
+
+message TClickedWizardID {
+    optional string ID = 1;
+    optional fixed32 Timestamp = 2;
+}
+
+message TClickedWizardsMessage {
+    repeated TClickedWizardID ClickedWizardIDs = 2;
+}
+
+message TShowsStateMessage {
+    optional string UserID = 1 [(NYT.key_column_name) = "user_id"];
+
+    // compressed trees - serialized & compressed TTreesMessage message
+    optional bytes CompressedTrees = 2 [(NYT.column_name) = "compressed_trees"];
+    // should not be present on YT
+    optional TTreesMessage Trees = 5;
+
+    optional string Codec = 3 [(NYT.column_name) = "codec"];
+    optional uint64 NextDelayedEventIndex = 4 [(NYT.column_name) = "next_delayed_event_index", default = 0];
+
+    // compressed clicked wizards - serialized & compressed TClickedWizardsMessage message
+    optional bytes CompressedClickedWizards = 6 [(NYT.column_name) = "compressed_clicked_wizards"];
+    // should not be present on YT
+    optional TClickedWizardsMessage ClickedWizards = 7;
+
+    // serialized & compressed TWeakTiesMessage message
+    optional bytes CompressedWeakTies = 8 [(NYT.column_name) = "compressed_weak_ties"];
+    // should not be present on YT
+    optional TWeakTiesMessage WeakTies = 9;
+
+    // set by post resharder to avoid trees decompression
+    optional EAntifraudVerdict AntifraudVerdict = 10;
+
+    // set for next stage metrics calculation without compressed data decompression
+    optional fixed32 Timestamp = 11;
+}
+
+
+message TSimpleShowsStateMessage {
+    repeated TClickedWizardID ClickedWizardIDs = 1;
+    repeated TWeakTie WeakTies = 2;
+    optional bytes CompressedData = 100;
+    optional string Codec = 101;
+}
+
+
+message TEnrichTriggerMessage {
+    optional string Uid = 1;
+    repeated string ReqidsChain = 2;
+    optional TWeakTie WeakTie = 3;
+    optional TTreeMessage Tree = 4;
+}
+
+
+message TShowsDelayedEventQueueMessage {
+    optional uint64 ShardID = 1 [(NYT.key_column_name) = "shard_id"];
+    optional uint64 Timestamp = 2 [(NYT.key_column_name) = "timestamp"];
+    optional string UserID = 3 [(NYT.key_column_name) = "user_id"];
+    optional uint64 DelayedEventIndex = 4 [(NYT.key_column_name) = "delayed_event_index"];
+    // actually is not used, injected here just to bypass YT complaints
+    // about tables without non-key columns
+    optional string Payload = 5 [(NYT.column_name) = "payload", default = ""];
+}
+
+
+message TShowsDelayedEventDataMessage {
+    optional uint64 ShardID = 1 [(NYT.key_column_name) = "shard_id"];
+    optional string UserID = 2 [(NYT.key_column_name) = "user_id"];
+    optional uint64 DelayedEventIndex = 3 [(NYT.key_column_name) = "delayed_event_index"];
+
+    // serialized & compressed TSessionQueueMessage
+    optional bytes CompressedEvent = 4 [(NYT.column_name) = "compressed_click"];
+    optional string Codec = 5 [(NYT.column_name) = "codec"];
+}

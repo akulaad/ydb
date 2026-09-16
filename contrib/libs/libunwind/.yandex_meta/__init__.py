@@ -55,7 +55,8 @@ def post_install(self):
                         PEERDIR=["contrib/restricted/emscripten/include"],
                         CFLAGS=[
                             "-D_LIBUNWIND_HIDE_SYMBOLS",
-                            "-D__WASM_EXCEPTIONS__",
+                            # No __WASM_EXCEPTIONS__: needs -fwasm-exceptions (Tag
+                            # section id 13); WAVM cannot load that section.
                             # Silence 'omitting the parameter name in a function definition is a C23 extension' warning
                             "-Wno-c23-extensions",
                         ],

@@ -1660,10 +1660,10 @@ class GnuCompiler(Compiler):
             self.c_flags.append('-m64')
 
         if self.target.is_wasm64:
-            # WebAssembly-specific exception handling flags
-            self.c_foptions += [
-                '-fwasm-exceptions',
-            ]
+            # Do not pass -fwasm-exceptions: it emits the standardized Tag
+            # section (id 13) that WAVM (udf_store host) does not parse.
+            # Guest modules run without wasm EH; throws hit the libunwind stub.
+            pass
 
         self.cross_suffix = '' if is_positive('FORCE_NO_PIC') else '.pic'
 

@@ -1,0 +1,170 @@
+import "library/cpp/yaff/proto/options.proto";
+
+package NUserSessions.NRT;
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/createlib/qb3/proto/rt;user_sessions";
+
+
+enum EAntifraudVerdict {
+    WHITE = 0;
+    GREY = 1;
+    BLACK = 2;
+    YELLOW = 3;
+}
+
+enum ERTSessTable {
+    RT_ST_USER_SESSIONS = 0;
+    RT_ST_USER_SESSIONS_TECH = 1;
+    RT_ST_YANDEX_ROBOTS_USER_SESSIONS = 2;
+    RT_ST_YANDEX_SERVERS_USER_SESSIONS = 3;
+    RT_ST_EMPTY_UID_SESSIONS = 4;
+    RT_ST_YANDEX_STAFF_SESSIONS = 5;
+    RT_ST_YANDEX_STAFF_EMPTY_UID_SESSIONS = 6;
+    RT_ST_TESTS = 7;
+    RT_ST_UNKNOWN_SESSIONS = 8;
+    RT_ST_ERRORS = 9;
+    RT_ST_SKIPS = 10;
+    RT_ST_HASHED = 11;
+    RT_ST_HASHED_ERRORS = 12;
+    RT_ST_HASHED_SKIPS = 13;
+    RT_ST_NUM_TABLES = 14;
+    // RT_ST_NUM_TABLES must be last
+}
+
+enum ERTMainServiceSpec {
+    RT_MSS_UNDEF = 0;
+    RT_MSS_WEB = 1;
+    RT_MSS_IMG = 2;
+    RT_MSS_VID = 3;
+    RT_MSS_MAP = 4;
+    RT_MSS_PPL = 5;
+    RT_MSS_PORTAL = 6;
+    RT_MSS_MAIL = 7;
+    RT_MSS_WEATHER = 8;
+    RT_MSS_MARKET = 9;
+    RT_MSS_COLLECTIONS = 10;
+    RT_MSS_SAFE_BROWSING = 11;
+    RT_MSS_RECOMMENDATIONS = 12;
+    RT_MSS_DIRECT = 13;
+    RT_MSS_TURBO = 14;
+    RT_MSS_UGC = 15;
+    RT_MSS_IZNANKA = 16;
+    RT_MSS_TV_ONLINE = 17;
+    RT_MSS_TRANSLATE = 18;
+    RT_MSS_YDO = 19;
+    RT_MSS_HEALTH = 20;
+    RT_MSS_NEWS = 21;
+    RT_MSS_PRODUCTS = 22;
+    RT_MSS_FUTURIS = 23;
+    RT_MSS_REVIEWS = 24;
+    RT_MSS_FINANCE = 25;
+    RT_MSS_MEDICINE = 26;
+    RT_MSS_REALTY = 27;
+    RT_MSS_FAVORITES = 28;
+    RT_MSS_WIKI = 29;
+    RT_MSS_SERVICES = 30;
+    RT_MSS_CONVERSATION = 31;
+    RT_MSS_NUM = 32;
+    // RT_MSS_NUM must be last
+}
+
+enum ERTLogType {
+    RT_LT_UNDEF = 0;
+    RT_LT_ACCESS = 1;
+    RT_LT_IMAGES_ACCESS = 2;
+    RT_LT_VIDEO_ACCESS = 3;
+    RT_LT_BS_WATCH = 4;
+    RT_LT_REDIR = 5;
+    RT_LT_WEB_REDIR = 6;
+    RT_LT_WEB_TECH_REDIR = 7;
+    RT_LT_VIDEO_REDIR = 8;
+    RT_LT_IMAGE_REDIR = 9;
+    RT_LT_COLLECTIONS_REDIR = 10;
+    RT_LT_BLOCKSTAT = 11;
+    RT_LT_IMG_REQANS = 12;
+    RT_LT_VIDEO_PROTO_REQANS = 13;
+    RT_LT_MORDA_ACCESS = 14;
+    RT_LT_MORDA_BLOCKSTAT = 15;
+    RT_LT_BAR_NAVIG = 16;
+    RT_LT_IMAGES_BLOCKSTAT = 17;
+    RT_LT_TURBO_BLOCKSTAT = 18;
+    RT_LT_VIDEO_BLOCKSTAT = 19;
+    RT_LT_MAP_REQANS = 20;
+    RT_LT_IMAGES_PERF_REDIR = 21;
+    RT_LT_IMAGES_TECH_REDIR = 22;
+    RT_LT_VIDEO_PERF_REDIR = 23;
+    RT_LT_VIDEO_TECH_REDIR = 24;
+    RT_LT_WEB_PERF_REDIR = 25;
+    RT_LT_SIMILARGROUP = 26;
+    RT_LT_BROWSER_METRIKA_MOBILE = 27;
+    RT_LT_SUPERAPP_METRIKA_MOBILE = 28;
+    RT_LT_USLUGI_REDIR = 29;
+    RT_LT_PROTO_REQANS_RT = 30;
+    RT_LT_DIRECT_PROTO_REQANS = 31;
+    RT_LT_WEB_MIDDLE_REQANS = 32;
+    RT_LT_IMAGES_PROTO_REQANS = 33;
+    RT_LT_CBIR_PROTO_REQANS = 34;
+    RT_LT_SUGGEST_RESPONSE = 35;
+    RT_LT_PROTO_PROFILE = 36;
+    RT_LT_WEB_RUM_TIME_REDIR = 37;
+    RT_LT_REEF_REDIR = 38;
+    RT_LT_REEF_BLOCKSTAT = 39;
+    RT_LT_SAAS_ACCESS = 40;
+    RT_LT_SAAS_REQANS = 41;
+    RT_LT_SAAS_ACCESS_INTRASEARCH = 42;
+    RT_LT_SAAS_REQANS_INTRASEARCH = 43;
+    RT_LT_MORDA_FEEDS_REDIR = 44;
+    RT_LT_REEF_ACCESS = 45;
+    RT_LT_MORDA_BAOBAB_BLOCKSTAT = 46;
+    RT_LT_YAZEKA_REDIR = 47;
+    RT_LT_YAZEKA_BLOCKSTAT = 48;
+    reserved 49 to 200;
+
+    // hamster:
+    RT_LT_HAMSTER_ACCESS = 201;
+    RT_LT_HAMSTER_IMAGES_BLOCKSTAT = 202;
+    RT_LT_HAMSTER_IMAGES_REDIR = 203;
+    RT_LT_HAMSTER_IMAGES_PERF_REDIR = 204;
+    RT_LT_HAMSTER_IMAGES_TECH_REDIR = 205;
+    RT_LT_HAMSTER_IMG_REQANS = 206;
+    RT_LT_HAMSTER_REDIR = 207;
+    RT_LT_HAMSTER_SEARCH_BLOCKSTAT = 208;
+    RT_LT_HAMSTER_SEARCH_REDIR = 209;
+    RT_LT_HAMSTER_SEARCH_PERF_REDIR= 210;
+    RT_LT_HAMSTER_SEARCH_TECH_REDIR = 211;
+    RT_LT_HAMSTER_TURBO_BLOCKSTAT = 212;
+    RT_LT_HAMSTER_VIDEO_BLOCKSTAT = 213;
+    RT_LT_HAMSTER_VIDEO_REDIR = 214;
+    RT_LT_HAMSTER_VIDEO_PERF_REDIR = 215;
+    RT_LT_HAMSTER_VIDEO_TECH_REDIR = 216;
+    RT_LT_HAMSTER_VIDEO_PROTO_REQANS = 217;
+    RT_LT_HAMSTER_PROTO_REQANS_RT = 218;
+    RT_LT_HAMSTER_DIRECT_PROTO_REQANS = 219;
+    RT_LT_HAMSTER_WEB_MIDDLE_REQANS = 220;
+    RT_LT_HAMSTER_REEF_REDIR = 221;
+    RT_LT_HAMSTER_REEF_BLOCKSTAT = 222;
+}
+
+message TProfileTimestamps {
+    option (yaff.proto.message) = {ignore: true};
+
+    optional fixed32 EventTime = 1;
+    optional fixed32 LogbrokerCreateTime = 11;
+    optional fixed32 LogbrokerWriteTime = 21;
+    optional uint64 LogbrokerWriteTimeMs = 22;
+    optional fixed32 ResharderTime = 31;
+    reserved 41; reserved "RemapperTime";
+    optional fixed32 ReducerTime = 51;
+    reserved 52; reserved "FirstReducerProcessTime";
+    reserved 53; reserved "LastReducerProcessTime";
+    optional fixed32 KPIProcessTime = 61;
+    optional fixed32 DropPrefetchTime = 71;
+    optional fixed32 BaobabEnrichPrepareStartTime = 81;
+    reserved 82;
+    reserved 83;
+    optional fixed32 YTToLBStartTime = 84;
+    reserved 85; reserved "YTToLBTime";
+    optional fixed32 BaobabEnrichProcessStartTime = 86;
+    reserved 87; reserved "FirstBaobabEnrichProcessTime";
+    reserved 88; reserved "LastBaobabEnrichProcessTime";
+}

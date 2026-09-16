@@ -1,0 +1,37 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/extension.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="BlockstatDataForRAB";
+
+message TSerializedBaobabTree {
+    optional bytes SerializedTree = 1;
+    enum ESerializedMode {
+        JSON = 0;
+        PROTO = 1;
+    }
+    optional ESerializedMode Mode = 2;
+    optional uint64 Timestamp = 3;
+}
+
+message TBlockstatPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional bytes BsBlocks = 5 [(NUserSessions.tskv_name) = "bs-blocks"];
+    optional bytes Ip = 9 [(NUserSessions.tskv_name) = "ip"];
+    optional bytes MainRequestId = 10 [(NUserSessions.tskv_name) = "main-reqid"];
+    optional bytes ShowsTreeStr = 14 [(NUserSessions.tskv_name) = "shows-tree"];
+    repeated bytes ShowsTreeStrPatches = 15;
+    repeated bytes OverlayTreesStr = 16;
+    reserved 17; // IsInSerializedMode
+    reserved 18; // IsWritten
+    optional bytes ShowsTreeProto = 19;
+    repeated bytes ShowsTreeProtoPatches = 20;
+    repeated bytes OverlayTreesProto = 21;
+
+    repeated TSerializedBaobabTree ShowsTreePatchesExt = 22;
+    repeated TSerializedBaobabTree OverlayTreesExt = 23;
+    optional bytes Request = 24;
+}

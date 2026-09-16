@@ -1,0 +1,369 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NQUICK;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/QUICK";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/antidup/antidup.cpp
+message TPropAntiDup {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> CheckedDocsCount = 1 [(_compat_renamed_prefix) = "CheckedDocsCount_"];
+    map<string, string> FreshAntidupRuleDisabled = 2 [(_compat_renamed_prefix) = "Fresh|AntidupRuleDisabled_"];
+    optional uint64 FreshCloneFound = 3 [(_compat_renamed_from) = "Fresh|CloneFound"];
+    map<string, bool> FreshDupsInTop10 = 4 [(_compat_renamed_prefix) = "Fresh|DupsInTop10_"];
+    map<string, uint64> FreshFirstDup = 5 [(_compat_renamed_prefix) = "Fresh|FirstDup_"];
+    map<string, bool> FreshSignatureDupsInTop10 = 6 [(_compat_renamed_prefix) = "Fresh|SignatureDupsInTop10_"];
+    map<string, bool> FreshSnippetDupsInTop10 = 7 [(_compat_renamed_prefix) = "Fresh|SnippetDupsInTop10_"];
+    map<string, string> FreshAntidup = 8 [(_compat_renamed_prefix) = "Fresh|antidup_"];
+    reserved 9;
+    map<string, uint64> FreshNumdocs = 10 [(_compat_renamed_prefix) = "Fresh|numdocs_"];
+    optional string Middle = 11 [(_compat_renamed_from) = "middle"];
+    optional uint64 MiddleBanned = 12 [(_compat_renamed_from) = "middle_banned"];
+    optional string MiddleDataDir = 13 [(_compat_renamed_from) = "middle_data_dir"];
+
+    map<string, uint64> FreshedCheckedDocsCount = 14 [(_compat_renamed_prefix) = "Fresh|CheckedDocsCount_"];
+    map<string, string> Base64 = 15 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "_base64"];
+    map<uint64, string> FreshClonePessimizedInTop = 16 [(_compat_renamed_prefix) = "Fresh|ClonePessimizedInTop"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/antispam/antispam.cpp
+message TPropAntispam {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Calc = 1 [(_compat_renamed_prefix) = "calc_"];
+    map<string, string> CalcSc = 2 [(_compat_renamed_prefix) = "calc_sc_"];
+    map<uint64, string> FormulaValue = 3 [(_compat_renamed_prefix) = "formula_value_"];
+    optional bool GoodValueThreshold = 4 [(_compat_renamed_from) = "goodValueThreshold"];
+    optional uint64 GroupSize = 5 [(_compat_renamed_from) = "group_size"];
+    optional uint64 GroupsToProcess = 6 [(_compat_renamed_from) = "groups_to_process"];
+    optional double MaxRelevThreshold = 7 [(_compat_renamed_from) = "maxRelevThreshold"];
+    optional uint64 MinRelevance = 8 [(_compat_renamed_from) = "minRelevance"];
+    map<uint64, string> Move = 9 [(_compat_renamed_prefix) = "move_"];
+    optional uint64 NumMxnet2 = 10 [(_compat_renamed_from) = "num_mxnet2"];
+    optional uint64 NumRearrange = 11 [(_compat_renamed_from) = "num_rearrange"];
+    map<uint64, string> Pess = 12 [(_compat_renamed_prefix) = "pess_"];
+    optional uint64 PessBorderPosition = 13 [(_compat_renamed_from) = "pess_border_position"];
+    map<uint64, string> PessSc = 14 [(_compat_renamed_prefix) = "pess_sc_"];
+    optional string RelevLocale = 15 [(_compat_renamed_from) = "relev_locale"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/filterbanned/web/bans/apply_bans.cpp
+message TPropFilterBanned {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional uint64 RKNBanned = 1 [(_compat_renamed_from) = "RKN_banned"];
+    optional uint64 RKNBannedLot = 2 [(_compat_renamed_from) = "RKN_banned_lot"];
+    optional string SentHashes = 3;
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/fresh_detector_features.cpp
+message TPropFreshDetector {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated double Features = 1;
+    map<uint64, string> PrsAgeRatio = 2 [(_compat_renamed_prefix) = "PrsAgeRatio_"];
+    optional uint64 PrsSize = 3;
+    map<string, string> PrsSourceRatioFrom = 4;
+    optional double PrsAgeRatio300 = 5 [(_compat_renamed_from) = "PrsAgeRatio_300"];
+    optional double PrsAgeRatio600 = 6 [(_compat_renamed_from) = "PrsAgeRatio_600"];
+    optional double PrsAgeRatio3600 = 7 [(_compat_renamed_from) = "PrsAgeRatio_3600"];
+    optional double PrsAgeRatio7200 = 8 [(_compat_renamed_from) = "PrsAgeRatio_7200"];
+    optional double PrsAgeRatio14400 = 9 [(_compat_renamed_from) = "PrsAgeRatio_14400"];
+    optional double PrsAgeRatio28800 = 10 [(_compat_renamed_from) = "PrsAgeRatio_28800"];
+    optional double PrsAgeRatio86400 = 11 [(_compat_renamed_from) = "PrsAgeRatio_86400"];
+    optional double PrsAgeRatio259200 = 12 [(_compat_renamed_from) = "PrsAgeRatio_259200"];
+    optional double PrsSourceRatioFromQuick = 13;
+    optional double PrsSourceRatioFromQuickRt = 14;
+    optional double PrsSourceRatioFromCallisto = 15;
+    optional double PrsSourceRatioFromQuickMed = 16;
+    optional double PrsSourceRatioFromWebTier1 = 17;
+    optional double PrsSourceRatioFromPlatinum = 18;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/fresh_hosts_features.cpp
+message TPropFreshHostsFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double IpFreshClickAvg50 = 1 [(_compat_renamed_from) = "ip_fresh_click_avg_50"];
+    optional double SurplusAvg = 2 [(_compat_renamed_from) = "surplus_avg"];
+    optional double SurplusSum50 = 3 [(_compat_renamed_from) = "surplus_sum_50"];
+    optional double SurplusTop1Avg = 4 [(_compat_renamed_from) = "surplus_top1_avg"];
+    optional double SurplusTop1Avg50 = 5 [(_compat_renamed_from) = "surplus_top1_avg_50"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/fresh_top_similarity_features.cpp
+message TPropFreshTopSimilarityFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double L2SurplusMaxUrls3 = 1 [(_compat_renamed_from) = "L2.surplus_max_urls3"];
+    optional double L2SurplusMaxUrls345 = 2 [(_compat_renamed_from) = "L2.surplus_max_urls345"];
+    optional double L2SurplusMaxUrls4 = 3 [(_compat_renamed_from) = "L2.surplus_max_urls4"];
+    optional double L2SurplusMaxUrls5 = 4 [(_compat_renamed_from) = "L2.surplus_max_urls5"];
+    optional double L3SurplusMaxUrls3 = 5 [(_compat_renamed_from) = "L3.surplus_max_urls3"];
+    optional double L3SurplusMaxUrls345 = 6 [(_compat_renamed_from) = "L3.surplus_max_urls345"];
+    optional double L3SurplusMaxUrls4 = 7 [(_compat_renamed_from) = "L3.surplus_max_urls4"];
+    optional double L3SurplusMaxUrls5 = 8 [(_compat_renamed_from) = "L3.surplus_max_urls5"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/fresh_urls_time_features.cpp
+message TPropFreshUrlsTimeFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool DateInUrlMax = 1 [(_compat_renamed_from) = "date_in_url_max"];
+    optional double TsDiffAvg = 2 [(_compat_renamed_from) = "ts_diff_avg"];
+    optional uint64 TsDiffMax = 3 [(_compat_renamed_from) = "ts_diff_max"];
+    optional uint64 TsDiffMin = 4 [(_compat_renamed_from) = "ts_diff_min"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/fusion_middle/fusion_middle.cpp
+message TPropFusionMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 FirstRegDoc = 1;
+    optional uint64 FreshQuickDocCount = 2;
+    optional uint64 FreshRealtimeDocCount = 3;
+    optional bool VideoSpam = 4 [(_compat_renamed_from) = "video_spam"];
+}
+
+message TPropFusionShmickTier0 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> HasAllWordsTRFm = 1 [(_compat_renamed_prefix) = "HasAllWordsTRFm_"];
+    map<string, string> TxtBreakEx = 2 [(_compat_renamed_prefix) = "TxtBreakEx_"];
+    map<string, string> TxtHeadEx = 3 [(_compat_renamed_prefix) = "TxtHeadEx_"];
+    map<string, string> TxtPairEx = 4 [(_compat_renamed_prefix) = "TxtPairEx_"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/base/yxs_ctxt.cpp
+message TPropL1 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FormulaFmlId = 1 [(_compat_renamed_from) = "L1FormulaFmlId"];
+    optional string FormulaFmlIdQuick = 2 [(_compat_renamed_from) = "L1FormulaFmlId_quick"];
+    optional string FormulaFmlIdQuickrt = 3 [(_compat_renamed_from) = "L1FormulaFmlId_quickrt"];
+    optional string FormulaName = 4 [(_compat_renamed_from) = "L1FormulaName"];
+    optional string FormulaNameQuick = 5 [(_compat_renamed_from) = "L1FormulaName_quick"];
+    optional string FormulaNameQuickrt = 6 [(_compat_renamed_from) = "L1FormulaName_quickrt"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/lingboost/lingboost.cpp
+message TPropLingBoost {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string BegemotQBundleHash = 1;
+    optional string FreshBegemotQBundleHash = 2 [(_compat_renamed_from) = "Fresh|BegemotQBundleHash"];
+    optional string FreshLightBegemotQBundleHash = 3 [(_compat_renamed_from) = "Fresh|LightBegemotQBundleHash"];
+    optional string LightBegemotQBundleHash = 4;
+    map<string, string> Q = 5 [(_compat_renamed_prefix) = "q"];
+    optional string Status = 6;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/mobile/mobile.cpp
+message TPropMobile {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 P = 1 [(_compat_renamed_from) = "p"];
+}
+
+message TPropNewsAgencyRatingFeatures {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double NewsAgencyRatingAvg = 1 [(_compat_renamed_from) = "news_agency_rating_avg"];
+    optional double NewsAgencyRatingMax = 2 [(_compat_renamed_from) = "news_agency_rating_max"];
+    optional double NewsAgencyRatingMin = 3 [(_compat_renamed_from) = "news_agency_rating_min"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/news_wizard_middle/news_wizard_middle.cpp
+message TPropNewsFromQuickMiddle {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CanShowMultipleClusterWizard = 1 [(_compat_renamed_from) = "can_show_multiple_cluster_wizard"];
+    optional bool CanShowNoneAsSingleWizard = 2 [(_compat_renamed_from) = "can_show_none_as_single_wizard"];
+    optional bool CanShowSingleClusterWizard = 3 [(_compat_renamed_from) = "can_show_single_cluster_wizard"];
+    optional double ClassifierBannedPositions = 4;
+    optional string ClassifierBannedUrls = 5;
+    optional string DocsThatDoNotHaveShippets = 6;
+    optional bool DuplicateDocumentFound = 7 [(_compat_renamed_from) = "duplicate_document_found"];
+    optional bool HasPictureInOrganicFreshness = 8;
+    optional bool HasSideblock = 9;
+    optional string NewsDesktopUrl = 10;
+    optional string NewsTouchUrl = 11;
+    optional bool NoStoriesInTopDocuments = 12 [(_compat_renamed_from) = "no_stories_in_top_documents"];
+    optional bool NoneAsSingleNewsWiz = 13;
+    optional bool NotEnoughDocumentsForMultipleStoryMode = 14 [(_compat_renamed_from) = "not_enough_documents_for_multiple_story_mode"];
+    optional bool NotEnoughDocumentsForNewsWizard = 15 [(_compat_renamed_from) = "not_enough_documents_for_news_wizard"];
+    optional bool NotEnoughPicturesForMultipleStoryMode = 16 [(_compat_renamed_from) = "not_enough_pictures_for_multiple_story_mode"];
+    optional string OriginalNewsDocumentsPositionsInDFresh = 17 [(_compat_renamed_from) = "original_news_documents_positions_in_d_fresh"];
+    optional string SideblockNewsWizardUrls = 18;
+    optional bool SingleStoryNewsWiz = 19 [(_infinite_ttl) = true];
+    optional uint64 StoriesCount = 20;
+    optional uint64 TotalVideoDocs = 21 [(_infinite_ttl) = true];
+    optional uint64 VideoSourcesDocsCount = 22;
+}
+
+message TPropNewsWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional double HighlightedWords = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/querysearch/querysearch_request.cpp
+message TPropQuerySearchRequest {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AggregatedExternalItems = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AggregatedExternalItems"];
+    map<string, string> AggregatedItems = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AggregatedItems"];
+    map<string, uint64> GroupingSize = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/GroupingSize"];
+    map<string, uint64> SentRequests = 4 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/SentRequests"];
+    map<string, string> Misc = 5 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/querysearch/querysearch_response.cpp
+message TPropQuerySearchResponse {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> AfterQueryDataMerge = 1 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/AfterQueryDataMerge"];
+    map<string, string> BeforeQueryDataMerge = 2 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/BeforeQueryDataMerge"];
+    map<string, uint64> ValidReqHandles = 3 [(_compat_renamed_prefix) = "", (_compat_renamed_suffix) = "/ValidReqHandles"];
+    map<string, string> Misc = 4 [(_compat_renamed_prefix) = ""];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/meta/rank/features/rapid_clicks_features.cpp
+message TPropRapidClicks {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 CatQueryDoppDiff = 1;
+    optional uint64 CatQueryDoppOsDiff = 2;
+    optional uint64 CatQueryDoppOsTimeDiff = 3;
+    optional uint64 CatQueryDoppRegDiff = 4;
+    optional uint64 CatQueryDoppRegLargeDiff = 5;
+    optional uint64 CatQueryDoppRegLargeTimeDiff = 6;
+    optional uint64 CatQueryDoppRegTimeDiff = 7;
+    optional uint64 CatQueryDoppTimeDiff = 8;
+    optional uint64 DocsWithFactors = 9;
+    optional uint64 DocsWithPersFactors = 10;
+}
+
+message TPropRoot {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional double Acc = 1;
+    map<string, string> AllFactorsUnanswer = 2 [(_compat_renamed_prefix) = "AllFactorsUnanswer_"];
+    optional string BaseRankingMn = 3;
+    optional string BaseRankingModel = 4;
+    optional string BaseRankingWords = 5;
+    optional uint64 BaseTimestamp = 6;
+    optional bool BsTouched = 7;
+    optional bool Cached = 8;
+    optional uint64 CalcMetaRelevanceMcs = 9;
+    map<uint64, uint64> ClientGroup = 10 [(_compat_renamed_prefix) = "ClientGroup_"];
+    map<string, string> ConfigInfo = 11 [(_compat_renamed_prefix) = "ConfigInfo_"];
+    optional double Domain1Docs = 12;
+    optional double Domain2Docs = 13;
+    optional bool ErrorInSp = 14 [(_compat_renamed_from) = "error_in_sp"];
+    optional string ExtensionsRankModel = 15;
+    map<string, string> FormulaValueDump = 16 [(_compat_renamed_prefix) = "FormulaValueDump_"];
+    map<string, string> HasAllWordsTRFm = 17 [(_compat_renamed_prefix) = "HasAllWordsTRFm_"];
+    optional string HostName = 18;
+    optional uint64 Ig = 19;
+    optional uint64 MetaRankDocs = 20;
+    optional uint64 MetaRankGroups = 21;
+    optional double MetaRankSuperMindMult = 22;
+    optional uint64 Nctx = 23;
+    optional string RankingIntMn = 24;
+    optional string RankingMn = 25;
+    optional string RankingModel = 26;
+    optional bool RankingTopHandJobBoosts = 27;
+    optional string RankingWords = 28;
+    optional string RapidClicksRtmrResponse = 29;
+    optional string RequestedRankingModel = 30;
+    map<string, string> SnippetUnanswer = 31 [(_compat_renamed_prefix) = "SnippetUnanswer_"];
+    optional uint64 SourceTimestamp = 32;
+    optional double SuperMindMult = 33;
+    map<string, string> TxtBreakEx = 34 [(_compat_renamed_prefix) = "TxtBreakEx_"];
+    map<string, string> TxtHeadEx = 35 [(_compat_renamed_prefix) = "TxtHeadEx_"];
+    map<string, string> TxtPairEx = 36 [(_compat_renamed_prefix) = "TxtPairEx_"];
+    map<string, string> Unanswer = 37 [(_compat_renamed_prefix) = "Unanswer_"];
+    map<string, string> WebL3ModelVersionForExport = 38 [(_compat_renamed_prefix) = "WebL3ModelVersionForExport_"];
+    optional string WebL3ModelsFlagsVersion = 39;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/saas_snippets/saas_snippets.cpp
+message TPropSaasSnippets {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, uint64> Req = 1 [(_compat_renamed_prefix) = "Req/"];
+    map<string, string> Resp = 2 [(_compat_renamed_prefix) = "Resp/"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/trash/trash.cpp
+message TPropTrash {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AdvFresh = 1 [(_compat_renamed_from) = "adv_fresh"];
+    map<uint64, uint64> TrashPessimizedCount = 2 [(_compat_renamed_prefix) = "trash_pessimized_count_"];
+    map<uint64, uint64> UnderPessimizedCount = 3 [(_compat_renamed_prefix) = "under_pessimized_count_"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/turbo_page_checker/turbo_page_checker.cpp
+message TPropTurboPageChecker {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool TurboHostDataSaas = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/video_touch_ban/video_touch_ban.cpp
+message TPropVideoTouchBan {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 VideoTouchBanWorked = 1 [(_compat_renamed_from) = "VideoTouchBan_worked"];
+}
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropAntiDup AntiDup = 1 [(_split_size_limit) = 100];
+    optional TPropAntispam Antispam = 2 [(_split_size_limit) = 550];
+    optional TPropFilterBanned FilterBanned = 3 [(_split_size_limit) = 770];
+    optional TPropFreshDetector FreshDetector = 4 [(_split_size_limit) = 255, (_infinite_ttl) = true];
+    optional TPropFreshHostsFeatures FreshHostsFeatures = 5 [(_split_size_limit) = 5];
+    optional TPropFreshTopSimilarityFeatures FreshTopSimilarityFeatures = 6 [(_split_size_limit) = 20];
+    optional TPropFreshUrlsTimeFeatures FreshUrlsTimeFeatures = 7 [(_split_size_limit) = 20];
+    optional TPropFusionMiddle FusionMiddle = 8 [(_split_size_limit) = 10];
+    optional TPropFusionShmickTier0 FusionShmickTier0 = 9 [(_compat_path_separator) = "/", (_split_size_limit) = 230];
+    optional TPropL1 L1 = 10 [(_compat_renamed_from) = "", (_split_size_limit) =5];
+    optional TPropLingBoost LingBoost = 11 [(_split_size_limit) = 75];
+    optional TPropLingBoost LingBoostL2 = 12 [(_split_size_limit) = 40];
+    optional TPropMobile Mobile = 13 [(_split_size_limit) = 5];
+    optional TPropNewsAgencyRatingFeatures NewsAgencyRatingFeatures = 14 [(_split_size_limit) = 30];
+    optional TPropNewsFromQuickMiddle NewsFromQuickMiddle = 15 [(_split_size_limit) = 830];
+    optional TPropNewsWizard NewsWizard = 16 [(_split_size_limit) = 10];
+    optional TPropQuerySearchRequest QuerySearchRequest = 17 [(_split_size_limit) = 1375];
+    optional TPropQuerySearchResponse QuerySearchResponse = 18 [(_split_size_limit) = 380];
+    optional TPropRapidClicks RapidClicks = 19 [(_split_size_limit) = 5];
+    optional TPropRoot Root = 20 [(_compat_renamed_from) = "", (_split_size_limit) = 1065];
+    optional TPropSaasSnippets SaasSnippets = 21 [(_split_size_limit) = 350];
+    optional TPropTrash Trash = 22 [(_split_size_limit) = 30];
+    optional TPropTurboPageChecker TurboPageChecker = 23 [(_split_size_limit) = 5];
+    optional TPropVideoTouchBan VideoTouchBan = 24 [(_split_size_limit) = 5];
+
+    optional TPropAntiDup AntiDup0 = 25 [(_split_size_limit) = 800];
+}

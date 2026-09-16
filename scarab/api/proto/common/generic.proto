@@ -1,0 +1,68 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+option go_package = "a.yandex-team.ru/scarab/api/proto/common;scarab_proto";
+package NScarabProto.NCommon;
+
+// Built-in data type
+message TIpV4 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional fixed32 Value = 1;
+}
+
+// Built-in data type
+message TIpV6 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional fixed32 Addr1 = 1;
+    optional fixed32 Addr2 = 2;
+    optional fixed32 Addr3 = 3;
+    optional fixed32 Addr4 = 4;
+}
+
+// Built-in data type
+message TIpAddress {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    oneof Value {
+        option (NYT.oneof_flags) = SEPARATE_FIELDS;
+
+        TIpV4 V4 = 1;
+        TIpV6 V6 = 2;
+    }
+}
+
+// Built-in data type
+message TListOfDouble {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated double Value = 1;
+}
+
+// Built-in data type
+message TListOfUint64 {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    repeated uint64 Value = 1;
+}
+
+// Built-in data type
+message TKeyValue {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Value = 1;
+}
+
+// Built-in data type
+message TSectionedKeyValue {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+
+    map<string, TKeyValue> Value = 1;
+}

@@ -1,0 +1,90 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NCommon;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/common;search_props_common";
+
+message TSlotInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Graph = 1 [
+        (_compat_renamed_from) = "graph"
+    ];
+    map<string, string> Patches = 2 [
+        (_compat_renamed_prefix) = "patch."
+    ]; // namespace -> patch name
+
+} // next: 3
+
+message TPropConfigurableRearrangeApplier {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    // Metadata:
+    // @{
+
+    optional TSlotInfo RearrsConf = 13 [
+        (_compat_renamed_from) = "RearrsConf"
+    ];
+
+    optional TSlotInfo L2Boost = 11 [
+        (_compat_renamed_from) = "L2Boost"
+    ];
+
+    optional TSlotInfo L3FeatureRemaps = 14 [
+        (_compat_renamed_from) = "L3FeatureRemaps"
+    ];
+
+    optional TSlotInfo L3RelevanceRemaps = 15 [
+        (_compat_renamed_from) = "L3RelevanceRemaps"
+    ];
+
+    optional TSlotInfo L3Boost = 12 [
+        (_compat_renamed_from) = "L3Boost"
+    ];
+
+    optional TSlotInfo ArsBoost = 16 [
+        (_compat_renamed_from) = "ArsBoost"
+    ];
+
+    // @}
+
+    // Payload:
+    // @{
+
+    // key: <prop-name>; value: "<prop-value>"
+    map<string, string> AggregationProps = 3 [
+        (_compat_renamed_prefix) = "SP_"
+    ];
+
+    // @}
+
+    map<string, string> Unmatched = 10 [
+        (_compat_is_default_container) = true
+    ];
+
+    // Deprecated since 2026-04-21
+    // @{
+
+    optional string L3BoostGraphName = 1 [
+        (_ttl) = 0
+    ];
+    optional string RearrsConfGraphName = 2 [
+        (_ttl) = 0
+    ];
+    map<string, string> Patches = 4 [
+        (_compat_renamed_prefix) = "RcPatch_",
+        (_ttl) = 0
+    ];
+    map<string, string> RearrsConfPatches = 5 [
+        (_compat_renamed_prefix) = "Patch_",
+        (_ttl) = 0
+    ];
+
+    // @}
+
+} // next: 17

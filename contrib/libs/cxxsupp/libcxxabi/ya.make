@@ -92,10 +92,11 @@ ELSE()
 ENDIF()
 
 IF (OS_EMSCRIPTEN AND ARCH_WASM64)
+    # No -D__WASM_EXCEPTIONS__: paired with building wasm64 without
+    # -fwasm-exceptions so guest modules stay loadable by WAVM.
     CFLAGS(
         -D_LIBCPP_SAFE_STATIC=
         -D_LIBCXXABI_DTOR_FUNC=
-        -D__WASM_EXCEPTIONS__
     )
 ELSEIF (OS_EMSCRIPTEN AND ARCH_WASM32)
     CFLAGS(

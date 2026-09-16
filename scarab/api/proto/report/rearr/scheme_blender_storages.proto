@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NRearr;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/rearr";
+
+// Props definitions
+
+message TPropAds {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Enabled = 1 [(_compat_renamed_from) = "enabled"];
+}
+
+// Source definition
+message TRearrSchemeBlenderStorages {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional TPropAds Ads = 1 [(_compat_renamed_from) = "ads", (_compat_path_separator) = "/", (_split_size_limit) = 5];
+}

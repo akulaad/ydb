@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/turbo_snippet/turbo_snippet.cpp
+message TPropTurboSnippet {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<uint64, string> BannedUrl = 1 [(_compat_renamed_prefix) = "banned_url_", (_split_size_limit) = 5];
+    map<uint64, string> DocUrl = 2 [(_compat_renamed_prefix) = "doc_url_", (_split_size_limit) = 5];
+    optional bool Done = 3 [(_compat_renamed_from) = "done"];
+    optional bool EasyblendInserted = 4 [(_compat_renamed_from) = "easyblend_inserted"];
+    optional uint64 FirstImageAesthetic = 5 [(_compat_renamed_from) = "first_image_aesthetic"];
+    optional uint64 FirstImageHeight = 6 [(_compat_renamed_from) = "first_image_height"];
+    optional uint64 FirstImageWidth = 7 [(_compat_renamed_from) = "first_image_width"];
+    optional double FirstTurboDocDiffMaxProximaPredict = 8 [(_compat_renamed_from) = "first_turbo_doc_diff_max_proxima_predict"];
+    optional double FirstTurboDocDiffMaxRelevPredict = 9 [(_compat_renamed_from) = "first_turbo_doc_diff_max_relev_predict"];
+    optional double FirstTurboDocDiffMaxRelevance = 10 [(_compat_renamed_from) = "first_turbo_doc_diff_max_relevance"];
+    optional string FirstTurboDocHost = 11 [(_compat_renamed_from) = "first_turbo_doc_host", (_split_size_limit) =5];
+    optional double FirstTurboDocMinusMaxProximaPredict = 12 [(_compat_renamed_from) = "first_turbo_doc_minus_max_proxima_predict"];
+    optional double FirstTurboDocMinusMaxRelevPredict = 13 [(_compat_renamed_from) = "first_turbo_doc_minus_max_relev_predict"];
+    optional double FirstTurboDocMinusMaxRelevance = 14 [(_compat_renamed_from) = "first_turbo_doc_minus_max_relevance"];
+    optional uint64 FirstTurboDocPosition = 15 [(_compat_renamed_from) = "first_turbo_doc_position"];
+    optional double FirstTurboDocProximaPredict = 16 [(_compat_renamed_from) = "first_turbo_doc_proxima_predict"];
+    optional double FirstTurboDocRelevPredict = 17 [(_compat_renamed_from) = "first_turbo_doc_relev_predict"];
+    optional double FirstTurboDocRelevance = 18 [(_compat_renamed_from) = "first_turbo_doc_relevance"];
+    optional bool HasFirstImage = 19 [(_compat_renamed_from) = "has_first_image"];
+    optional uint64 HostRating = 20 [(_compat_renamed_from) = "host_rating"];
+    optional double MaxProximaPredict = 21 [(_compat_renamed_from) = "max_proxima_predict"];
+    optional double MaxRelevPredict = 22 [(_compat_renamed_from) = "max_relev_predict"];
+    optional double MaxRelevance = 23 [(_compat_renamed_from) = "max_relevance"];
+    repeated double Source = 24 [(_compat_renamed_from) = "source"];
+    optional uint64 TextLength = 25 [(_compat_renamed_from) = "text_length"];
+    optional uint64 TextLengthBeforeImage = 26 [(_compat_renamed_from) = "text_length_before_image"];
+    optional uint64 TopDocsCount = 27 [(_compat_renamed_from) = "top_docs_count"];
+    optional uint64 TurboUrlsNm = 28 [(_compat_renamed_from) = "turbo_urls_nm"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/turbo_urls/turbo_urls.cpp
+message TPropTurboUrls {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CustomDomainTurboUrlInsertSuccess = 1 [(_compat_renamed_from) = "custom_domain_turbo_url.insert_success"];
+    optional bool CustomDomainTurboUrlNoNeedToChangeDomain = 2 [(_compat_renamed_from) = "custom_domain_turbo_url.no_need_to_change_domain"];
+    optional bool CustomDomainTurboUrlWorked = 3 [(_compat_renamed_from) = "custom_domain_turbo_url.worked"];
+    optional bool HostDataTurboUrlTurboAppEnabled = 4 [(_compat_renamed_from) = "host_data_turbo_url.turbo_app_enabled"];
+    optional bool SafeShoppingSerpDataInserted = 5 [(_compat_renamed_from) = "safe_shopping_serp_data_inserted"];
+    optional string CustomDomainTurboUrlOnSerp = 6 [(_compat_renamed_from) = "custom_domain_turbo_url.on_serp", (_split_size_limit) = 5];
+}

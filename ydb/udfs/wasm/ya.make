@@ -7,6 +7,7 @@ IF (OS_EMSCRIPTEN)
         log_parsing
         md5
         protobuf
+        reef_profile
         sdk
         text
         trie

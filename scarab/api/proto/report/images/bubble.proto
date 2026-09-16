@@ -1,0 +1,153 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NBubble;
+
+message TMargins {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 Top = 1;
+    optional uint64 Bottom = 2;
+    optional uint64 Left = 3;
+    optional uint64 Right = 4;
+}
+
+message TSize {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Type = 1;
+    optional uint64 Value = 2;
+}
+
+message TAction {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string LogId = 1;
+    optional string Url = 2;
+}
+
+message TPromoField {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Type = 1;
+    optional string Text = 2;
+    optional string ButtonActionId = 3;
+    optional string OkButtonAction = 4;
+    optional NScarabProto.NReport.NBubble.TMargins Margins = 5;
+}
+
+message TItemsImage {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Type = 1;
+    optional string ImageUrl = 2;
+    optional string PlaceHolderColor = 3;
+    optional NScarabProto.NReport.NBubble.TSize Height = 4;
+    optional NScarabProto.NReport.NBubble.TSize Width = 5;
+
+}
+
+message TItemsPromo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Type = 1;
+    optional NScarabProto.NReport.NBubble.TMargins Paddings = 2;
+    repeated NScarabProto.NReport.NBubble.TPromoField PromoContent = 3;
+}
+
+message TItems {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional NScarabProto.NReport.NBubble.TItemsImage Image = 1;
+    optional NScarabProto.NReport.NBubble.TItemsPromo Promo = 2;
+}
+
+message TContentField {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Type = 1;
+    optional string HeaderImageUrl = 2;
+    optional string AlignmentHorizontal = 3;
+    optional string AlignmentVertical = 4;
+    optional NScarabProto.NReport.NBubble.TMargins Margins = 5;
+    optional NScarabProto.NReport.NBubble.TSize Height = 6;
+    optional NScarabProto.NReport.NBubble.TSize Width = 7;
+    optional NScarabProto.NReport.NBubble.TItems Items = 8;
+}
+
+message TDiv {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string Type = 1;
+    optional string Title = 2;
+    optional string Carbohydrates = 3;
+    optional string Proteins = 4;
+    optional string Fats = 5;
+    optional string ProductImageUrl = 6;
+    optional string ChartPieImageUrl = 7;
+    optional string Translation = 8;
+    optional string Description = 9;
+    optional string Query = 10;
+    repeated string Image = 11;
+    optional string Price = 12;
+    optional string Text = 13;
+    optional NScarabProto.NReport.NBubble.TSize Width = 14;
+    optional NScarabProto.NReport.NBubble.TMargins Margins = 15;
+    optional NScarabProto.NReport.NBubble.TAction Action = 16;
+    repeated NScarabProto.NReport.NBubble.TContentField Content = 17;
+}
+
+message TStates {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 StateId = 1;
+    optional NScarabProto.NReport.NBubble.TDiv Div = 2;
+}
+
+message TPriceInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string PriceString = 1;
+    optional float Price = 2;
+    optional uint64 MinPrice = 3;
+    optional uint64 AvgPrice = 4;
+}
+
+message TData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional float Relevance = 1;
+    optional float Score = 2;
+    optional string Type = 3;
+    optional string Title = 4;
+    optional string Image = 5;
+    optional string ShopUrl = 6;
+    optional string ShopDomain = 7;
+    optional string Currency = 8;
+    optional string MarketImage = 9;
+    optional string LogId = 10;
+    optional string LightText = 11;
+    optional string Link = 12;
+    optional string Poetry = 13;
+    optional string BoldText = 14;
+    optional string Ento = 15;
+    optional string Description = 16;
+    optional string PageUrl = 17;
+    optional NScarabProto.NReport.NBubble.TPriceInfo PriceInfo = 18;
+    optional NScarabProto.NReport.NBubble.TStates States = 19;
+}
+
+// Source definition
+message TBubble {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Type = 1;
+    optional string SubType = 2;
+    optional uint64 Relevance = 3;
+    optional NScarabProto.NReport.NBubble.TData Data = 4;
+}

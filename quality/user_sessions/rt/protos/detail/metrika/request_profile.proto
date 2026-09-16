@@ -1,0 +1,17 @@
+package NUserSessions.NRT;
+
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+import "quality/user_sessions/rt/protos/public/metrika/request_clicks_queue.proto";
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos/detail/metrika";
+
+message TMetrikaRequestClicksCommonInfo {
+    optional bool IsRequestOutputted = 1;
+    optional uint32 NextClickOutputIndex = 2;
+    optional TRequestClicksQueueMessage QueueMessageTemplate = 3;
+    optional bool NotBounceOutputted = 4;
+    optional int32 UserRegion = 5;
+    optional EAntifraudVerdict AntifraudVerdict = 6;
+    repeated uint64 OutputtedCounterIDs = 7;
+    map<uint64, bool> OutputtedClickIndexes = 8;
+}

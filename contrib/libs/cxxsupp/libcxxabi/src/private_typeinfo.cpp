@@ -1547,7 +1547,10 @@ __base_class_type_info::search_below_dst(__dynamic_cast_info* info,
 
 
 // XXX EMSCRIPTEN
-#if defined(__wasm__) && !defined(__WASM_EXCEPTIONS__)
+// Skip on wasm64: without -fwasm-exceptions we omit __WASM_EXCEPTIONS__, but
+// cxa_exception.cpp still provides __cxa_get_exception_ptr and linking both
+// duplicates the symbol. These helpers are only for emscripten JS EH (wasm32).
+#if defined(__wasm__) && !defined(__wasm64__) && !defined(__WASM_EXCEPTIONS__)
 
 #include "cxa_exception.h"
 
@@ -1602,5 +1605,5 @@ void *__cxa_get_exception_ptr(void *thrown_object) throw() {
 
 }  // __cxxabiv1
 
-#endif // __wasm__ && !__WASM_EXCEPTIONS__
+#endif // __wasm__ && !__wasm64__ && !__WASM_EXCEPTIONS__
 

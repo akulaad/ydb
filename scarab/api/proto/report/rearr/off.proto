@@ -1,0 +1,60 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NRearr;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/rearr";
+
+message TRearrOff {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Antispam = 1 [(_compat_renamed_from) = "Antispam_off"];
+    optional bool ApplyBlender = 2 [(_compat_renamed_from) = "ApplyBlender_off"];
+    optional bool Baden = 3 [(_compat_renamed_from) = "Baden_off"];
+    optional bool Banner = 4 [(_compat_renamed_from) = "Banner_off"];
+    optional bool BlenderUpperCache = 5 [(_compat_renamed_from) = "BlenderUpperCache_off"];
+    optional bool CollectionsDssm = 6 [(_compat_renamed_from) = "CollectionsDssm_off"];
+    optional bool ConditionalSerpDataWriter = 7 [(_compat_renamed_from) = "ConditionalSerpDataWriter_off"];
+    optional bool DiversityUpper = 8 [(_compat_renamed_from) = "DiversityUpper_off"];
+    optional bool EntitySeach = 9 [(_compat_renamed_from) = "EntitySeach_off"];
+    optional bool EntitySearch = 10 [(_compat_renamed_from) = "EntitySearch_off"];
+    optional bool Facts = 11 [(_compat_renamed_from) = "Facts_off"];
+    optional bool FilterBanned = 12 [(_compat_renamed_from) = "FilterBanned_off"];
+    optional bool FilterBannedSnippets = 13 [(_compat_renamed_from) = "FilterBannedSnippets_off"];
+    optional bool FilterBannedUpper = 14 [(_compat_renamed_from) = "FilterBannedUpper_off"];
+    optional bool FilterBannedVideo = 15 [(_compat_renamed_from) = "FilterBannedVideo_off"];
+    optional bool Filters = 16 [(_compat_renamed_from) = "Filters_off"];
+    optional bool Games = 17 [(_compat_renamed_from) = "Games_off"];
+    optional bool HighlightDocuments = 18 [(_compat_renamed_from) = "HighlightDocuments_off"];
+    optional bool ImgRelatedQueries = 19 [(_compat_renamed_from) = "ImgRelatedQueries_off"];
+    optional bool LingBoost = 20 [(_compat_renamed_from) = "LingBoost_off"];
+    optional bool Market = 21 [(_compat_renamed_from) = "Market_off"];
+    optional bool MarketUpper = 22 [(_compat_renamed_from) = "MarketUpper_off"];
+    optional bool Misspell = 23 [(_compat_renamed_from) = "Misspell_off"];
+    optional bool Mobile = 24 [(_compat_renamed_from) = "Mobile_off"];
+    optional bool NarcoPess = 25 [(_compat_renamed_from) = "NarcoPess_off"];
+    optional bool Panther = 26 [(_compat_renamed_from) = "Panther_off"];
+    optional bool Personalization = 27 [(_compat_renamed_from) = "Personalization_off"];
+    optional bool Porno = 28 [(_compat_renamed_from) = "Porno_off"];
+    optional bool PornoUpper = 29 [(_compat_renamed_from) = "PornoUpper_off"];
+    optional bool PrettySerpFeatures = 30 [(_compat_renamed_from) = "PrettySerpFeatures_off"];
+    optional bool RandomLog = 31 [(_compat_renamed_from) = "RandomLog_off"];
+    optional bool RepSnipMarket = 32 [(_compat_renamed_from) = "RepSnipMarket_off"];
+    optional bool SaasSnippets = 33 [(_compat_renamed_from) = "SaasSnippets_off"];
+    optional bool SerpFact = 34 [(_compat_renamed_from) = "SerpFact_off"];
+    optional bool SerpObject = 35 [(_compat_renamed_from) = "SerpObject_off"];
+    optional bool Sitelinks = 36 [(_compat_renamed_from) = "Sitelinks_off"];
+    optional bool Trash = 37 [(_compat_renamed_from) = "Trash_off"];
+    optional bool TurboSnippetRight = 38 [(_compat_renamed_from) = "TurboSnippetRight_off"];
+    optional bool Vertical = 39 [(_compat_renamed_from) = "Vertical_off"];
+    optional bool VideoAdsMiddle = 40 [(_compat_renamed_from) = "VideoAdsMiddle_off"];
+    optional bool VideoAdsUpper = 41 [(_compat_renamed_from) = "VideoAdsUpper_off"];
+    optional bool VideoSerpdata = 42 [(_compat_renamed_from) = "VideoSerpdata_off"];
+    optional bool WebCache = 43 [(_compat_renamed_from) = "WebCache_off"];
+    optional bool WizardAchievement = 44 [(_compat_renamed_from) = "WizardAchievement_off"];
+    optional bool Yabs = 45 [(_compat_renamed_from) = "Yabs_off"];
+    optional bool ImgFilterBanned = 46 [(_compat_renamed_from) = "ImgFilterBanned_off"];
+    optional bool ImgSemidupsGlueing = 47 [(_compat_renamed_from) = "ImgSemidupsGlueing_off"];
+}

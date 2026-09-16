@@ -1,0 +1,55 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgfresh/imgfresh.cpp
+message TPropImgFresh {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 FirstQuickPos = 1;
+    optional uint64 MainResults = 2;
+    optional string NNDupsError = 3 [(_split_size_limit) = 5];
+    optional uint64 NNDupsRemoved = 4;
+    optional uint64 QuickAdded = 5;
+    optional uint64 QuickGSize = 6;
+    optional uint64 QuickResults = 7;
+    optional uint64 UrlDupsRemoved = 8;
+    optional double IntentProbability = 9 [(_compat_renamed_from) = "IntentProb"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgporno_upper/imgpornoupper.cpp
+message TPropImgPornoUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FilteredGroupings = 1 [(_compat_renamed_from) = "filtered_groupings", (_split_size_limit) = 5];
+    optional string ImgpqImgmsppqBanmsp = 2 [(_compat_renamed_from) = "imgpq_imgmsppq_banmsp", (_split_size_limit) = 5];
+    optional bool ResultsFiltered = 3 [(_compat_renamed_from) = "results_filtered"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgserpdata/imgserpdata.cpp
+message TPropImgSerpData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool ImgSerpData = 1;
+    optional double QCommercialProb = 2;
+    optional double QCommercialProbV2 = 3;
+    optional double QCommercialProbV3 = 4;
+    optional double QCommercialProbV5 = 5;
+    optional double QInteriorProbV1 = 6;
+    map<string, uint64> MoneySource = 7 [(_compat_renamed_prefix) = "money_source_", (_split_size_limit) = 15];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/imgmisspell/imgmisspell.cpp
+message TPropUpperImgMisspell {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MspFilteredByPorno = 1 [(_compat_renamed_from) = "msp_filtered_by_porno"];
+    optional bool UpperImgMisspell = 2;
+}

@@ -1,0 +1,40 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/report/all.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="ProfileLogPartForRAB";
+message TProfileLogPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional int64 BalancerExpgetterTime = 1;
+    optional int64 BalancerLaasTime = 2;
+    optional int64 BlenderDuration = 3;
+    optional uint64 BytesSent = 4;
+    repeated NScarabProto.NReport.TCriticalPathInfo CriticalPath = 5;
+    optional bytes HostName = 6;
+    optional int64 Latency = 7;
+    optional int64 MergeFlagsTime = 8;
+    optional bytes Project = 9;
+    optional uint64 RawContentLength = 10;
+    optional int64 ReportTime = 11;
+    optional int64 ReportTimeV2 = 12;
+    optional int64 RequestInitDuration = 13;
+    optional bool SdchAccept = 14;
+    optional bool SdchAvailDictionary = 15;
+    optional bool SdchEncodeZero = 16;
+    optional bool SdchEncoding = 17;
+    optional bool SdchGetDictionary = 18;
+    optional int64 SearchTime = 19;
+    repeated NScarabProto.NReport.TSourceProfile SourceProfiles = 20;
+    optional int64 TemplatesTime = 21;
+    optional int64 TimeToRecvBlenderResponse = 22;
+    optional int64 TimeToRecvWebMiddleResponse = 23;
+    optional uint64 Timestamp = 24;
+    optional int64 TotalTime = 25;
+    optional int64 WebMiddleDuration = 26;
+    optional int64 WebWizardryDuration = 27;
+    optional int64 SdchSourcesTotalDuration = 28;
+    optional double ResponseTime = 29;
+}

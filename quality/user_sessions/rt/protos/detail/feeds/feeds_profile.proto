@@ -1,0 +1,8 @@
+package NUserSessions.NRT;
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos/detail/feeds";
+
+message TFeedsOutputCache {
+    repeated string OutputShowBlockIds = 1;
+    repeated string OutputClickEventIds = 2;
+}

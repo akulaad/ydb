@@ -1,0 +1,96 @@
+package NUserSessions.NProto;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="DirectDataForRAB";
+
+message TDirectClickData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional bytes BaobabEventId = 1;
+    optional int32 EventCost = 2;
+    optional uint64 FraudBits = 3;
+    optional uint64 LogId = 4;
+    optional int32 OrderId = 5;
+    optional uint64 PageId = 6;
+    optional int32 Position = 7;
+    optional bytes ProductType = 8;
+    optional int64 SlotId = 9;
+    optional int32 TypeId = 10;
+    optional bytes WideFraudBits = 11;
+    optional int32 ClientId = 12;
+    optional uint64 EventHash = 13;
+    optional uint64 HitlogId = 14;
+    optional int32 Bid = 15;
+    optional bytes Description = 16;
+    optional bytes BSBlockId = 17;
+    optional int32 PlaceId = 18;
+    optional double ValueActual = 19;
+    optional int64 CubeEventTime = 20;
+    optional int64 CubeTimestamp = 21;
+    optional int64 BannerId = 22;
+    optional int64 EventCost64 = 23;
+    optional int64 Bid64 = 24;
+}
+
+message TDirectShowData {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    optional int64 BannerId = 1;
+    optional int32 DomainId = 2;
+    optional int64 EventCost = 3;
+    optional uint64 FraudBits = 4;
+    optional bool OptionsCommerce = 5;
+    optional bool OptionsDnt = 6;
+    optional bool OptionsDsp = 7;
+    optional bool OptionsDynamicBarrier = 8;
+    optional bool OptionsLos = 9;
+    optional bool OptionsMobile = 10;
+    optional bool OptionsMobileApp = 11;
+    optional bool OptionsParentlessPerformance = 12;
+    optional bool OptionsPerformance = 13;
+    optional bool OptionsPicture = 14;
+    optional bool OptionsRtbShadow = 15;
+    optional bool OptionsStationaryConnection = 16;
+    optional int32 OrderId = 17;
+    optional uint64 PageId = 18;
+    optional int32 Position = 19;
+    optional bytes ProductType = 20;
+    optional uint32 Relevance = 21;
+    optional int64 SlotId = 22;
+    optional int32 TypeId = 23;
+    optional bytes WideFraudBits = 24;
+    optional uint64 LogId = 25;
+    optional uint64 EventHash = 26;
+    optional uint64 HitlogId = 27;
+    optional int32 Bid = 28;
+    optional bytes Description = 29;
+    optional bytes BSBlockId = 30;
+    optional bool OptionsFlatPage = 31;
+    optional int32 PlaceId = 32;
+    optional double ValueActual = 43;
+    optional uint64 ICookieMoneyCubeValue = 34;
+    optional int64 CubeEventTime = 35;
+    optional int64 CubeTimestamp = 36;
+    optional int64 Bid64 = 37; // EventCost is already int64
+}
+
+message TDirectShowVector {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    repeated TDirectShowData Shows = 1;
+}
+
+message TDirectHitlogID2ShowVector {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+    map<uint64, TDirectShowVector> HitlogIdToShows = 1;
+}
+
+message TDirectShowsPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (NYT.default_field_flags) = MAP_AS_LIST_OF_STRUCTS;
+    map<uint64, TDirectHitlogID2ShowVector> EventHashToHitlogIdToShows = 1;
+}

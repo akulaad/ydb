@@ -1,0 +1,67 @@
+syntax = "proto2";
+
+import "scarab/api/proto/common/options.proto";
+
+package NScarabProto.NReport;
+
+enum ENavLevel {
+    option (_description_enum) = "TODO";
+    NAV_LEVEL_SCARAB_UNKNOWN = 0;
+    NAV_LEVEL_NAVIG = 1;
+    NAV_LEVEL_URLNAV = 2;
+};
+
+enum EServerUserBirthReason {
+    option (_description_enum) = "Identificator returning reason code";
+    SERVER_USER_BIRTH_REASON_SCARAB_UNKNOWN = 0;
+    SERVER_USER_BIRTH_REASON_BIRTH = 1;
+    SERVER_USER_BIRTH_REASON_INVALID_OLD_IDENTIFIER = 2;
+};
+
+enum EServiceKey {
+    SERVICE_KEY_SCARAB_UNKNOWN = 0;
+    SERVICE_KEY_ASSISTANT = 1;
+    SERVICE_KEY_ATOMSEARCH = 2;
+    SERVICE_KEY_BROSEARCH = 3;
+    SERVICE_KEY_CONFIG_EXPORT = 4;
+    SERVICE_KEY_JSONPROXY = 5;
+    SERVICE_KEY_MOBILE = 6;
+    SERVICE_KEY_SEARCHAPI = 7;
+    SERVICE_KEY_SEARCHAPP = 8;
+    SERVICE_KEY_SUGGEST = 9;
+    SERVICE_KEY_TOUCHSEARCH = 10;
+    SERVICE_KEY_PEOPLE = 11;
+    SERVICE_KEY_SEARCH_WWW = 12;
+    SERVICE_KEY_DIRECT = 13;
+    SERVICE_KEY_IZNANKA = 14;
+};
+
+enum ESlot {
+    option (_description_enum) = "Logical position of document (desired position) Real position should be logged in blockstat_log";
+    SLOT_SCARAB_UNKNOWN = 0;
+    SLOT_BOTTOM_CAROUSEL = 1;
+    SLOT_CAROUSEL = 2;
+    SLOT_IMPORTANT = 3;
+    SLOT_IMPORTANT_RIGHT = 4;
+    SLOT_LEFT_DOC = 5;
+    SLOT_NAVIGATION = 6;
+    SLOT_OPENGRAPH = 7;
+    SLOT_RELATED = 8;
+    SLOT_RIGHT_BANNER = 9;
+    SLOT_RIGHT_DOC = 10;
+    SLOT_UPPER = 11;
+    SLOT_NOTIFICATIONS = 12;
+};
+
+enum ETemplateMode {
+    TEMPLATE_MODE_SCARAB_UNKNOWN = 0;
+    TEMPLATE_MODE_PRE_SEARCH = 1;
+    TEMPLATE_MODE_POST_SEARCH = 2;
+};
+
+enum ESearchOrigin {
+    SEARCH_ORIGIN_UNKNOWN = 0;
+    SEARCH_ORIGIN_YANDEX  = 1;
+    SEARCH_ORIGIN_MAIL_RU = 2;
+    SEARCH_ORIGIN_ZEN     = 3;
+};

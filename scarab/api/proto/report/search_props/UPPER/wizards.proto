@@ -1,0 +1,460 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/afisha_event_wizard_upper/afisha_event_wizard_upper.cpp
+message TPropAfishaEventWizardUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AfishaOrganicType = 1 [(_compat_renamed_from) = "afisha_organic_type", (_split_size_limit) = 5];
+    optional bool Ban = 2 [(_compat_renamed_from) = "ban"];
+    optional string BlendSource = 3 [(_split_size_limit) =5];
+    optional bool HasAfishaPlaceWizardData = 4 [(_compat_renamed_from) = "has_afisha_place_wizard_data"];
+    optional bool HasAfishaSaasData = 5 [(_compat_renamed_from) = "has_afisha_saas_data"];
+    optional bool HideWhenGeo = 6 [(_compat_renamed_from) = "hide_when_geo"];
+    optional bool HideWhenOrganic = 7 [(_compat_renamed_from) = "hide_when_organic"];
+    optional bool NullSerpData = 8;
+    optional string ReasonOfAbsence = 9 [(_split_size_limit) = 5];
+    optional double RubricEventModel = 10;
+    optional string WizardRubric = 11 [(_split_size_limit) = 5];
+    optional string WizardType = 12 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/alice_wizard/alice.cpp
+message TPropAliceWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ReasonOfAbsence = 1 [(_split_size_limit) = 25];
+    optional bool WizardInserted = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/chat_wizard/chat_wizard.cpp
+message TPropChatWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Chat = 1 [(_compat_renamed_prefix) = "chat_", (_split_size_limit) = 5];
+    optional uint64 NumChats = 2;
+    optional uint64 NumChatsResized = 3;
+    optional uint64 NumSrcDocs = 4;
+    map<string, bool> PSFDenied = 5 [(_compat_renamed_prefix) = "PSFDenied_", (_split_size_limit) = 5];
+    map<string, bool> PSFFiltered = 6 [(_compat_renamed_prefix) = "PSFFiltered_", (_split_size_limit) = 5];
+    map<string, bool> PSFHasData = 7 [(_compat_renamed_prefix) = "PSFHasData_", (_split_size_limit) = 5];
+    map<string, bool> PSFIncompatible = 8 [(_compat_renamed_prefix) = "PSFIncompatible_", (_split_size_limit) = 5];
+    map<string, bool> PSFPlugins = 9 [(_compat_renamed_prefix) = "PSFPlugins_", (_split_size_limit) = 5];
+    optional string Result = 10 [(_split_size_limit) = 5];
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/counterparty_wizard/counterparty_wizard.cpp
+message TPropCounterpartyWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string ExperimentalTags = 1 [(_split_size_limit) = 100];
+    optional bool Inserted = 2;
+    optional string Type = 3 [(_split_size_limit) = 100];
+    optional string Id = 4 [(_split_size_limit) = 100];
+    optional uint64 FreshDocsAmount = 5;
+    optional uint64 FreshDocsInNewsBlockAmount = 6;
+    optional uint64 SuitableDocsCount = 7;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/direct_wizard/direct_wizard.cpp
+message TPropDirectWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 YabsDirectShowall = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/org_wizard/org_wizard.cpp
+message TPropOrgWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AddressSnippetSourceDueWithRealtyFlag = 1;
+    optional bool AddressSnippetSourceHasPaidRealty = 2;
+    optional bool AddressSnippetSourceHasRealty = 3;
+    optional string AddressSnippetSourceSelectedKey = 4 [(_split_size_limit) = 10];
+    optional double BestWebRelatedOrgScore = 5;
+    optional uint64 CarouselPos = 6;
+    optional string Chains = 7 [(_split_size_limit) = 10];
+    optional bool ChangeToponymToPaidRealtyFromAddressSnippet = 8;
+    optional string DisplayMode = 9 [(_split_size_limit) = 20];
+    optional bool EntitySearchIntersection = 10;
+    optional double EntitySearchIntersectionShare = 11;
+    optional bool FirstOrgHasEntitySearch = 12;
+    optional uint64 FirstSnippetPosition = 13;
+    optional double FirstWebRelatedOrgsScoreRelation = 14;
+    optional string GeoKind = 15 [(_split_size_limit) = 10];
+    optional int64 GeosearchAnswerQuorumValue = 16;
+    optional string GeosearchRequestOrigin = 17 [(_infinite_ttl) = true, (_split_size_limit) = 25];
+    optional bool HasDirect = 18;
+    optional bool HasGeoTravelResult = 19;
+    optional bool HasYandexTravel = 20;
+    optional bool HasYandexTravelTop1 = 21;
+    optional bool IsBNARequest = 22;
+    optional bool IsBigBeauty = 23;
+    optional bool IsPhoneRequest = 24;
+    optional bool IsSmallGeo = 25;
+    optional bool MoveToRightCandidate = 26;
+    optional bool MovedToCarousel = 27;
+    optional uint64 OrgCandidateCount = 28;
+    optional uint64 OrgCountInFirstSnippet = 29;
+    optional string OrgIntent = 30 [(_split_size_limit) = 5];
+    optional string QueryType = 31 [(_split_size_limit) = 6];
+    optional double QuorumValue = 32;
+    optional string ReasonOfAbsenceYdoCard = 33 [(_split_size_limit) = 16];
+    optional uint64 RelatedWebUrlCount = 34;
+    optional string Rubrics = 35 [(_split_size_limit) = 5];
+    optional bool SameGeoBna = 36 [(_compat_renamed_from) = "same_geo_bna"];
+    optional string SelectedSourceBeforeExternalMxUpdate = 37 [(_split_size_limit) = 20];
+    optional string SelectedWizardSource = 38 [(_infinite_ttl) = true, (_split_size_limit) = 15];
+    optional uint64 SnippetCount = 39;
+    reserved 40;
+    optional string TabIntent = 41 [(_split_size_limit) = 5];
+    optional bool ToponymToOrgChangeFlag = 42;
+    optional bool TravelByModel = 43;
+    optional double TravelClassifierValue = 44;
+    optional double TravelRatio = 45;
+    optional bool TravelRequest = 46;
+    optional string UserRegion = 47 [(_split_size_limit) = 5];
+    optional string ViewType = 48 [(_split_size_limit) = 20] ;
+    optional uint64 WebLogUrlsBestCandidateRelevance = 49;
+    optional bool WebLogUrlsSourceDueWithRealtyFlag = 50;
+    optional bool WebLogUrlsSourceHasPaidRealty = 51;
+    optional bool WebLogUrlsSourceHasRealty = 52;
+    optional string WebLogUrlsSourceSelectedKey = 53 [(_split_size_limit) = 5];
+    optional bool WebReportRelatedOrgsSourceDueWithRealtyFlag = 54;
+    optional bool WebReportRelatedOrgsSourceHasPaidRealty = 55;
+    optional bool WebReportRelatedOrgsSourceHasRealty = 56;
+    optional string WebReportRelatedOrgsSourceSelectedKey = 57 [(_split_size_limit) = 16];
+    optional string WizardSources = 58 [(_split_size_limit) = 16];
+    optional string CarouselClickedOrg = 59 [(_infinite_ttl) = true];
+    repeated int64 SourceIdIntPairs = 60 [(_compat_renamed_from) = "SourceIdPairs", (_split_size_limit) = 65];
+    optional int64 PerScoreAble = 61;
+    optional bool HasYandexTravelSingle = 62 [(_compat_renamed_from) = "HasYTravelSingle"];
+    optional bool HasYandexTravelMulti = 63 [(_compat_renamed_from) = "HasYTravelMulti"];
+    optional string SearchWindowOrigin = 64 [(_split_size_limit) = 10];
+    optional bool HaveListBestsData = 65;
+    optional bool UgcAspectsSnippetSelectTypeDefault = 66;
+    optional bool UgcAspectsSnippetSelectTypeGoods = 67;
+    optional string CategoryAspectsSize = 68 [(_split_size_limit) = 5];
+    optional string Rubric = 69 [(_split_size_limit) = 5]; // Yeah it's not the same with Rubrics property, "Big thanks" to  inadequate orgwizards rearrange rules
+    optional bool HaveListDiscoveryData = 70;
+    map<string, string> ActiveObservations = 71 [(_compat_renamed_prefix) = "ActiveObservations/",(_owner_fld) = "abc:geosearch2", (_split_size_limit) = 20]; // for ab exps only. No more then few experiments at the same time.
+    optional uint64 SkiData = 72 [(_owner_fld) = "abc:rtx"];
+
+    optional bool HasForcedMain = 73;
+    optional string ViewTypeFormula = 74 [(_split_size_limit) = 20];
+
+    optional uint64 NumberOfHotelsWithOffers = 75;
+    optional uint64 NumberOfPartnersWithOffers = 76;
+    optional bool HideSearchForm = 77;
+    optional bool IsGeoGenesisQuery = 78;
+    optional bool HasMedicine = 79 [(_ttl) = 720];
+
+    optional bool AdvertAuctionPrepared  = 80 [(_split_size_limit) = 20];
+    optional bool AdvertAuctionDone = 81 [(_split_size_limit) = 20];
+
+    optional string Title = 82 [(_split_size_limit) = 100];
+
+    optional bool HasGeoSearch = 83;
+    optional bool HasUserGeo = 84;
+
+    optional bool HasMetarealty = 85 [(_ttl) = 720];
+    optional bool HasMetarealtyPaid = 86 [(_ttl) = 720];
+
+    optional string DoctorsWithTimeslotsOnClinicPage = 87 [(_split_size_limit) = 10];
+    optional string AllDoctorsWithTimeslotsInClinic = 88 [(_split_size_limit) = 10];
+
+    optional bool HasMetarealtyAddressSnippet = 89 [(_ttl) = 720];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/suppliers/suppliers.cpp
+message TPropSuppliers {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CryptaB2bBuyers = 1;
+    optional bool CryptaB2bUsers = 2;
+    optional string InsertedPos = 3 [(_compat_renamed_from) = "inserted_pos", (_split_size_limit) = 10];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/toponym_wizard/toponym_wizard.cpp
+message TPropToponymWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool IsParking = 1;
+    optional bool IsTransit = 2;
+    optional bool NoToponymInRequest = 3;
+    optional bool TransitInRequestRegion = 4;
+    optional string TransitType = 5 [(_split_size_limit) = 5];
+    optional string ViewTypeFormula = 6;
+    optional string GeoKind = 7;
+    optional bool IsSmallGeo = 8;
+    optional string GeoId = 9;
+    optional string HighlightTemplate = 10;
+    optional string HighlightedTitle = 11;
+    optional string LocalLang = 12;
+    optional string OnMapRegionName = 13;
+    optional string AddressFromGeocoderAnswer = 14;
+    optional string GeoMetaSearchData = 15;
+    optional string UserRegion = 16;
+    optional string IntentByGeosearch = 17;
+    optional string ViewType = 18;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/ugc/rule/ugc.cpp
+message TPropUgc {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 ActiveUgcCount = 1;
+    optional string Error = 2 [(_split_size_limit) = 5];
+    optional uint64 FilmRatingCount = 3;
+    optional uint64 SeriesRatingCount = 4;
+    optional string TopCandidateScenarioId = 5 [(_split_size_limit) =5];
+    optional string UgcBlock = 6 [(_split_size_limit) = 5];
+    optional double UgcMLWeight = 7;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/ugc_favorites/ugc_favorites.cpp
+message TPropUgcFavorites {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional uint64 FilmsFavoriteCount = 1;
+    optional bool HasVisitorImages = 2;
+    optional uint64 SeriesFavoriteCount = 3;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/unisearch_education/unisearch_education.cpp
+message TPropUnisearchEducation {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AddedCourseIds = 1 [(_compat_renamed_from) = "added_course_ids", (_split_size_limit) = 5];
+    optional bool IsDpo = 2 [(_compat_renamed_from) = "is_dpo", (_owner_fld) = "abc:unisearch"];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/unisearch_medicine/unisearch_medicine.cpp
+message TPropUnisearchMedicine {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AddedIds = 1 [(_compat_renamed_from) = "added_ids", (_split_size_limit) = 5];
+    map<string, string> UnisearchMedicineJobs = 2 [(_compat_renamed_prefix) = "UnisearchMedicine_", (_split_size_limit) = 50, (_owner_fld) = "abc:unisearch"];
+}
+
+message TPropTrNewsWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool IsSummarizationAvaliable = 1;
+    optional bool IsSummarizationWithRelevantUrlsFilterAvaliable = 2;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/wizard_carousel/wizard_carousel.cpp
+message TPropWizardCarousel {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string CarouselIds = 1 [(_split_size_limit) = 70];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/wizard_rules_log/wizard_rules_log.cpp
+message TPropWizardRulesLog {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string FioDisabledByRelevLocale = 1 [(_compat_renamed_from) = "Fio__DisabledByRelevLocale", (_split_size_limit) = 5];
+    optional string FioFio = 2 [(_compat_renamed_from) = "Fio__Fio", (_split_size_limit) = 35];
+    optional string FioFioBASE64 = 3 [(_compat_renamed_from) = "Fio__Fio__BASE64", (_split_size_limit) = 5];
+    optional string ReportReportBiathlon = 4 [(_compat_renamed_from) = "Report__report_biathlon", (_split_size_limit) = 5];
+    optional string WizDetectionModelResultsBASE64 = 5 [(_compat_renamed_from) = "WizDetection__ModelResults__BASE64", (_split_size_limit) = 5];
+    optional bool TranslateFeaturesHasExpDiff = 6 [(_compat_renamed_from) = "TranslateFeatures__HasExpDiff"];
+    optional string RearrMarkerProject = 7 [(_compat_renamed_from) = "RearrMarker__project", (_split_size_limit) = 5];
+    optional string RearrMarkerProjectBASE64 = 8 [(_compat_renamed_from) = "RearrMarker__project__BASE64", (_split_size_limit) =5];
+    optional uint64 MinusDeletedWords = 9 [(_compat_renamed_from) = "Minus__DeletedWords__count", (_split_size_limit) = 5];
+}
+
+message TPropYTutorGdzWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool MushroomWizardTutorGdzBlendComplete = 1 [(_compat_renamed_from) = "mushroom_wizard_tutor-gdz_blend_complete"];
+    optional bool PassDocsFilter = 2;
+}
+
+message TPropEducationWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool InsertingEducationWizard = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/y_tutor_pdf_wizard/y_tutor_pdf_wizard.cpp
+message TPropYTutorPdfWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Docids = 1 [(_compat_renamed_from) = "docids", (_split_size_limit) = 5];
+    optional bool MushroomWizardTutorBlendComplete = 2 [(_compat_renamed_from) = "mushroom_wizard_tutor_blend_complete"];
+    optional bool MushroomWizardTutorFromOrganicPos = 3 [(_compat_renamed_from) = "mushroom_wizard_tutor_from_organic_pos"];
+}
+
+// TODO Remove after YDO-40886
+message TPropYdoWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool AddWizardsFromProxy = 1;
+    optional uint64 AdvertisedGroupingSize = 2;
+    optional string AdvertisedReasonOfAbsense = 3 [(_split_size_limit) = 5];
+    optional bool BlendSource = 4;
+    optional bool Competitors = 5;
+    optional bool HasPartners = 6;
+    optional bool IsRubricQuery = 7;
+    optional double MxNetAverageFirstPage = 8;
+    optional double MxNetMaxFirstPage = 9;
+    optional double MxNetMinFirstPage = 10;
+    optional uint64 NumberOfOffers = 11;
+    optional bool PassedTheClassifier = 12;
+    optional bool QueryFromWorker = 13;
+    optional uint64 RubricLevel = 14;
+    optional string RubricsInQuery = 15 [(_split_size_limit) = 5];
+    optional bool RubricsIsMap = 16;
+    optional bool RubricsIsPhoto = 17;
+    optional string SchemeType = 18 [(_split_size_limit) = 5];
+    optional uint64 TopOccupationId = 19;
+    optional uint64 TopQuorumSerpSpecializationId = 20;
+    optional uint64 TopSpecializationId = 21;
+    map<string, double> UslugiCustomers = 22 [(_compat_renamed_prefix) = "uslugi_customers_", (_split_size_limit) = 70];
+    optional string WizardType = 23 [(_split_size_limit) = 5];
+    optional uint64 PossiblePromoWorkersCount = 24;
+    optional double QueryPopularity = 25;
+    optional uint64 RubricNumberId = 26;
+    optional uint64 TextRubricNumberId = 27;
+    optional string UberizedType = 28 [(_split_size_limit) = 5];
+    optional string WizardDocLanding = 29 [(_split_size_limit) = 5];
+    optional double CargoTaxi = 30 [(_compat_renamed_from) = "cargo_taxi"];
+    optional double MlClassifier = 31 [(_compat_renamed_from) = "ml_classifier"];
+    optional double TelemedClassifTest1 = 32 [(_compat_renamed_from) = "telemed_classif_test_1"];
+    optional double Tow = 33 [(_compat_renamed_from) = "tow"];
+    optional double UslugiDocdocV1 = 34 [(_compat_renamed_from) = "uslugi_docdoc_v1"];
+    optional bool WorkersShownModified = 35 [(_compat_renamed_from) = "workers_shown_modified"];
+    optional double YaHealthMedQuery = 36 [(_compat_renamed_from) = "ya_health_med_query"];
+    optional double YdoReformulationQueryClassifierSept21Compressed = 37 [(_compat_renamed_from) = "ydo_reformulation_query_classifier_sept_21_compressed"];
+    optional string TopSerpSpeciaizationId = 38 [(_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/zen/zen.cpp
+message TPropZen {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, bool> IntentFilter = 1 [(_compat_renamed_prefix) = "IntentFilter/"];
+    optional string Mode = 2 [(_compat_renamed_from) = "mode", (_split_size_limit) = 5];
+    optional double ZenProximaPredict = 3 [(_compat_renamed_from) = "zen_proxima_predict"];
+    optional string ZenUrl = 4 [(_compat_renamed_from) = "zen_url", (_split_size_limit) = 5];
+    optional string ZenExtraLinks = 5[(_compat_renamed_from) = "zen_extra_links", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/direct_pokupki_gallery/direct_pokupki_gallery.cpp
+message TPropDirectPokupkiGallery {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool HasGallery = 1 [(_compat_renamed_from) = "has_gallery"];
+    optional bool HasDoGallery = 2 [(_compat_renamed_from) = "has_do_gallery"];
+    optional bool HasTgoGallery = 3 [(_compat_renamed_from) = "has_tgo_gallery"];
+    optional bool HasGalleryFromMarketWizard = 4 [(_compat_renamed_from) = "has_gallery_from_market_wizard"];
+    optional bool HasMarketGallery = 5 [(_compat_renamed_from) = "has_market_gallery"];
+    optional bool HasGalleryFromMarketOffers = 6 [(_compat_renamed_from) = "has_gallery_from_market_offers"];
+    optional bool HasGalleryFromDirectOffers = 7 [(_compat_renamed_from) = "has_gallery_from_direct_offers"];
+    optional uint64 GoodsAndValueSize = 8 [(_compat_renamed_from) = "goods_and_values_size"];
+    map<string, uint64> ImagesCountMoreThenOrEqual = 9 [(_compat_renamed_prefix) = "images_count_more_then_or_equal_", (_split_size_limit) = 5];
+    map<string, uint64> ImagesCountEqual = 10 [(_compat_renamed_prefix) = "images_count_equal_", (_split_size_limit) = 5];
+    optional uint64 OffersWithDiscount = 11 [(_compat_renamed_from) = "offers_with_discount"];
+    optional uint64 OffersWithNotValidDiscount = 12 [(_compat_renamed_from) = "offers_with_not_valid_discount"];
+    optional uint64 OffersWithCashback = 13 [(_compat_renamed_from) = "offers_with_cashback"];
+    optional uint64 OffersWithGift = 14 [(_compat_renamed_from) = "offers_with_gift"];
+    optional uint64 OffersWithPromocode = 15 [(_compat_renamed_from) = "offers_with_promocode"];
+    optional bool HasBno = 16 [(_compat_renamed_from) = "has_bno"];
+    optional bool HasMarketOffersGallery = 17 [(_compat_renamed_from) = "has_market_offers_gallery"];
+    optional bool HasDirectOffersGallery = 18 [(_compat_renamed_from) = "has_direct_offers_gallery"];
+}
+
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/products/products.cpp
+message TPropProducts {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional bool MarketWizardReplaced = 1 [(_compat_renamed_from) = "market_wizard_replaced"];
+    optional bool MarketWizardRemoved = 2 [(_compat_renamed_from) = "market_wizard_removed"];
+    optional bool AreFiltersUsed = 3;
+    optional uint64 ProductsHasComparatorDataFirst = 4;
+    optional uint64 ProductsHasComparatorDataSecond = 5;
+    optional uint64 GoodsFiltersCount = 6;
+    optional bool HasCategoricalSuggests = 7;
+    optional uint64 DocsInProducts = 8 [(_split_size_limit) = 0];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/static_wizard/static_wizard.cpp
+message TPropStaticWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string AddToBlend = 1 [(_owner_fld) = "abc:blender", (_split_size_limit) = 30];
+}
+
+message TPropSportWizard {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string SportTryToAddBlendType = 1 [(_owner_fld) = "abc:sport", (_compat_renamed_from) = "TryToAddBlendType", (_split_size_limit) = 30];
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/random_image_game/random_image_game.cpp
+message TPropRandomImageGame {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AddToBlender = 1;
+    optional string ModeNotInConfig = 2 [(_split_size_limit) = 100];
+    optional string ImagesNotInConfig = 3 [(_split_size_limit) = 100];
+    optional string TitlesNotInConfig = 4 [(_split_size_limit) = 100];
+    optional string ModeUnknown = 5 [(_split_size_limit) = 100];
+    optional string FilteredByTheme = 6 [(_split_size_limit) = 100];
+}
+
+// https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/news_block_upper/news_block_upper.cpp
+message TPropNewsBlockUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool AddToBlend = 1 [(_compat_renamed_from) = "add_to_blend"];
+    optional uint64 FewDocsInBlock = 2;
+    optional bool HasDataFromMiddle = 3;
+    optional string BannedSources = 4 [(_split_size_limit) = 100];
+    optional string ErasedOrganicUrls = 5 [(_split_size_limit) = 100];
+    optional string GroupingContent = 6 [(_split_size_limit) = 100];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arcadia/search/web/extensions/rearrange/metarealty/metarealty.cpp
+message TPropMetarealty {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string TriggeregSearch = 1 [(_compat_renamed_from) = "metarealty_search_triggered", (_split_size_limit) = 5];
+    optional string BannerType = 2 [(_compat_renamed_from) = "metarealty_banner_type", (_split_size_limit) = 5];
+    optional string AddedIds = 3 [(_compat_renamed_from) = "added_ids", (_split_size_limit) = 5];
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/delivery_tracking/delivery_tracking.cpp
+message TPropDeliveryTrackingUpper {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool IsCarrierRequest = 1 [(_compat_renamed_from) = "IsCarrierRequest"];
+    optional bool IsWideRequest    = 2 [(_compat_renamed_from) = "IsWideRequest"];
+    optional string Carrier        = 3 [(_compat_renamed_from) = "Carrier"];
+}
+
+message TPropUnisearchServices {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool Triggered = 1 [(_compat_renamed_from) = "Triggered", (_split_size_limit) = 5];
+}

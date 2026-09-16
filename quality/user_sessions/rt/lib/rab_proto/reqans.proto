@@ -1,0 +1,105 @@
+package NUserSessions.NProto;
+
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+import "scarab/api/proto/common/all.proto";
+import "scarab/api/proto/report/all.proto";
+import "scarab/api/proto/report/common.proto";
+import "scarab/api/proto/report/doc_markers.proto";
+import "scarab/api/proto/report/rearr/off.proto";
+import "scarab/api/proto/report/rearr/root.proto";
+import "scarab/api/proto/report/rearr/scheme_blender.proto";
+import "scarab/api/proto/report/rearr/scheme_blender_storages.proto";
+import "scarab/api/proto/report/rearr/scheme_local.proto";
+import "scarab/api/proto/report/relev/relev.proto";
+import "scarab/api/proto/report/search_props/REPORT.proto";
+import "scarab/api/proto/report/search_props/UPPER.proto";
+import "scarab/api/proto/report/search_props/WIZARD.proto";
+import "scarab/api/proto/report/search_props/AUTO2.proto";
+import "scarab/api/proto/report/search_props/FASTRES2.proto";
+import "scarab/api/proto/report/search_props/WEB.proto";
+import "scarab/api/proto/report/search_props/QUICK.proto";
+import "scarab/api/proto/report/search_props/IMAGESP.proto";
+import "scarab/api/proto/report/search_props/VIDEOP.proto";
+import "scarab/api/proto/report/search_props/VIDEOQUICKP.proto";
+import "scarab/api/proto/report/search_props/UNITSCONVERTER.proto";
+import "kernel/blender/factor_storage/protos/storage.proto";
+import "yt/yt_proto/yt/formats/extension.proto";
+
+option java_package="NUserSessions.NProto";
+option java_outer_classname="ReqansDataForRab";
+
+message TWebReportSearchReqansPart {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional bytes EventType = 1;
+    optional uint64 EventVersion = 2;
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 5;
+    repeated string BsBlockIds = 6;
+    optional uint32 BuilderVersion = 7;
+    optional bytes Catalogue = 8;
+    optional uint32 ConfigVersion = 9;
+    optional NScarabProto.NReport.TCookiesT Cookies = 10;
+    repeated NScarabProto.NReport.TWebDocument Documents = 11;
+    repeated NScarabProto.NCommon.TExperiment Experiments = 12;
+    optional bytes FullRequest = 13;
+    optional bytes GroupBy = 14;
+    optional bool HasMiscEvent = 15;
+    optional NScarabProto.NReport.THeadersT Headers = 16;
+    optional bytes Host = 17;
+    optional NScarabProto.NReport.TMisspellInfo Msp = 18;
+    optional uint64 NumDocs = 19;
+    optional uint32 PageNo = 20;
+    optional bytes ParentRequestId = 21;
+    optional NScarabProto.NCommon.EProvider Provider = 22;
+    reserved 23; // Query
+    optional NScarabProto.NReport.TMisspellInfo Reask = 24;
+    reserved 25; //Referer
+    optional int32 RelevRegion = 26;
+    reserved 27; // RequestId
+    optional uint32 RequestedPageSize = 28;
+    optional NScarabProto.NReport.NSearchProps.NAUTO2.TSource SearchPropsAUTO2 = 29;
+    optional NScarabProto.NReport.NSearchProps.NFASTRES2.TSource SearchPropsFASTRES2 = 30;
+    optional NScarabProto.NReport.NSearchProps.NREPORT.TSource SearchPropsREPORT = 31;
+    optional NScarabProto.NReport.NSearchProps.NUPPER.TSource SearchPropsUPPER = 32;
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB_MISSPELL = 33;
+    optional NScarabProto.NReport.NSearchProps.NWIZARD.TSource SearchPropsWIZARD = 34;
+    optional NScarabProto.NCommon.TVersion ServerVersion = 35;
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 36;
+    reserved 37; // Timestamp
+    optional bytes UiLanguage = 38;
+    optional NScarabProto.NCommon.TUserAgent UserAgent = 39;
+    reserved 40; // UserAgentRaw
+    optional NScarabProto.NCommon.TUserId UserId = 41;
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 42;
+    reserved 43; // UserIp
+    optional int32 UserRegion = 44;
+    optional int32 UserRegionId = 45;
+    repeated NScarabProto.NReport.TWebDocument Wizplaces = 46;
+    repeated NScarabProto.NReport.NDocMarkers.TDocMarkersFat DocMarkersFat = 47;
+    optional NScarabProto.NReport.NRelev.TRelev Relev = 48;
+    optional NScarabProto.NReport.NRearr.TRearr Rearr = 49;
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlender RearrSchemeBlender = 50;
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlenderStorages RearrSchemeBlenderStorages = 51;
+    optional NScarabProto.NReport.NRearr.TRearrSchemeLocal RearrSchemeLocal = 52;
+    optional NScarabProto.NReport.NRearr.TRearrOff RearrOff = 53;
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB = 54;
+    optional NScarabProto.NReport.NSearchProps.NQUICK.TSource SearchPropsQUICK = 55;
+    optional NBlender.NProto.TFactorStorages ApplyBlenderFactorStorages = 56;
+    optional string SearchPersBigRTProfile = 57;
+    optional string UserHistoryResponse = 58;
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP = 59;
+    optional NScarabProto.NReport.NSearchProps.NVIDEOP.TSource SearchPropsVIDEOP = 60;
+    optional NScarabProto.NReport.NSearchProps.NVIDEOQUICKP.TSource SearchPropsVIDEOQUICKP = 61;
+    optional NScarabProto.NReport.NSearchProps.NUNITSCONVERTER.TSource SearchPropsUNITSCONVERTER = 62;
+    reserved 63; // PassportUIDHash
+    optional NScarabProto.NReport.ESearchOrigin SearchOrigin = 64;
+    optional NUserSessions.NRT.EAntifraudVerdict AntifraudVerdict = 65;
+    optional NUserSessions.NRT.EAntifraudVerdict ExpAntifraudVerdict = 66;
+    optional bytes SuggestRequestId = 67;
+    optional bytes AntifraudInfo = 68;
+    optional NScarabProto.NReport.TMainObservations NoapacheUpperMainObservations = 69;
+    optional NScarabProto.NReport.TInstallationInfo InstallationInfo = 70;
+}
+
+
+

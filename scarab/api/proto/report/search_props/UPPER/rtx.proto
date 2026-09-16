@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+package NScarabProto.NReport.NSearchProps.NUPPER;
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/UPPER;search_props";
+// Props definitions
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/collections_boards_rtx/collections_boards_rtx.cpp
+message TPropCollectionsBoardsRtx {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CollectionsBoardsRtx = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/rearrange/collections_boards_serp_data_rtx/collections_boards_serp_data_rtx.cpp
+message TPropCollectionsBoardsSerpDataRtx {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional bool CollectionsBoardsSerpDataRtx = 1;
+}
+
+// TODO protobufize https://a.yandex-team.ru/arc/trunk/arcadia/search/web/extensions/rearrange/pretty_serp_features_rtx/pretty_serp_features_rtx.cpp
+message TPropPrettySerpFeaturesRtx {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    map<string, string> Doc = 1 [(_compat_renamed_prefix) = "Doc_", (_split_size_limit) = 1000];
+    optional bool PrettySerpFeaturesRtx = 2;
+    optional string RtxRankerId = 3 [(_split_size_limit) = 5];
+    optional uint64 RtxRearrangedTop = 4;
+}

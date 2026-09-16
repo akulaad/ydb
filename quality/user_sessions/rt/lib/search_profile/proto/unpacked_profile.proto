@@ -1,0 +1,150 @@
+package NUserSessions.NRT;
+
+import "quality/user_sessions/createlib/qb3/proto/suggest.proto";
+import "quality/user_sessions/createlib/qb3/proto/web_middle_reqans.proto";
+import "quality/user_sessions/rt/lib/rab_proto/access.proto";
+import "quality/user_sessions/rt/lib/rab_proto/blockstat.proto";
+import "quality/user_sessions/rt/lib/rab_proto/clicks.proto";
+import "quality/user_sessions/rt/lib/rab_proto/common.proto";
+import "quality/user_sessions/rt/lib/rab_proto/direct.proto";
+import "quality/user_sessions/rt/lib/rab_proto/reqans.proto";
+import "quality/user_sessions/rt/lib/rab_proto/profile_log.proto";
+import "quality/user_sessions/rt/lib/rab_proto/techs.proto";
+import "quality/user_sessions/rt/protos/detail/search/shows_state.proto";
+import "quality/user_sessions/rt/protos/profile.proto";
+
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+
+message TSearchProfilePrefetchInfo {
+    message TRequestInfo {
+        optional bool IsSearchApp = 1 [default = false];
+        optional bool IsBrowserPP = 2 [default = false];
+    }
+
+    message TTechInfo {
+        optional bool IsPageOpened = 1 [default = false];
+        optional bool IsRequestEntryCompleted = 2 [default = false];
+    }
+
+    // Request properties.
+    optional TRequestInfo RequestInfo = 1;
+    // Tech properties.
+    optional TTechInfo TechInfo = 2;
+
+    // This flag becomes ``false`` only for non-prefetch requests (``true`` even for shown prefetches).
+    optional bool IsPrefetchCandidate = 11 [default = true];
+
+    // Flag of terminal state. It is not defined when we are waiting tech/request properties.
+    optional bool IsUnshownPrefetch = 21;
+}
+
+message TSearchProfileEnrichInfo {
+    optional TShowsStateMessage OldShowsData = 1;
+    optional TSimpleShowsStateMessage ShowsData = 2;
+}
+
+message TSearchProfileDelayedEventsInfo {
+    optional uint64 NextEnrichDelayedEventIndex = 1 [default = 0];
+    optional uint64 NextReduceDelayedEventIndex = 2 [default = 0];
+}
+
+message TSearchProfileCommonFlags {
+    optional bool HasWebReqansData = 1 [default = false];
+    optional bool WebReqansIsJoinedWithMiddle = 2 [default = false];
+    optional bool IsReadyRequestNotification = 3 [default = false];
+}
+
+message TSearchProfileReqansData {
+    optional NUserSessions.NProto.TWebReportSearchReqansPart Data = 1;
+    optional TProfileTimestamps ProfileTimestamps = 2;
+    optional ERTSessTable TableType = 3;
+    optional ERTMainServiceSpec MainService = 4;
+    optional EAntifraudVerdict AntifraudVerdict = 5;
+    optional NUserSessions.NProto.TWebMiddleReqansEvent MiddlePart = 6;
+    optional bool IsAlreadyJoinedWithMiddle = 7 [default=false];
+    optional EAntifraudVerdict FastAntifraudVerdict = 8;
+    optional bytes AntifraudRestInfo = 9;
+}
+
+message TSearchProfileCommonData {
+    optional NUserSessions.NProto.TRABCommonPart Data = 1;
+    optional string Key = 2;
+    optional string Subkey = 3;
+    optional string RequestId = 4;
+    optional uint32 RebuildVersion = 5;
+}
+
+message TSearchProfileAccessData {
+    optional NUserSessions.NProto.TAccessPart Data = 1;
+}
+
+message TSearchProfileAccessCookies {
+    optional NUserSessions.NProto.TExtraOverridableAccessCookies Data = 1;
+}
+
+message TSearchProfileProfile {
+    optional TProfileMessage OldProfile = 1;
+}
+
+message TSearchProfileProfileData {
+    optional NUserSessions.NProto.TProfileLogPart Data = 1;
+}
+
+message TSearchProfileBlockstatData {
+    optional NUserSessions.NProto.TBlockstatPart Data = 1;
+}
+
+message TSearchProfileRedirData {
+    reserved 1; reserved "ShowsTreeStrPatches";
+    reserved 2; reserved "OverlayTreesStr";
+    reserved 3; reserved "ShowsTreeProtoPatches";
+    reserved 4; reserved "OverlayTreesProto";
+    repeated NUserSessions.NProto.TSerializedBaobabTree ShowsTreePatchesExt = 5;
+    repeated NUserSessions.NProto.TSerializedBaobabTree OverlayTreesExt = 6;
+    repeated uint64 ShowsTreePatchesOriginWriteTimesMs = 7;
+    repeated uint64 OverlayTreesOriginWriteTimesMs = 8;
+}
+
+message TSearchProfileClicksData {
+    optional NUserSessions.NProto.TClicksPart Data = 1;
+}
+
+message TSearchProfileSuggestData {
+    optional NUserSessions.NProto.TSuggestEvent Data = 1;
+}
+
+message TSearchProfileDirectShowsData {
+    message TDirectClicksPart {
+        map<string, NUserSessions.NProto.TDirectClickData> Data = 1;
+    }
+
+    optional NUserSessions.NProto.TDirectShowsPart Data = 1;
+    optional TDirectClicksPart ClicksData = 2;
+}
+
+message TSearchProfileTechsData {
+    optional NUserSessions.NProto.TTechsPart Data = 1;
+}
+
+message TSearchProfileRumTechsData {
+    optional NUserSessions.NProto.TTechsPart Data = 1;
+}
+
+message TSearchProfilePlayVideoEventsData {
+    optional NUserSessions.NProto.TTechsPart Data = 1;
+}
+
+message TSearchProfileImageShowsData {
+    optional NUserSessions.NProto.TTechsPart Data = 1;
+}
+
+message TSearchProfileImageNavigsData {
+    optional NUserSessions.NProto.TTechsPart Data = 1;
+}
+
+message TSearchProfileDeliveryTimes {
+    optional uint64 ReqansLBWriteTimeMs = 1 [default = 0];
+    optional uint64 MiddleReqansLBWriteTimeMs = 2 [default = 0];
+    optional uint64 BlockstatLBWriteTimeMs = 3 [default = 0];
+    optional uint64 LastPrefetchTechLBWriteTimeMs = 4 [default = 0];
+}

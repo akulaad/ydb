@@ -1,0 +1,62 @@
+package NUserSessions.NRT;
+
+option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos/common";
+
+
+enum EUserInterface {
+    Unknown = 0;
+    Desktop = 1;
+    Mobile = 2;
+    Touch = 3;
+    Pad = 4;
+    MobileApp = 5;
+    SiteSearch = 6;
+}
+
+
+enum EActionType {
+    Request = 1;
+    Click = 2;
+    ResultShowsBatch = 3;
+
+    // images specific
+    ImageNavig = 4;
+
+    // video specific
+    VideoDuration = 5;
+    VideoHeartbeat = 6;
+    VideoPlayerEvent = 7;
+
+    // metrika specific
+    NotBounce = 8;
+    Append = 9;
+}
+
+enum EService {
+    ServiceUnknown = 0;
+    ServiceWeb = 1;
+    ServiceImages = 2;
+    ServiceVideo = 3;
+    ServiceProducts = 4;
+    ServiceProductsTr = 5;
+    ServiceShopping = 6;
+    ServiceReviews = 7;
+    ServiceMedicine = 8;
+    ServiceFinance = 9;
+    ServiceRealty = 10;
+    ServiceYaWiki = 11;
+    ServiceInternationalNews = 12;
+    ServiceYazeka = 13;
+    ServiceFavorites = 14;
+    ServiceFinanceTr = 15;
+    ServiceConversation = 16;
+    ServiceServices = 17;
+    ServiceAlice = 18;
+    ServiceAliceOffline = 19;
+}
+
+enum EPlacement {
+    MainPlace = 1;
+    RightPlace = 2;
+    WizplacePlace = 3;
+}

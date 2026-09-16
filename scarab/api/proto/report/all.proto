@@ -1,0 +1,945 @@
+syntax = "proto2";
+
+package NScarabProto.NReport;
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/generic.proto";
+import "scarab/api/proto/common/all.proto";
+import "scarab/api/proto/report/common.proto";
+import "scarab/api/proto/report/search_props/AUTO2.proto";
+import "scarab/api/proto/report/search_props/FASTRES2.proto";
+import "scarab/api/proto/report/search_props/IMAGESP.proto";
+import "scarab/api/proto/report/search_props/IMAGESQUICKP.proto";
+import "scarab/api/proto/report/search_props/IMAGESULTRAP.proto";
+import "scarab/api/proto/report/search_props/QUICK.proto";
+import "scarab/api/proto/report/search_props/REPORT.proto";
+import "scarab/api/proto/report/search_props/UNITSCONVERTER.proto";
+import "scarab/api/proto/report/search_props/UPPER.proto";
+import "scarab/api/proto/report/search_props/VIDEOP.proto";
+import "scarab/api/proto/report/search_props/VIDEOQUICKP.proto";
+import "scarab/api/proto/report/search_props/WEB.proto";
+import "scarab/api/proto/report/search_props/WIZARD.proto";
+import "scarab/api/proto/report/doc_markers.proto";
+import "scarab/api/proto/report/rearr/off.proto";
+import "scarab/api/proto/report/rearr/root.proto";
+import "scarab/api/proto/report/rearr/scheme_blender.proto";
+import "scarab/api/proto/report/rearr/scheme_blender_storages.proto";
+import "scarab/api/proto/report/rearr/scheme_local.proto";
+import "scarab/api/proto/report/relev/relev.proto";
+import "scarab/api/proto/report/images/bubble.proto";
+import "scarab/api/proto/report/images/relev.proto";
+import "scarab/api/proto/report/images/cbir.proto";
+import "scarab/api/proto/report/images/images_document.proto";
+
+// User Defined Type
+message TCookiesT {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Yp = 1001 [(_rt_required) = true];
+    optional string Yc = 1002 [(_rt_required) = true];
+    optional string Ys = 1003 [(_rt_required) = true];
+    optional string L = 1004;
+
+}
+
+// User Defined Type
+message TCriticalPathInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+
+    optional string SubgraphPath = 1001;
+    repeated string Source = 1002 [(_required) = true];
+
+}
+
+// User Defined Type
+message TDirectDocument {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_owner_msg) = "abc:report";
+
+    optional string Url = 1001 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional uint32 Position = 1002 [(_required) = true];
+    optional int64 Relevance = 1003 [(_required) = true];
+    optional string SavedDoc = 1004;
+    reserved 1005; // Markers
+    optional string FullDocId = 1006;
+    optional NScarabProto.NReport.NDocMarkers.TDocMarkers Markers = 1007;
+}
+
+// User Defined Type
+message TErrorContext {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Message = 1001 [(_required) = true];
+
+}
+
+// User Defined Type
+message THeadersT {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional int32 XRegionSuspected = 1001;
+    optional int32 XRegionId = 1002;
+    optional string XRegionLocationLat = 1003;
+    optional string XRegionLocationLen = 1004;
+    optional int32 XRegionLocationAccuracy = 1005;
+    optional int32 XRegionLocationTime = 1006;
+    optional int32 XRegionSuspectedCity = 1007;
+    optional int32 XRegionCityId = 1008;
+    optional int32 XRegionByIp = 1009;
+    optional int32 XRegionPrecision = 1010;
+    optional int32 XRegionIsUserChoice = 1011;
+    optional int32 XRegionShouldUpdateCookie = 1012;
+    optional string XRegionInterest = 1013;
+    optional string XRegionAffectedExps = 1014;
+    optional string YandexPreload = 1015 [(_rt_required) = true];
+    optional string XYandexTcpInfo = 1016;
+    optional string XYandexHttpsInfo = 1017;
+    optional string Ect = 1018;
+    optional double Downlink = 1019;
+    optional double Rtt = 1020;
+    optional uint32 DeviceMemory = 1021;
+    optional string XYandexJa3 = 1022 [(_rt_required) = true];
+    optional string Purpose = 1023 [(_rt_required) = true];
+    optional string XYandexExpBoxes = 1024;
+    optional string XYandexExpConfigVersion = 1025;// do not use in reqans
+    optional string XYandexExpFlags = 1026;
+    optional string XYandexExpSplitParams = 1027;
+    optional uint32 XYandexConfigVersion = 1028;
+    optional string XForwardedFor = 1029;
+}
+
+// User Defined Type
+message TInstallationInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Ctype = 1001;
+    optional string Geo = 1002;
+    optional string Vertical = 1003;
+
+}
+
+// User Defined Type
+message TMisspellInfo {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string Rule = 1001 [(_required) = true];
+    optional int32 Relev = 1002 [(_required) = true];
+    optional string CorrectedQuery = 1003 [(_required) = true];
+    optional string Source = 1004;
+    optional uint32 Flags = 1005;
+
+}
+
+// User Defined Type
+message TPeopleDocument {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_owner_msg) = "abc:report";
+
+    optional string Url = 1001 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional uint32 Position = 1002 [(_required) = true];
+    optional int64 Relevance = 1003 [(_required) = true];
+    optional string SavedDoc = 1004;
+
+}
+
+// User Defined Type
+message TSourceProfile {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string SourceName = 1001;
+    optional int32 GraphStartToSourceFinishTime = 1002 [(_default) = "0"];
+    optional int32 RequestStartToSourceFinishTime = 1003 [(_default) = "0"];
+    optional int32 UncompressedResponseSize = 1004 [(_default) = "0"];
+
+}
+
+// Event
+message TVideoReportSearchReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_owner_msg) = "TODO actualize";
+    option (_description_msg) = "Request and response to video report.";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+
+}
+
+// User Defined Type
+message TWebDocument {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:report";
+    option (_description_msg) = "TODO";
+
+    optional string Url = 1001 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional string Source = 1002 [(_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional uint32 PassagesCount = 1003 [(_infinite_ttl) = true];
+    optional uint32 Position = 1004 [(_required) = true, (_key_field) = true];
+    optional int64 Relevance = 1005 [(_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional string SavedDoc = 1006 [(_infinite_ttl) = true];
+    optional string Language = 1007 [(_infinite_ttl) = true];
+    optional NScarabProto.NReport.ENavLevel NavLevel = 1008 [(_infinite_ttl) = true];
+    repeated int32 Regions = 1009 [(_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional string SnippetType = 1010 [(_rt_required) = true, (_infinite_ttl) = true];
+    optional bool IsFirst = 1011 [(_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional bool IsSecond = 1012 [(_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional string Shard = 1013 [(_rt_required) = true, (_infinite_ttl) = true];
+    optional string BaseType = 1014 [(_infinite_ttl) = true];
+    reserved 1015; // Markers
+    repeated string SiteLinks = 1016 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true, (_rt_required) = true, (_infinite_ttl) = true];
+    optional string FullDocId = 1017 [(_key_field) = true];
+    optional string HostId = 1018 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_infinite_ttl) = true];
+    optional NScarabProto.NReport.ESlot Slot = 1019 [(_infinite_ttl) = true];
+    optional NScarabProto.NReport.NDocMarkers.TDocMarkers Markers = 1020;
+    optional string Title = 1021 [(_rt_required) = true, (_ttl) = 360];
+    optional string OmniTitle = 1022 [(_rt_required) = true, (_ttl) = 360];
+    optional string MainContentUrl = 1023 [(_rt_required) = true, (_infinite_ttl) = true];
+    optional uint32 OrganicPosition = 1024 [(_rt_required) = true, (_infinite_ttl) = true];
+    optional string OmniUrl = 1025 [(_rt_required) = true, (_ttl) = 30];
+}
+
+message TMainObservations {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:abt";
+    repeated string TestIds = 1;
+}
+
+// Event
+message TWebReportSearchReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:report";
+    option (_description_msg) = "Information of request to report and response to the user";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating", (_key_field) = true];
+
+    // Version 1
+    optional string ParentRequestId = 1001 [(_rt_required) = true];
+    optional NScarabProto.NCommon.TUserAgent UserAgent = 1002 [(_rt_required) = true];
+    optional string UserAgentRaw = 1003 [(_rt_required) = true];
+    optional int32 UserRegionId = 1004 [(_required) = true, (_rt_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1005 [(_required) = true, (_key_field) = true];
+    optional string Referer = 1006 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    reserved 1007; // Domain
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1008 [(_required) = true, (_rt_required) = true];
+    optional uint32 ConfigVersion = 1009;
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1010 [(_required) = true, (_rt_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1011 [(_required) = true, (_rt_required) = true];
+    optional string RequestId = 1012 [(_required) = true, (_key_field) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1013 [(_required) = true, (_key_field) = true];
+    optional uint32 PageNo = 1014 [(_required) = true, (_rt_required) = true];
+    optional uint32 RequestedPageSize = 1015 [(_required) = true, (_rt_required) = true];
+    optional string Catalogue = 1016;
+    optional string GroupBy = 1017;
+    optional int32 RelevRegion = 1018 [(_rt_required) = true];
+    optional NScarabProto.NReport.TMisspellInfo Msp = 1019 [(_rt_required) = true];
+    optional NScarabProto.NReport.TMisspellInfo Reask = 1020 [(_rt_required) = true];
+    optional NScarabProto.NCommon.EProvider Provider = 1021 [(_required) = true, (_fixed) = "PERL_REPORT", (_rt_required) = true];
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 1022 [(_required) = true, (_rt_required) = true];
+    optional string Query = 1023 [(_required) = true, (_rt_required) = true];
+    optional string UiLanguage = 1024 [(_required) = true, (_rt_required) = true];
+    optional bytes FullRequest = 1025 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true, (_key_field) = true];
+    reserved 1026; // Relev
+    reserved 1027; // Rearr
+    reserved 1028; // SearchProps
+    reserved 1029; // BsBlockId
+    optional uint64 NumDocs = 1030 [(_required) = true, (_rt_required) = true];
+    repeated NScarabProto.NReport.TWebDocument Documents = 1031 [(_required) = true];
+
+    // Version 2
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 2001 [(_required) = true, (_version_fld) = 2];
+
+    // Version 3
+    repeated string BsBlockIds = 3001 [(_required) = true, (_version_fld) = 3];
+
+    // Version 4
+    optional string GoodWords = 4001 [(_required) = true, (_version_fld) = 4, (_rt_required) = true];
+    optional string Host = 4002 [(_required) = true, (_version_fld) = 4, (_key_field) = true];
+
+    // Version 5
+    optional NScarabProto.NReport.TCookiesT Cookies = 5001 [(_version_fld) = 5];
+    optional NScarabProto.NReport.THeadersT Headers = 5002 [(_version_fld) = 5, (_rt_required) = true];
+
+    // Version 6
+    reserved 6001; // HasMiscEvent
+
+    // Version 7
+    optional NScarabProto.NReport.NSearchProps.NAUTO2.TSource SearchPropsAUTO2 = 7001 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NFASTRES2.TSource SearchPropsFASTRES2 = 7002 [(_version_fld) = 7];
+    reserved 7003; // SearchPropsFASTRES_PROXY
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP = 7004 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP_YAREC = 7016 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESQUICKP.TSource SearchPropsIMAGESQUICKP = 7005 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESULTRAP.TSource SearchPropsIMAGESULTRAP = 7006 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NQUICK.TSource SearchPropsQUICK = 7007 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NREPORT.TSource SearchPropsREPORT = 7008 [(_version_fld) = 7, (_rt_required) = true];
+    optional NScarabProto.NReport.NSearchProps.NUNITSCONVERTER.TSource SearchPropsUNITSCONVERTER = 7015 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NUPPER.TSource SearchPropsUPPER = 7009 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NVIDEOP.TSource SearchPropsVIDEOP = 7010 [(_version_fld) = 7, (_split_size_limit) = 0];
+    optional NScarabProto.NReport.NSearchProps.NVIDEOQUICKP.TSource SearchPropsVIDEOQUICKP = 7011 [(_version_fld) = 7, (_split_size_limit) = 0];
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB = 7012 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB_MISSPELL = 7013 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NWIZARD.TSource SearchPropsWIZARD = 7014 [(_version_fld) = 7];
+
+    // Version 8
+    repeated NScarabProto.NReport.TWebDocument Wizplaces = 8001 [(_required) = true, (_version_fld) = 8];
+    reserved 8002; // AfVerdict
+
+    // Version 9
+    optional string DeliveryTimestamps = 9001 [(_version_fld) = 9];
+
+    // Version 10
+    repeated NScarabProto.NReport.NDocMarkers.TDocMarkersFat DocMarkersFat = 10001 [(_required) = true, (_version_fld) = 10, (_split_size_limit) = 0];
+    optional NScarabProto.NReport.NRelev.TRelev Relev = 10002 [(_version_fld) = 10];
+    optional NScarabProto.NReport.NRearr.TRearr Rearr = 10003 [(_version_fld) = 10];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeLocal RearrSchemeLocal = 10004 [(_version_fld) = 10];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlender RearrSchemeBlender = 10005 [(_version_fld) = 10];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlenderStorages RearrSchemeBlenderStorages = 10006 [(_version_fld) = 10];
+    optional NScarabProto.NReport.NRearr.TRearrOff RearrOff = 10007 [(_version_fld) = 10];
+
+    // Version 11
+    optional NScarabProto.NReport.TInstallationInfo InstallationInfo = 11001 [(_version_fld) = 11, (_rt_required) = true];
+
+    // Version 12
+    optional string PassportUidHash = 12001 [(_version_fld) = 12];
+
+    //Version 13
+    optional NScarabProto.NReport.ESearchOrigin SearchOrigin = 13001 [(_version_fld) = 13, (_rt_required) = true];
+
+    // Version 14
+    optional string SuggestReqId = 14001 [(_version_fld) = 14, (_rt_required) = true];
+
+    // Version 15
+    optional TMainObservations MainObservations = 15001 [(_version_fld) = 15, (_rt_required) = true];
+}
+
+// Event
+message TAccessEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_output_mreport";
+    option (_description_msg) = "Raw techical information of request and it's handling. Based on access_log (https://wiki.yandex-team.ru/JandeksPoisk/Dokumentacija/PoiskovyeLogi#accesslogverxnegometapoiska).";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1001 [(_required) = true];
+    optional uint32 ConfigVersion = 1002;
+    optional NScarabProto.NCommon.TUserId UserId = 1003 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1004 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress ConnectionIp = 1005 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress BalancerIp = 1006;
+    optional string Cookies = 1007;
+    optional string RequestId = 1008;
+    optional string Referer = 1009 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    optional string HttpRequest = 1010 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional NScarabProto.NCommon.EHttpMethod HttpMethod = 1011 [(_required) = true];
+    optional int64 HttpStatus = 1012 [(_required) = true];
+    repeated NScarabProto.NCommon.THttpHeader HttpHeaders = 1013 [(_required) = true];
+    optional string UserAgent = 1014;
+    optional string VHost = 1015;
+    optional string Flags = 1016;
+    optional uint32 InternalSubnetFlag = 1017;
+    optional uint32 Pid = 1018 [(_required) = true];
+    optional uint64 ProcessingMicroTime = 1019 [(_required) = true];
+    optional string Protocol = 1020 [(_required) = true];
+    optional uint32 Ratio = 1021;
+    optional uint64 RequestTime = 1022 [(_required) = true];
+    optional string Scheme = 1023;
+    optional uint32 Size = 1024;
+    optional string TimeZone = 1025;
+
+}
+
+// Event
+message TAtomRequestEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_output_mreport";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1001 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1002 [(_required) = true];
+    optional string RequestId = 1003 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1004 [(_required) = true];
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1005 [(_required) = true];
+    optional uint32 ConfigVersion = 1006;
+    optional string ParentRequestId = 1007 [(_required) = true];
+    optional NScarabProto.NCommon.TLocation Location = 1008;
+    optional NScarabProto.NCommon.TVersion AppVersion = 1009;
+    optional NScarabProto.NCommon.EPlatform Platform = 1010 [(_required) = true];
+    optional NScarabProto.NCommon.TTimeZone Timezone = 1011;
+    optional string Locale = 1012 [(_required) = true];
+    optional uint32 RegionId = 1013;
+    optional bool Internal = 1014 [(_required) = true];
+    optional string Referer = 1015;
+
+    // Version 2
+    reserved 2001; // Domain
+    optional bytes FullRequest = 2002 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true, (_version_fld) = 2];
+
+    // Version 3
+    optional string Host = 3001 [(_required) = true, (_version_fld) = 3];
+
+}
+
+// Event
+message TCbirSearchReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_serp_user/";
+    option (_description_msg) = "Request and answer to cbir service.";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1001 [(_required) = true];
+    optional uint32 ConfigVersion = 1002;
+    optional uint32 PageNo = 1003 [(_required) = true];
+    optional uint32 RequestedPageSize = 1004 [(_required) = true];
+    optional NScarabProto.NReport.TMisspellInfo Msp = 1005;
+    optional NScarabProto.NReport.TMisspellInfo Reask = 1006;
+    optional string RequestId = 1007 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1008 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1009 [(_required) = true];
+    optional NScarabProto.NCommon.EProvider Provider = 1010 [(_required) = true, (_fixed) = "IMAGES_PERL_REPORT"];
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 1011 [(_required) = true];
+    optional int32 UserRegionId = 1012 [(_required) = true];
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1013;
+    optional string Query = 1014 [(_required) = true];
+    optional string UiLanguage = 1015 [(_required) = true];
+    optional bytes FullRequest = 1016 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional string RelatedQueries = 1017;
+    optional uint64 NumDocs = 1018 [(_required) = true];
+    optional string SerpId = 1019;
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 1020 [(_required) = true];
+    optional NScarabProto.NReport.NImagesRelev.TImagesRelev ImagesRelev = 1021;
+    optional NScarabProto.NReport.NRelev.TRelev Relev = 1022; // Relev
+    optional NScarabProto.NReport.NRearr.TRearr Rearr = 1023; // Rearr
+    reserved 1024; // SearchProps
+    repeated NScarabProto.NReport.TImagesDocument Documents = 1025 [(_required) = true];
+    repeated NScarabProto.NReport.TCommercialDocument GoodsDocuments = 1026 [(_required) = true];
+    optional string UserAgentRaw = 1027 [(_version_fld) = 3];
+    repeated NScarabProto.NReport.TCommercialDocument GoodsClothesDocuments = 1028 [(_required) = true];
+
+    // Version 2
+    repeated string CbirTags = 2001 [(_required) = true, (_version_fld) = 2];
+
+    // Version 3
+    optional string Host = 3001 [(_required) = true, (_version_fld) = 3];
+
+    // Version 4
+
+    optional uint64 NumItems = 4001 [(_required) = true, (_version_fld) = 4];
+    optional bool ImageFilter = 4002 [(_required) = true, (_version_fld) = 4];
+    optional string ImageUrl = 4003 [(_required) = true, (_version_fld) = 4];
+    optional string Service = 4004 [(_required) = true, (_version_fld) = 4];
+    optional string CbirId = 4005 [(_version_fld) = 4];
+    repeated string CbirClasses = 4006 [(_version_fld) = 4];
+    optional string SCCluster = 4007 [(_version_fld) = 4];
+    optional bool GlobalCacheHit = 4008 [(_version_fld) = 4];
+    optional string CbirDataInAvatars = 4009 [(_version_fld) = 4];
+    optional uint64 CbirDetectionsTotal = 4010 [(_version_fld) = 4];
+    optional uint64 CbirDetectionsVisible = 4011 [(_version_fld) = 4];
+    optional uint64 CbirDetectionsSearched = 4012 [(_version_fld) = 4];
+    repeated string CbirDetectionsClasses = 4013 [(_version_fld) = 4];
+    optional string CbirDetectionsContrast = 4014 [(_version_fld) = 4];
+    optional float CbirJpgQuality = 4015 [(_version_fld) = 4];
+    optional NScarabProto.NReport.NBubble.TBubble Bubble = 4016 [(_version_fld) = 4];
+    optional uint64 FuidVersion = 4017 [(_version_fld) = 4];
+
+    // Version 5
+
+    optional string IntentFactors = 5001 [(_version_fld) = 5];
+
+    // Version 6
+    optional NScarabProto.NReport.THeadersT Headers = 6001 [(_version_fld) = 6];
+    optional NScarabProto.NCommon.EPlatform AppPlatform = 6002 [(_version_fld) = 6];
+    optional uint64 AppVersion = 6003 [(_version_fld) = 6];
+    optional string AppId = 6004 [(_version_fld) = 6];
+    optional string AppRequestId = 6005 [(_version_fld) = 6];
+    optional string SourceUri = 6006 [(_version_fld) = 6];
+    optional bool Family = 6007 [(_version_fld) = 6];
+    optional bool HInternal = 6008 [(_version_fld) = 6];
+    optional bool HRobot = 6009 [(_version_fld) = 6];
+    optional bool IsTrusted = 6010 [(_version_fld) = 6];
+    optional bool IsYandex = 6011 [(_version_fld) = 6];
+    optional bool LR = 6012 [(_version_fld) = 6];
+    optional NScarabProto.NCommon.TIpAddress RemoteIp = 6013 [(_version_fld) = 6];
+    optional string SType = 6014 [(_version_fld) = 6];
+    optional string SerpUrl = 6015 [(_version_fld) = 6];
+    optional uint64 GSize = 6016 [(_version_fld) = 6];
+    optional string ReportVersion = 6017 [(_version_fld) = 6];
+    optional string AcceptLanguage = 6018 [(_version_fld) = 6];
+    optional string RemoteImg = 6019 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP = 6020 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP_YAREC = 6027 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NSearchProps.NREPORT.TSource SearchPropsREPORT = 6021 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NSearchProps.NUPPER.TSource SearchPropsUPPER = 6022 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeLocal RearrSchemeLocal = 6023 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrOff RearrOff = 6024 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlenderStorages RearrSchemeBlenderStorages = 6025 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlender RearrSchemeBlender = 6026 [(_version_fld) = 6];
+
+    // Version 7
+    optional string CameraSearchResponse = 7001 [(_version_fld) = 7];
+
+    // Version 8
+    optional string IntentQuery = 8001 [(_version_fld) = 8];
+    optional string IntentMultimodal = 8002 [(_version_fld) = 8];
+    optional bool IntentIsMod = 8003 [(_version_fld) = 8];
+
+    // Version 9
+    optional bytes RawHttpResponse = 9001 [(_version_fld) = 9];
+    repeated NScarabProto.NReport.NCbir.TCbirPostData PostData = 9002 [(_version_fld) = 9];
+    repeated NScarabProto.NReport.NCbir.TCbirSerchByCropResult SerchByCropResult = 9003 [(_version_fld) = 9];
+    repeated NScarabProto.NReport.NCbir.TCbirImageFeatures ImageFeatures = 9004 [(_version_fld) = 9];
+}
+
+// Event
+message TCreationClientEventError {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_output_mreport";
+    option (_description_msg) = "Event occurs when client's event logging failures";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1001 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1002 [(_required) = true];
+    optional string RequestId = 1003 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1004 [(_required) = true];
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1005 [(_required) = true];
+    optional uint32 ConfigVersion = 1006;
+    optional NScarabProto.NReport.TErrorContext ErrorContext = 1007 [(_required) = true];
+    optional string OriginText = 1008 [(_required) = true];
+
+}
+
+// Event
+message TDirectSearchReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:report";
+    option (_description_msg) = "Request and response to direct-search service.";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional string ParentRequestId = 1001;
+    optional NScarabProto.NCommon.TUserAgent UserAgent = 1002;
+    optional string UserAgentRaw = 1003;
+    optional int32 UserRegionId = 1004 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1005 [(_required) = true];
+    optional string Referer = 1006 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1007 [(_required) = true];
+    optional uint32 ConfigVersion = 1008;
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1009 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1010 [(_required) = true];
+    optional string RequestId = 1011 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1012 [(_required) = true];
+    optional uint32 PageNo = 1013 [(_required) = true];
+    optional uint32 RequestedPageSize = 1014 [(_required) = true];
+    optional NScarabProto.NCommon.EProvider Provider = 1015 [(_required) = true, (_fixed) = "PERL_REPORT"];
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 1016 [(_required) = true];
+    optional string Query = 1017 [(_required) = true];
+    optional string UiLanguage = 1018 [(_required) = true];
+    optional bytes FullRequest = 1019 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional uint64 NumDocs = 1020 [(_required) = true];
+    repeated NScarabProto.NReport.TDirectDocument Documents = 1021 [(_required) = true];
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 1022 [(_required) = true];
+    optional string Host = 1023 [(_required) = true];
+
+    // Version 2
+    repeated string BsBlockIds = 2001 [(_required) = true, (_version_fld) = 2];
+
+    // Version 3
+    optional string Catalogue = 3001 [(_version_fld) = 3];
+    optional string GroupBy = 3002 [(_version_fld) = 3];
+    optional int32 RelevRegion = 3003 [(_version_fld) = 3];
+    optional NScarabProto.NReport.TMisspellInfo Msp = 3004 [(_version_fld) = 3];
+    optional NScarabProto.NReport.TMisspellInfo Reask = 3005 [(_version_fld) = 3];
+    reserved 3006; // Relev
+    reserved 3007; // Rearr
+    reserved 3008; // SearchProps
+
+    // Version 4
+    optional NScarabProto.NReport.TCookiesT Cookies = 4001 [(_version_fld) = 4];
+    optional NScarabProto.NReport.THeadersT Headers = 4002 [(_version_fld) = 4];
+
+    optional NScarabProto.NReport.NSearchProps.NAUTO2.TSource SearchPropsAUTO2 = 5001 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NFASTRES2.TSource SearchPropsFASTRES2 = 5002 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP = 5004 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP_YAREC = 5013 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESQUICKP.TSource SearchPropsIMAGESQUICKP = 5005 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NIMAGESULTRAP.TSource SearchPropsIMAGESULTRAP = 5006 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NQUICK.TSource SearchPropsQUICK = 5007 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NREPORT.TSource SearchPropsREPORT = 5008 [(_version_fld) = 5, (_rt_required) = true];
+    optional NScarabProto.NReport.NSearchProps.NUPPER.TSource SearchPropsUPPER = 5009 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NVIDEOP.TSource SearchPropsVIDEOP = 5010 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NVIDEOQUICKP.TSource SearchPropsVIDEOQUICKP = 5011 [(_version_fld) = 5];
+    optional NScarabProto.NReport.NSearchProps.NWIZARD.TSource SearchPropsWIZARD = 5012 [(_version_fld) = 5];
+
+    optional NScarabProto.NReport.NRelev.TRelev Relev = 6001 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearr Rearr = 6002 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeLocal RearrSchemeLocal = 6003 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlender RearrSchemeBlender = 6005 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlenderStorages RearrSchemeBlenderStorages = 6006 [(_version_fld) = 6];
+    optional NScarabProto.NReport.NRearr.TRearrOff RearrOff = 6007 [(_version_fld) = 6];
+}
+
+// Event
+message TImagesSearchReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_serp_user/";
+    option (_description_msg) = "Request and answer to images service.";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1001 [(_required) = true]; // test-ids, test-buckets
+    optional uint32 ConfigVersion = 1002;
+    optional uint32 PageNo = 1003 [(_required) = true];
+    optional uint32 RequestedPageSize = 1004 [(_required) = true];
+    optional NScarabProto.NReport.TMisspellInfo Msp = 1005;
+    optional NScarabProto.NReport.TMisspellInfo Reask = 1006;
+    optional string RequestId = 1007 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1008 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1009 [(_required) = true];
+    optional NScarabProto.NCommon.EProvider Provider = 1010 [(_required) = true, (_fixed) = "IMAGES_PERL_REPORT"];
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 1011 [(_required) = true];
+    optional int32 UserRegionId = 1012 [(_required) = true];
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1013;
+    optional string Query = 1014 [(_required) = true];
+    optional string UiLanguage = 1015 [(_required) = true];
+    optional bytes FullRequest = 1016 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    optional string RelatedQueries = 1017;
+    optional uint64 NumDocs = 1018 [(_required) = true];
+    optional string SerpId = 1019;
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 1020 [(_required) = true];
+    optional NScarabProto.NReport.NImagesRelev.TImagesRelev ImagesRelev = 1021;
+    optional NScarabProto.NReport.NRelev.TRelev Relev = 1022; // Relev
+    optional NScarabProto.NReport.NRearr.TRearr Rearr = 1023; // Rearr
+    reserved 1024; // SearchProps
+    repeated NScarabProto.NReport.TImagesDocument Documents = 1025 [(_required) = true];
+    optional string GoodWords = 1026 [(_required) = true];
+    optional NScarabProto.NReport.THeadersT Headers = 1027;
+    optional NScarabProto.NReport.NBubble.TBubble Bubble = 1028;
+    optional NScarabProto.NCommon.EPlatform AppPlatform = 1029;
+    optional uint64 AppVersion = 1030;
+    optional string AppId = 1031;
+    optional string AppRequestId = 1032;
+    optional uint64 NumItems = 1033;
+    optional string AcceptLanguage = 1034;
+    reserved 1035; // string Catalogue
+    optional string SourceUri = 1036;
+    reserved 1037; // float ApacheVersion
+    optional string ReportVersion = 1038;
+    optional uint64 UpperVersion = 1039; // In experiments always equals to 1000
+    reserved 1040; // pruningm
+    optional string Thesaurus = 1041; // thesaurus
+    optional NScarabProto.NReport.NRearr.TRearrSchemeLocal RearrSchemeLocal = 1042;
+    optional NScarabProto.NReport.NRearr.TRearrOff RearrOff = 1043;
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlenderStorages RearrSchemeBlenderStorages = 1045;
+    optional NScarabProto.NReport.NRearr.TRearrSchemeBlender RearrSchemeBlender = 1046;
+    optional bool Family = 1047;
+    optional bool FreshUid = 1048;
+    optional bool GlobalCacheHit = 1049;
+    optional bool HInternal = 1050;
+    optional bool HRobot = 1051;
+    optional bool IsTrusted = 1052;
+    optional bool IsYandex = 1053;
+    optional bool LR = 1054;
+    optional bool ImageFilter = 1055;
+    optional uint64 FuidVersion = 1056;
+    optional uint64 GSize = 1057;
+    optional string ImageUrl = 1058;
+    optional string Match = 1059;
+    optional string Metahost = 1060;
+    reserved 1061; //bool Remote
+    optional NScarabProto.NCommon.TIpAddress RemoteIp = 1062;
+    optional string SType = 1063;
+    reserved 1064; // rstr
+    reserved 1065; // site
+    reserved 1066; // sort
+    reserved 1067; // string ScCluster
+    optional string SerpUrl = 1068;
+    reserved 1069; // bool RHist
+    optional bool IsUtf = 1070;
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP = 1071;
+    optional NScarabProto.NReport.NSearchProps.NIMAGESP.TSource SearchPropsIMAGESP_YAREC = 1080;
+    optional NScarabProto.NReport.NSearchProps.NREPORT.TSource SearchPropsREPORT = 1072;
+    optional NScarabProto.NReport.NSearchProps.NUPPER.TSource SearchPropsUPPER = 1073;
+
+    optional string Rhist = 1074;
+    optional string RemoteImg = 1075;
+    optional bool BannedByClassifier = 1076;
+    optional string QueryLangExperiment = 1077;
+    optional string AV = 1078;
+
+    // Version 2
+    optional string Host = 2001 [(_required) = true, (_version_fld) = 2];
+
+    //Version 3
+    optional string UserAgentRaw = 1079 [(_version_fld) = 3];
+
+}
+
+// Event
+message TIznankaReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:report";
+    option (_description_msg) = "Request and response of Yandex Iznanka service.";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional string ParentRequestId = 1001;
+    optional NScarabProto.NCommon.TUserAgent UserAgent = 1002;
+    optional string UserAgentRaw = 1003;
+    optional int32 UserRegionId = 1004 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1005 [(_required) = true];
+    optional string Referer = 1006 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    reserved 1007; // Domain
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1008 [(_required) = true];
+    optional uint32 ConfigVersion = 1009;
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1010 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1011 [(_required) = true];
+    optional string RequestId = 1012 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1013 [(_required) = true];
+    optional uint32 PageNo = 1014 [(_required) = true];
+    optional uint32 RequestedPageSize = 1015 [(_required) = true];
+    optional string Catalogue = 1016;
+    optional string GroupBy = 1017;
+    optional int32 RelevRegion = 1018;
+    optional NScarabProto.NReport.TMisspellInfo Msp = 1019;
+    optional NScarabProto.NReport.TMisspellInfo Reask = 1020;
+    optional NScarabProto.NCommon.EProvider Provider = 1021 [(_required) = true, (_fixed) = "PERL_REPORT"];
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 1022 [(_required) = true];
+    optional string Query = 1023 [(_required) = true];
+    optional string UiLanguage = 1024 [(_required) = true];
+    optional bytes FullRequest = 1025 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    reserved 1026; // Relev
+    reserved 1027; // Rearr
+    reserved 1028; // SearchProps
+    reserved 1029; // BsBlockId
+    optional uint64 NumDocs = 1030 [(_required) = true];
+    repeated NScarabProto.NReport.TWebDocument Documents = 1031 [(_required) = true];
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 1032 [(_required) = true];
+    repeated string BsBlockIds = 1033 [(_required) = true];
+    optional string Host = 1034 [(_required) = true];
+
+    // Version 2
+    optional NScarabProto.NReport.TCookiesT Cookies = 2001 [(_version_fld) = 2];
+    optional NScarabProto.NReport.THeadersT Headers = 2002 [(_version_fld) = 2];
+
+}
+
+// Event
+message TMobileReportReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_output_mreport";
+    option (_description_msg) = "Information of request to mobile-report and response to user";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional NScarabProto.NCommon.EProvider Provider = 1001 [(_required) = true, (_fixed) = "MOBILE_REPORT"];
+    optional string ParentRequestId = 1002;
+    optional NScarabProto.NCommon.TUserAgent UserAgent = 1003;
+    optional string UserAgentRaw = 1004;
+    optional int32 UserRegionId = 1005 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1006 [(_required) = true];
+    optional string Referer = 1007 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    reserved 1008; // Domain
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1009 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1010 [(_required) = true];
+    optional string RequestId = 1011 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1012 [(_required) = true];
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1013 [(_required) = true];
+    optional uint32 ConfigVersion = 1014;
+    optional NScarabProto.NCommon.TLocation UserLocation = 1015;
+    optional uint32 ClientAppVersion = 1016;
+    optional string ClientLocale = 1017 [(_required) = true];
+    optional bool IsInternal = 1018 [(_required) = true];
+
+    // Version 2
+    optional string Host = 2001 [(_required) = true, (_version_fld) = 2];
+
+}
+
+// Event
+message TPeopleReportSearchReqansEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:report";
+    option (_description_msg) = "Request and response to people-search service.";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional string ParentRequestId = 1001;
+    optional NScarabProto.NCommon.TUserAgent UserAgent = 1002;
+    optional string UserAgentRaw = 1003;
+    optional int32 UserRegionId = 1004 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1005 [(_required) = true];
+    optional string Referer = 1006 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&"];
+    reserved 1007; // Domain
+    repeated NScarabProto.NCommon.TExperiment Experiments = 1008 [(_required) = true];
+    optional uint32 ConfigVersion = 1009;
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1010 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1011 [(_required) = true];
+    optional string RequestId = 1012 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1013 [(_required) = true];
+    optional uint32 PageNo = 1014 [(_required) = true];
+    optional uint32 RequestedPageSize = 1015 [(_required) = true];
+    optional NScarabProto.NCommon.EProvider Provider = 1016 [(_required) = true, (_fixed) = "PERL_REPORT"];
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 1017 [(_required) = true];
+    optional string Query = 1018 [(_required) = true];
+    optional string UiLanguage = 1019 [(_required) = true];
+    optional bytes FullRequest = 1020 [(_regex)="^\\w+:(\\/?\\/?)[^\\s]+&", (_required) = true];
+    reserved 1021; // BsBlockId
+    optional uint64 NumDocs = 1022 [(_required) = true];
+    repeated NScarabProto.NReport.TPeopleDocument Documents = 1023 [(_required) = true];
+    repeated NScarabProto.NCommon.TExperiment AdvExperiments = 1024 [(_required) = true];
+
+    // Version 2
+    optional string Host = 2001 [(_required) = true, (_version_fld) = 2];
+
+    // Version 3
+    optional NScarabProto.NReport.TCookiesT Cookies = 3001 [(_version_fld) = 3];
+    optional NScarabProto.NReport.THeadersT Headers = 3002 [(_version_fld) = 3];
+
+    // Version 4
+    reserved 4001; // SearchProps
+
+}
+
+// Event
+message TReportErrorEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_output_mreport";
+    option (_description_msg) = "This event is generated upon another event generation failure";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1001 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1002 [(_required) = true];
+    optional string RequestId = 1003 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1004 [(_required) = true];
+    optional NScarabProto.NReport.TErrorContext ErrorContext = 1005 [(_required) = true];
+
+}
+
+// Event
+message TReportRequestProfileEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    option (_owner_msg) = "abc:report";
+    option (_description_msg) = "Request processing duration by the report";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional string RequestId = 1001 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1002 [(_required) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 1003 [(_required) = true];
+    optional int64 TotalTime = 1004 [(_required) = true, (_description_fld) = "Time passed since processing start until leaving the report"];
+    optional int64 Latency = 1005 [(_required) = true, (_description_fld) = "Time passed since processing start until last byte of response has been given to balancer"];
+    optional int64 SearchTime = 1006 [(_required) = true, (_description_fld) = "Time passed since sending request to the search until finishing receiving response. Time of second request included in case of request resending caused by misspelling"];
+    optional int64 ReportTime = 1007 [(_required) = true, (_description_fld) = "Time of the report's code execution"];
+    optional int64 TemplatesTime = 1008 [(_required) = true, (_description_fld) = "Total execution time of templates for request (network request included)"];
+    optional uint64 RawContentLength = 1009 [(_required) = true, (_description_fld) = "Response's body size without compressing"];
+    optional uint64 BytesSent = 1010 [(_required) = true, (_description_fld) = "Response's body size that has been sended to the network"];
+
+    // Version 2
+    optional NScarabProto.NCommon.EUserInterface UserInterface = 2001 [(_required) = true, (_version_fld) = 2];
+
+    // Version 3
+    optional int64 MergeFlagsTime = 3001 [(_required) = true, (_version_fld) = 3, (_description_fld) = "Time of flags merge in perl-report."];
+
+    // Version 4
+    optional int64 ReportTimeV2 = 4001 [(_required) = true, (_version_fld) = 4, (_description_fld) = "An improved version of report_time. Some non-report specific timings are substracted. E.g.: merge_flags_time."];
+
+    // Version 5
+    optional bool SdchAccept = 5001 [(_required) = true, (_version_fld) = 5, (_description_fld) = "Indicator whether client supports SDCH."];
+    optional bool SdchEncoding = 5002 [(_required) = true, (_version_fld) = 5, (_description_fld) = "Indicator whether SDCH-encoding was used for the response."];
+    optional bool SdchGetDictionary = 5003 [(_required) = true, (_version_fld) = 5, (_description_fld) = "Indicator whether \"get dictionary\" header was given to client."];
+    optional bool SdchAvailDictionary = 5004 [(_required) = true, (_version_fld) = 5, (_description_fld) = "Indicator whether client sent \"avail dictionary\" header."];
+    optional bool SdchEncodeZero = 5005 [(_required) = true, (_version_fld) = 5, (_description_fld) = "Indicator whether response was not encoded by SDCH despite client sent \"avail dictionary\" header."];
+    optional string HostName = 5006 [(_required) = true, (_version_fld) = 5, (_description_fld) = "Host name where the event was logged."];
+    optional string Project = 5007 [(_version_fld) = 5, (_description_fld) = "Layout project name."];
+
+    // Version 6
+    repeated NScarabProto.NReport.TSourceProfile SourceProfiles = 6001 [(_required) = true, (_version_fld) = 6, (_description_fld) = "Sources profile data", (_split_size_limit) = 4500];
+
+    // Version 7
+    optional int64 RequestInitDuration = 7001 [(_required) = true, (_version_fld) = 7, (_description_fld) = "Duration of web request init"];
+    optional int64 WebWizardryDuration = 7002 [(_required) = true, (_version_fld) = 7, (_description_fld) = "Duration of web wizardry"];
+    optional int64 WebMiddleDuration = 7003 [(_required) = true, (_version_fld) = 7, (_description_fld) = "Duration of web middle metasearch"];
+    optional int64 TimeToRecvWebMiddleResponse = 7004 [(_required) = true, (_version_fld) = 7, (_description_fld) = "Duration from request start to web middle finish"];
+    optional int64 BlenderDuration = 7005 [(_required) = true, (_version_fld) = 7, (_description_fld) = "Duration of blender"];
+    optional int64 TimeToRecvBlenderResponse = 7006 [(_required) = true, (_version_fld) = 7, (_description_fld) = "Duration from request start to blender finish"];
+    repeated NScarabProto.NReport.TCriticalPathInfo CriticalPath = 7007 [(_required) = true, (_version_fld) = 7, (_description_fld) = "List of sources on critical path for subgraphs", (_split_size_limit) = 1500];
+
+    // Version 8
+    optional int64 BalancerLaasTime = 8001 [(_required) = true, (_version_fld) = 8, (_description_fld) = "Processing time for balancer's laas module"];
+    optional int64 BalancerExpgetterTime = 8002 [(_required) = true, (_version_fld) = 8, (_description_fld) = "Processing time for balancer's expgetter module"];
+
+    // Version 9
+    repeated NScarabProto.NReport.TSourceProfile FullSourceProfiles = 9001 [(_required) = true, (_version_fld) = 9, (_description_fld) = "Sources profile data for all sources touched in request"];
+    repeated NScarabProto.NReport.TCriticalPathInfo FullCriticalPath = 9002 [(_required) = true, (_version_fld) = 9, (_description_fld) = "List of sources on critical path for all subgraphs executed in request"];
+
+    // Version 10
+    optional int64 SdchSourcesTotalDuration = 10001 [(_required) = true, (_version_fld) = 10, (_description_fld) = "Processing time of all sdch sources"];
+
+    // Version 11
+    optional int64 ResponseTime = 11001 [(_required) = true, (_version_fld) = 11, (_description_fld) = "Request processing duration"];
+
+    // Version 12
+    optional string PassportUidHash = 12001 [(_version_fld) = 12];
+}
+
+// Event
+message TServerUserBirthEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (_owner_msg) = "TODO actualize https://staff.yandex-team.ru/departments/yandex_search_tech_searchinfradev_output_mreport";
+    option (_description_msg) = "This event is generated when new identifier is returned by server In case some server's identifier is out of date and it's value should be recoreded in oldUserId";
+    // Base fields
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating"];
+
+    // Version 1
+    optional NScarabProto.NCommon.TVersion ServerVersion = 1001 [(_required) = true];
+    optional NScarabProto.NReport.EServiceKey ServiceKey = 1002 [(_required) = true];
+    optional string RequestId = 1003 [(_required) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 1004 [(_required) = true];
+    optional NScarabProto.NReport.EServerUserBirthReason Reason = 1005 [(_required) = true];
+
+}
+
+// Definition for mmeta-search props, that are being logged from mmeta directly.
+message TWebMetaSearchPropsEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional uint64 Timestamp = 1 [(_required) = true, (_description_fld) = "Timestamp of event creating", (_key_field) = true];
+    optional string RequestId = 2 [(_required) = true, (_key_field) = true];
+    optional NScarabProto.NCommon.TUserId UserId = 3 [(_required) = true, (_key_field) = true];
+    optional string Host = 4 [(_required) = true, (_version_fld) = 4, (_key_field) = true];
+    optional NScarabProto.NCommon.TIpAddress UserIp = 5 [(_required) = true, (_key_field) = true];
+
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB = 6 [(_version_fld) = 7];
+    optional NScarabProto.NReport.NSearchProps.NWEB.TSource SearchPropsWEB_MISSPELL = 7 [(_version_fld) = 7];
+
+    repeated NScarabProto.NCommon.TExperiment Experiments = 8 [(_required) = true, (_rt_required) = true];
+}

@@ -1,0 +1,53 @@
+option go_package = "a.yandex-team.ru/bigrt/lib/serializable_profile/proto;serializableprofile";
+
+import "google/protobuf/descriptor.proto";
+
+package NBigRT;
+
+enum EProtoFieldType {
+    PFT_UNKNOWN = 0;
+    PFT_SIMPLE = 1;
+    PFT_PACKABLE = 2;
+    PFT_KEY = 3;
+
+    PFT_UNHASHABLE_KEY = 4;
+    // Key that would be used for sort but not in hash
+
+    PFT_UNMANAGED = 5;
+
+    // Field that is clean at epoch start, then written into watchlog and cleared at epoch end.
+    PFT_WATCHLOG_PAYLOAD = 6;
+};
+
+// flags for updates queue (which)
+enum EProfileServiceFlags {
+    PSF_NONE = 0;
+    PSF_DELETED = 1;  // message has delete profile
+    PSF_FULL = 2;   // message has full profile
+    PSF_TOUCHED = 3;  // the profile was touched, e.g. by service log
+}
+
+message TServiceFields {
+    optional EProfileServiceFlags Flags = 1;
+    optional fixed64 ChangedColumns = 2;
+}
+
+extend google.protobuf.FieldOptions {
+    // Consider also these options for choosing numeric tags:
+    // https://a.yandex-team.ru/arcadia/ads/bsyeti/merge_protos/options.proto?rev=r14373529#L31
+    optional string FieldName = 56010;
+    optional EProtoFieldType FieldType = 56011;
+    optional string Aggregate = 56012;
+    optional string CompressSimple = 56021;
+    optional string Group = 56020;
+    optional bool Withdrawn = 56022;
+    optional bool Unwatchable = 56023;
+    // If all fields in the profile except for weak fields are empty, the profile will be deleted.
+    optional bool Weak = 56024;
+    optional bool Yson = 56025;
+};
+
+extend google.protobuf.MessageOptions {
+    optional string YtTableName = 58000;
+    repeated string ForceAddFieldToWatchLog = 58001;
+}

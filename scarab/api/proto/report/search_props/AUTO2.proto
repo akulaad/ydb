@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+
+import "yt/yt_proto/yt/formats/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "scarab/api/proto/common/compat.proto";
+
+option go_package = "a.yandex-team.ru/scarab/api/proto/report/search_props/go/AUTO2;AUTO2";
+package NScarabProto.NReport.NSearchProps.NAUTO2;
+// Props definitions
+
+// Source definition
+message TSource {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+
+    optional string AutoWizType = 1 [(_split_size_limit) = 5];
+    optional uint64 GeoFactor = 2 [(_compat_renamed_from) = "geo_factor"];
+    optional double RelativeAmountOfAds = 3 [(_compat_renamed_from) = "relative_amount_of_ads"];
+}

@@ -1,0 +1,60 @@
+package NUserSessions.NProto;
+
+import "quality/user_sessions/createlib/qb3/proto/rt/util.proto";
+import "quality/user_sessions/createlib/qb3/proto/util/extension.proto";
+import "scarab/api/proto/common/options.proto";
+import "yt/yt_proto/yt/formats/extension.proto";
+
+message TSuggestEvent {
+    option (NYT.default_field_flags) = SERIALIZATION_YT;
+    option (NYT.default_field_flags) = OPTIONAL_LIST;
+    optional bytes EventType = 1;
+    optional uint64 EventVersion = 2;
+    optional bytes Key = 3 [(NYT.column_name) = "key", (_infinite_ttl) = true];
+    optional bytes Subkey = 4 [(NYT.column_name) = "subkey", (_infinite_ttl) = true];
+    optional uint32 BuilderVersion = 5 [(NUserSessions.tskv_name) = "builder-version"];
+    optional bool ButtonClick = 6 [(NUserSessions.tskv_name) = "button-click"];
+    optional uint32 Cchd = 7 [(NUserSessions.tskv_name) = "cchd"];
+    optional uint32 ClickTimeFs = 8 [(NUserSessions.tskv_name) = "click_timefs"];
+    optional uint32 ClicksOnSuggests = 9 [(NUserSessions.tskv_name) = "clks"];
+    optional uint32 ConfigVersion = 10 [(NUserSessions.tskv_name) = "exp_config_version"];
+    optional bytes DictsLog = 11 [(NUserSessions.tskv_name) = "log"];
+    optional bytes DomainRegion = 12 [(NUserSessions.tskv_name) = "dom-region"];
+    optional uint32 Ersp = 13 [(NUserSessions.tskv_name) = "ersp"];
+    optional bool FromBeta = 14 [(NUserSessions.tskv_name) = "from_beta"];
+    optional uint32 InputPosition = 15 [(NUserSessions.tskv_name) = "input-pos"];
+    optional bool IsPersonal = 16 [(NUserSessions.tskv_name) = "pers"];
+    optional bytes NavType = 17 [(NUserSessions.tskv_name) = "nav_type"];
+    optional uint32 Pos = 18 [(NUserSessions.tskv_name) = "pos"];
+    optional bytes Query = 19 [(NUserSessions.tskv_name) = "query"];
+    optional bytes Ratio = 20 [(NUserSessions.tskv_name) = "ratio"];
+    optional uint32 RenderedSuggests = 21 [(NUserSessions.tskv_name) = "rndr"];
+    optional uint32 Rqs = 22 [(NUserSessions.tskv_name) = "rqs"];
+    optional uint32 Rsp = 23 [(NUserSessions.tskv_name) = "rsp"];
+    optional bytes Service = 24 [(NUserSessions.tskv_name) = "service"];
+    optional uint32 SinceFirstChange = 25 [(NUserSessions.tskv_name) = "since_first_change"];
+    optional uint32 SinceLastChange = 26 [(NUserSessions.tskv_name) = "since_last_change"];
+    optional bytes SuggestAction = 27 [(NUserSessions.tskv_name) = "action"];
+    optional bytes SuggestRequestId = 28 [(NUserSessions.tskv_name) = "suggest_reqid"];
+    optional bytes SuggestStatus = 29 [(NUserSessions.tskv_name) = "status"];
+    optional bytes SuggestTimes = 30 [(NUserSessions.tskv_name) = "times"];
+    optional bytes Suggestion = 31 [(NUserSessions.tskv_name) = "suggestion"];
+    optional bytes TestInfo = 32 [(NUserSessions.tskv_name) = "test-buckets", (_ttl) = 90, (_transform_ttl) = 90];
+    optional uint32 TimeFs = 33 [(NUserSessions.tskv_name) = "timefs"];
+    optional uint32 TotalInputTime = 34 [(NUserSessions.tskv_name) = "total_input_time"];
+    optional bytes TpahLog = 35 [(NUserSessions.tskv_name) = "tpah_log"];
+    optional bytes Type = 36 [(NUserSessions.tskv_name) = "type"];
+    optional bytes UIType = 37 [(NUserSessions.tskv_name) = "ui"];
+    optional bytes Url = 38 [(NUserSessions.tskv_name) = "url", (_infinite_ttl) = true];
+    optional bytes UserAgentRaw = 39 [(NUserSessions.tskv_name) = "u-agent"];
+    optional bytes UserInput = 40 [(NUserSessions.tskv_name) = "input"];
+    optional int32 UserRegion = 41 [(NUserSessions.tskv_name) = "user-region"];
+    optional bool WasEdited = 42 [(NUserSessions.tskv_name) = "edit"];
+    optional bytes Path = 43 [(NUserSessions.tskv_name) = "path"];
+    optional NUserSessions.NRT.EAntifraudVerdict AntifraudVerdict = 44 [(NUserSessions.tskv_name) = "_af_verdict"];
+    optional NUserSessions.NRT.EAntifraudVerdict ExpAntifraudVerdict = 45;
+    optional bytes RequestId = 46 [(NUserSessions.tskv_name) = "reqid"];
+    optional bytes SuggestService = 47 [(NUserSessions.tskv_name) = "suggest_service"];
+    optional bytes AntifraudInfo = 48;
+}
+
