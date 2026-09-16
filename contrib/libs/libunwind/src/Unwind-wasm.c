@@ -127,4 +127,42 @@ _LIBUNWIND_EXPORT _Unwind_Reason_Code
 _Unwind_RaiseException(_Unwind_Exception *exception_object __attribute__((unused))) {
   abort();
 }
+
+// libc++abi's exported personality functions still reference these symbols
+// when wasm EH is disabled. Keep the ABI linkable, but trap if unsupported
+// unwinding is actually attempted, just like _Unwind_RaiseException above.
+_LIBUNWIND_EXPORT void
+_Unwind_DeleteException(_Unwind_Exception *exception_object) {
+  if (exception_object->exception_cleanup != NULL)
+    (*exception_object->exception_cleanup)(_URC_FOREIGN_EXCEPTION_CAUGHT,
+                                           exception_object);
+}
+
+_LIBUNWIND_EXPORT void
+_Unwind_SetGR(struct _Unwind_Context *context __attribute__((unused)),
+              int index __attribute__((unused)),
+              uintptr_t value __attribute__((unused))) {
+  abort();
+}
+
+_LIBUNWIND_EXPORT uintptr_t
+_Unwind_GetIP(struct _Unwind_Context *context __attribute__((unused))) {
+  abort();
+}
+
+_LIBUNWIND_EXPORT void
+_Unwind_SetIP(struct _Unwind_Context *context __attribute__((unused)),
+              uintptr_t value __attribute__((unused))) {
+  abort();
+}
+
+_LIBUNWIND_EXPORT uintptr_t
+_Unwind_GetLanguageSpecificData(struct _Unwind_Context *context __attribute__((unused))) {
+  abort();
+}
+
+_LIBUNWIND_EXPORT uintptr_t
+_Unwind_GetRegionStart(struct _Unwind_Context *context __attribute__((unused))) {
+  abort();
+}
 #endif // defined(__WASM_EXCEPTIONS__)
