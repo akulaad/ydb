@@ -25,6 +25,10 @@ DEPENDS(
 )
 
 PEERDIR(
+    contrib/python/PyYAML
+    ydb/public/api/grpc
+    ydb/public/api/protos
+    contrib/python/grpcio
     ydb/tests/functional/udf_store/lib
     ydb/tests/library
     ydb/tests/oss/ydb_sdk_import

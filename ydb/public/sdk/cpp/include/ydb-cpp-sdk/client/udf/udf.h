@@ -17,10 +17,16 @@ namespace Ydb::Udf {
 
 namespace NYdb::inline Dev::NUdf {
 
+enum class EModuleType {
+    Unspecified = 0,
+    Module = 1,
+    Library = 2,
+};
+
 enum class EModuleKind {
     Unspecified = 0,
-    Udf = 1,
-    Library = 2,
+    Wasm = 1,
+    Native = 2,
 };
 
 enum class ECompileStatus {
@@ -40,6 +46,7 @@ enum class EWriteMode {
 
 struct TModuleInfo {
     std::string Name;
+    EModuleType Type = EModuleType::Unspecified;
     EModuleKind Kind = EModuleKind::Unspecified;
     std::string Uid;
     std::string Md5;
@@ -55,11 +62,9 @@ struct TPlatformCompileStatus {
     std::string CompileError;
 };
 
-struct TUploadModuleSettings : public TOperationRequestSettings<TUploadModuleSettings> {
+struct TUploadModuleSettings: public TOperationRequestSettings<TUploadModuleSettings> {
     using TSelf = TUploadModuleSettings;
 
-    FLUENT_SETTING_DEFAULT(EModuleKind, Kind, EModuleKind::Unspecified);
-    FLUENT_SETTING(std::string, LibraryName);
     FLUENT_SETTING(std::string, ManifestJson);
     FLUENT_SETTING_DEFAULT(EWriteMode, WriteMode, EWriteMode::Unspecified);
     FLUENT_SETTING(std::string, ExpectedUid);
@@ -70,25 +75,27 @@ struct TUploadModuleSettings : public TOperationRequestSettings<TUploadModuleSet
     FLUENT_SETTING_DEFAULT(size_t, ChunkSize, size_t(1) << 20);
 };
 
-struct TDeleteModuleSettings : public TOperationRequestSettings<TDeleteModuleSettings> {
+struct TDeleteModuleSettings: public TOperationRequestSettings<TDeleteModuleSettings> {
     using TSelf = TDeleteModuleSettings;
 
+    FLUENT_SETTING_DEFAULT(EModuleType, Type, EModuleType::Unspecified);
     FLUENT_SETTING_DEFAULT(EModuleKind, Kind, EModuleKind::Unspecified);
     FLUENT_SETTING(std::string, ExpectedUid);
 };
 
-struct TListModulesSettings : public TOperationRequestSettings<TListModulesSettings> {
+struct TListModulesSettings: public TOperationRequestSettings<TListModulesSettings> {
     using TSelf = TListModulesSettings;
 
+    FLUENT_SETTING_DEFAULT(EModuleType, TypeFilter, EModuleType::Unspecified);
     FLUENT_SETTING_DEFAULT(EModuleKind, KindFilter, EModuleKind::Unspecified);
     FLUENT_SETTING_DEFAULT(ECompileStatus, StatusFilter, ECompileStatus::Unspecified);
     FLUENT_SETTING_OPTIONAL(uint32_t, PageSize);
     FLUENT_SETTING(std::string, PageToken);
 };
 
-struct TDescribeModuleSettings : public TOperationRequestSettings<TDescribeModuleSettings> {};
+struct TDescribeModuleSettings: public TOperationRequestSettings<TDescribeModuleSettings> {};
 
-struct TUploadModuleResult : public TStatus {
+struct TUploadModuleResult: public TStatus {
     TUploadModuleResult(TStatus&& status, Ydb::Udf::UploadModuleResult&& proto);
 
     const std::string& GetName() const;
@@ -107,7 +114,7 @@ private:
     bool ReplacedExisting_ = false;
 };
 
-struct TListModulesResult : public TStatus {
+struct TListModulesResult: public TStatus {
     TListModulesResult(TStatus&& status, Ydb::Udf::ListModulesResult&& proto);
 
     const std::vector<TModuleInfo>& GetModules() const;
@@ -118,7 +125,7 @@ private:
     std::string NextPageToken_;
 };
 
-struct TDescribeModuleResult : public TStatus {
+struct TDescribeModuleResult: public TStatus {
     TDescribeModuleResult(TStatus&& status, Ydb::Udf::DescribeModuleResult&& proto);
 
     const TModuleInfo& GetModule() const;
@@ -143,6 +150,10 @@ public:
 
     //! Streams `body` as UploadModule chunks (metadata first, then data).
     TAsyncUploadModuleResult UploadModule(std::string body, const TUploadModuleSettings& settings = {});
+
+    //! Opens a regular file and reads it incrementally. The file must remain unchanged
+    //! until the future completes. Open/read errors are reported through the future.
+    TAsyncUploadModuleResult UploadModuleFromFile(const std::string& path, const TUploadModuleSettings& settings = {});
 
     TAsyncStatus DeleteModule(const std::string& name, const TDeleteModuleSettings& settings = {});
 

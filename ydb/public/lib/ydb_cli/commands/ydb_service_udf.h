@@ -9,12 +9,12 @@
 namespace NYdb {
 namespace NConsoleClient {
 
-class TCommandUdf : public TClientCommandTree {
+class TCommandUdf: public TClientCommandTree {
 public:
     TCommandUdf();
 };
 
-class TCommandUdfUpload : public TYdbOperationCommand, public TCommandWithOutput {
+class TCommandUdfUpload: public TYdbOperationCommand {
 public:
     TCommandUdfUpload();
     void Config(TConfig& config) override;
@@ -22,10 +22,9 @@ public:
     int Run(TConfig& config) override;
 
 private:
-    TString Kind;
+    TString Format = "text";
     TString FilePath;
     TString ManifestPath;
-    TString LibraryName;
     TString WriteMode;
     TString ExpectedUid;
     TString ExpectedMd5;
@@ -33,7 +32,7 @@ private:
     bool ReplaceOnly = false;
 };
 
-class TCommandUdfDelete : public TYdbOperationCommand {
+class TCommandUdfDelete: public TYdbOperationCommand {
 public:
     TCommandUdfDelete();
     void Config(TConfig& config) override;
@@ -41,11 +40,12 @@ public:
 
 private:
     TString Name;
+    TString Type;
     TString Kind;
     TString ExpectedUid;
 };
 
-class TCommandUdfList : public TYdbOperationCommand, public TCommandWithOutput {
+class TCommandUdfList: public TYdbOperationCommand {
 public:
     TCommandUdfList();
     void Config(TConfig& config) override;
@@ -53,11 +53,13 @@ public:
     int Run(TConfig& config) override;
 
 private:
+    TString Type;
     TString Kind;
     TString Status;
+    TString Format = "table";
 };
 
-class TCommandUdfDescribe : public TYdbOperationCommand, public TCommandWithOutput {
+class TCommandUdfDescribe: public TYdbOperationCommand {
 public:
     TCommandUdfDescribe();
     void Config(TConfig& config) override;
@@ -66,6 +68,7 @@ public:
 
 private:
     TString Name;
+    TString Format = "json";
 };
 
 } // namespace NConsoleClient

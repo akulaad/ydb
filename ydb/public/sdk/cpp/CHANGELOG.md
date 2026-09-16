@@ -1,5 +1,6 @@
 * Added `Float16` and `BFloat16` vector index types.
 
+* Updated the experimental UDF API to manifest-based uploads and separate module type/code kind; added incremental `UploadModuleFromFile`.
 ## v3.23.0
 
 * Added optional `TRetryOperationSettings::StopToken` for cooperative cancellation between retry attempts.

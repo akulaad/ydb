@@ -64,8 +64,11 @@ bool ParseArtifactDirListing(
     const NSchemeCache::TSchemeCacheNavigate& response,
     TVector<TString>& cpuSpecs);
 
-Ydb::Udf::ModuleKind ToProtoKind(NUdfStore::EUdfType type);
-bool FromProtoKind(Ydb::Udf::ModuleKind kind, NUdfStore::EUdfType& type);
+inline constexpr TStringBuf NativeUnsupported = "Native UDF modules and libraries are not supported yet";
+Ydb::Udf::ModuleType ToProtoType(NUdfStore::EUdfType type);
+bool FromProtoType(Ydb::Udf::ModuleType type, NUdfStore::EUdfType& result);
+Ydb::StatusIds::StatusCode ValidateKind(Ydb::Udf::ModuleKind kind, TString& error);
+Ydb::StatusIds::StatusCode ValidateUpload(const Ydb::Udf::UploadModuleParams& params, TString& error);
 Ydb::Udf::CompileStatus ToProtoCompileStatus(NUdfStore::ECompileStatus status);
 bool FromProtoCompileStatus(Ydb::Udf::CompileStatus status, NUdfStore::ECompileStatus& result);
 

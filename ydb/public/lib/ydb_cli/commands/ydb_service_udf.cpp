@@ -3,6 +3,8 @@
 #include <ydb/public/lib/ydb_cli/common/pretty_table.h>
 
 #include <library/cpp/json/json_writer.h>
+#include <ydb/public/lib/udf/manifest/manifest.h>
+#include <yaml-cpp/yaml.h>
 
 #include <util/stream/file.h>
 #include <util/string/cast.h>
@@ -12,15 +14,88 @@ namespace NYdb {
 namespace NConsoleClient {
 namespace {
 
-NUdf::EModuleKind ParseKind(const TString& value) {
+NUdf::EModuleType ParseType(const TString& value) {
     const TString lower = to_lower(value);
-    if (lower == "udf") {
-        return NUdf::EModuleKind::Udf;
+    if (lower == "module") {
+        return NUdf::EModuleType::Module;
     }
     if (lower == "library") {
-        return NUdf::EModuleKind::Library;
+        return NUdf::EModuleType::Library;
     }
-    throw TMisuseException() << "Unknown module kind '" << value << "'. Expected: udf, library";
+    throw TMisuseException() << "Unknown module type '" << value << "'. Expected: module, library";
+}
+
+NUdf::EModuleKind ParseKind(const TString& value) {
+    if (value == "wasm") {
+        return NUdf::EModuleKind::Wasm;
+    }
+    if (value == "native") {
+        return NUdf::EModuleKind::Native;
+    }
+    throw TMisuseException() << "Unknown module kind '" << value << "'. Expected: wasm, native";
+}
+
+void EmitYaml(YAML::Emitter& emitter, const NJson::TJsonValue& json) {
+    switch (json.GetType()) {
+        case NJson::JSON_MAP:
+            emitter << YAML::BeginMap;
+            for (const auto& [key, value] : json.GetMap()) {
+                emitter << YAML::Key << YAML::DoubleQuoted << std::string(key.data(), key.size()) << YAML::Value;
+                EmitYaml(emitter, value);
+            }
+            emitter << YAML::EndMap;
+            break;
+        case NJson::JSON_ARRAY:
+            emitter << YAML::BeginSeq;
+            for (const auto& value : json.GetArray()) {
+                EmitYaml(emitter, value);
+            }
+            emitter << YAML::EndSeq;
+            break;
+        case NJson::JSON_STRING: {
+            // Quote strings even when their contents look like YAML booleans,
+            // numbers or timestamps, preserving the JSON value's type.
+            const auto& value = json.GetString();
+            emitter << YAML::DoubleQuoted << std::string(value.data(), value.size());
+            break;
+        }
+        case NJson::JSON_INTEGER:
+            emitter << json.GetInteger();
+            break;
+        case NJson::JSON_UINTEGER:
+            emitter << json.GetUInteger();
+            break;
+        case NJson::JSON_DOUBLE:
+            emitter << json.GetDouble();
+            break;
+        case NJson::JSON_BOOLEAN:
+            emitter << json.GetBoolean();
+            break;
+        case NJson::JSON_NULL:
+        case NJson::JSON_UNDEFINED:
+            emitter << YAML::Null;
+            break;
+    }
+}
+
+void PrintStructured(const NJson::TJsonValue& json, const TString& format) {
+    if (format == "yaml") {
+        YAML::Emitter emitter;
+        EmitYaml(emitter, json);
+        Cout << emitter.c_str() << Endl;
+    } else {
+        NJson::WriteJson(&Cout, &json, true, true);
+        Cout << Endl;
+    }
+}
+
+void CheckFormat(const TString& format, std::initializer_list<TStringBuf> allowed) {
+    for (auto item : allowed) {
+        if (format == item) {
+            return;
+        }
+    }
+    throw TMisuseException() << "Unsupported output format: " << format;
 }
 
 NUdf::ECompileStatus ParseCompileStatus(const TString& value) {
@@ -41,12 +116,24 @@ NUdf::ECompileStatus ParseCompileStatus(const TString& value) {
         << "'. Expected: pending, compiling, ready, failed";
 }
 
+TStringBuf TypeToString(NUdf::EModuleType kind) {
+    switch (kind) {
+        case NUdf::EModuleType::Module:
+            return "module";
+        case NUdf::EModuleType::Library:
+            return "library";
+        case NUdf::EModuleType::Unspecified:
+            return "unspecified";
+    }
+    return "unspecified";
+}
+
 TStringBuf KindToString(NUdf::EModuleKind kind) {
     switch (kind) {
-        case NUdf::EModuleKind::Udf:
-            return "udf";
-        case NUdf::EModuleKind::Library:
-            return "library";
+        case NUdf::EModuleKind::Wasm:
+            return "wasm";
+        case NUdf::EModuleKind::Native:
+            return "native";
         case NUdf::EModuleKind::Unspecified:
             return "unspecified";
     }
@@ -72,7 +159,8 @@ TStringBuf StatusToString(NUdf::ECompileStatus status) {
 NJson::TJsonValue ModuleToJson(const NUdf::TModuleInfo& module) {
     NJson::TJsonValue json(NJson::JSON_MAP);
     json["name"] = module.Name;
-    json["kind"] = TString(KindToString(module.Kind));
+    json["module_type"] = TString(TypeToString(module.Type));
+    json["module_kind"] = TString(KindToString(module.Kind));
     json["uid"] = module.Uid;
     json["md5"] = module.Md5;
     json["size"] = module.Size;
@@ -87,7 +175,7 @@ NJson::TJsonValue ModuleToJson(const NUdf::TModuleInfo& module) {
 } // namespace
 
 TCommandUdf::TCommandUdf()
-    : TClientCommandTree("udf", {}, "Manage WASM UDF / LIBRARY modules in the UDF store")
+    : TClientCommandTree("udf", {}, "Manage WASM modules and libraries (native is not supported yet)")
 {
     AddCommand(std::make_unique<TCommandUdfUpload>());
     AddCommand(std::make_unique<TCommandUdfDelete>());
@@ -96,38 +184,43 @@ TCommandUdf::TCommandUdf()
 }
 
 TCommandUdfUpload::TCommandUdfUpload()
-    : TYdbOperationCommand("upload", {}, "Upload a WASM UDF or LIBRARY module")
+    : TYdbOperationCommand("upload", {}, "Upload a WASM module or library using its manifest")
 {
 }
 
 void TCommandUdfUpload::Config(TConfig& config) {
     TYdbOperationCommand::Config(config);
-    config.Opts->AddLongOption("kind", "Module kind: udf | library")
-        .Required().RequiredArgument("KIND").StoreResult(&Kind);
-    config.Opts->AddLongOption('f', "file", "Path to the module body (.wasm)")
-        .Required().RequiredArgument("PATH").StoreResult(&FilePath);
-    config.Opts->AddLongOption("manifest", "Path to manifest.json (required for --kind udf)")
-        .Optional().RequiredArgument("PATH").StoreResult(&ManifestPath);
-    config.Opts->AddLongOption("name",
-            "Library name (required for --kind library; for --kind udf it must match manifest module_name)")
-        .Optional().RequiredArgument("NAME").StoreResult(&LibraryName);
+    config.Opts->AddLongOption('f', "file", "Path to the module body (format is specified in the manifest)")
+        .Required()
+        .RequiredArgument("PATH")
+        .StoreResult(&FilePath);
+    config.Opts->AddLongOption("manifest", "Path to the required module or library manifest.json")
+        .Required()
+        .RequiredArgument("PATH")
+        .StoreResult(&ManifestPath);
     config.Opts->AddLongOption("write-mode", "create-or-replace | create-only | replace-only")
-        .Optional().RequiredArgument("MODE").StoreResult(&WriteMode);
+        .Optional()
+        .RequiredArgument("MODE")
+        .StoreResult(&WriteMode);
     config.Opts->AddLongOption("create-only", "Refuse to replace an existing module")
         .StoreTrue(&CreateOnly);
     config.Opts->AddLongOption("replace-only", "Refuse to create a missing module")
         .StoreTrue(&ReplaceOnly);
     config.Opts->AddLongOption("expected-uid", "Abort unless the current uid matches")
-        .Optional().RequiredArgument("UID").StoreResult(&ExpectedUid);
+        .Optional()
+        .RequiredArgument("UID")
+        .StoreResult(&ExpectedUid);
     config.Opts->AddLongOption("expected-md5", "Abort unless the uploaded body md5 matches")
-        .Optional().RequiredArgument("MD5").StoreResult(&ExpectedMd5);
-    AddOutputFormats(config, { EDataFormat::Pretty, EDataFormat::Json });
+        .Optional()
+        .RequiredArgument("MD5")
+        .StoreResult(&ExpectedMd5);
+    config.Opts->AddLongOption("format", "Output format: text (default) | json").RequiredArgument("FORMAT").StoreResult(&Format);
     config.SetFreeArgsNum(0);
 }
 
 void TCommandUdfUpload::Parse(TConfig& config) {
     TClientCommand::Parse(config);
-    ParseOutputFormats();
+    CheckFormat(Format, {"text", "json"});
 }
 
 int TCommandUdfUpload::Run(TConfig& config) {
@@ -141,22 +234,9 @@ int TCommandUdfUpload::Run(TConfig& config) {
         throw TMisuseException() << "--replace-only conflicts with --write-mode";
     }
 
-    const auto kind = ParseKind(Kind);
-    if (kind == NUdf::EModuleKind::Udf && !ManifestPath) {
-        throw TMisuseException() << "--manifest is required for --kind udf";
-    }
-    if (kind == NUdf::EModuleKind::Library && !LibraryName) {
-        throw TMisuseException() << "--name is required for --kind library";
-    }
-
-    auto settings = FillSettings(NUdf::TUploadModuleSettings())
-        .Kind(kind);
-    if (ManifestPath) {
-        settings.ManifestJson(TFileInput(ManifestPath).ReadAll());
-    }
-    if (LibraryName) {
-        settings.LibraryName(LibraryName);
-    }
+    const auto manifest = TFileInput(ManifestPath).ReadAll();
+    NUdfManifest::Parse(manifest);
+    auto settings = FillSettings(NUdf::TUploadModuleSettings()).ManifestJson(manifest);
     if (CreateOnly) {
         settings.WriteMode(NUdf::EWriteMode::CreateOnly);
     } else if (ReplaceOnly) {
@@ -182,10 +262,10 @@ int TCommandUdfUpload::Run(TConfig& config) {
 
     auto driver = CreateDriver(config);
     NUdf::TUdfClient client(driver);
-    auto result = client.UploadModule(TFileInput(FilePath).ReadAll(), settings).GetValueSync();
+    auto result = client.UploadModuleFromFile(FilePath, settings).GetValueSync();
     NStatusHelpers::ThrowOnErrorOrPrintIssues(result);
 
-    if (OutputFormat == EDataFormat::Json) {
+    if (Format == "json") {
         NJson::TJsonValue json(NJson::JSON_MAP);
         json["name"] = result.GetName();
         json["uid"] = result.GetUid();
@@ -214,16 +294,29 @@ TCommandUdfDelete::TCommandUdfDelete()
 void TCommandUdfDelete::Config(TConfig& config) {
     TYdbOperationCommand::Config(config);
     config.Opts->AddLongOption("name", "Module name")
-        .Required().RequiredArgument("NAME").StoreResult(&Name);
-    config.Opts->AddLongOption("kind", "Optional kind assert: udf | library")
-        .Optional().RequiredArgument("KIND").StoreResult(&Kind);
+        .Required()
+        .RequiredArgument("NAME")
+        .StoreResult(&Name);
+    config.Opts->AddLongOption("type", "Module type: module | library")
+        .Optional()
+        .RequiredArgument("TYPE")
+        .StoreResult(&Type);
+    config.Opts->AddLongOption("kind", "Optional code kind assert: wasm | native (native unsupported)")
+        .Optional()
+        .RequiredArgument("KIND")
+        .StoreResult(&Kind);
     config.Opts->AddLongOption("expected-uid", "Abort unless the current uid matches")
-        .Optional().RequiredArgument("UID").StoreResult(&ExpectedUid);
+        .Optional()
+        .RequiredArgument("UID")
+        .StoreResult(&ExpectedUid);
     config.SetFreeArgsNum(0);
 }
 
 int TCommandUdfDelete::Run(TConfig& config) {
     auto settings = FillSettings(NUdf::TDeleteModuleSettings());
+    if (Type) {
+        settings.Type(ParseType(Type));
+    }
     if (Kind) {
         settings.Kind(ParseKind(Kind));
     }
@@ -244,21 +337,32 @@ TCommandUdfList::TCommandUdfList()
 
 void TCommandUdfList::Config(TConfig& config) {
     TYdbOperationCommand::Config(config);
-    config.Opts->AddLongOption("kind", "Filter by kind: udf | library")
-        .Optional().RequiredArgument("KIND").StoreResult(&Kind);
+    config.Opts->AddLongOption("type", "Module type: module | library")
+        .Optional()
+        .RequiredArgument("TYPE")
+        .StoreResult(&Type);
+    config.Opts->AddLongOption("kind", "Filter by code kind: wasm | native (native unsupported)")
+        .Optional()
+        .RequiredArgument("KIND")
+        .StoreResult(&Kind);
     config.Opts->AddLongOption("status", "Filter by compile status")
-        .Optional().RequiredArgument("STATUS").StoreResult(&Status);
-    AddOutputFormats(config, { EDataFormat::Pretty, EDataFormat::Json });
+        .Optional()
+        .RequiredArgument("STATUS")
+        .StoreResult(&Status);
+    config.Opts->AddLongOption("format", "Output format: table (default) | json | yaml").RequiredArgument("FORMAT").StoreResult(&Format);
     config.SetFreeArgsNum(0);
 }
 
 void TCommandUdfList::Parse(TConfig& config) {
     TClientCommand::Parse(config);
-    ParseOutputFormats();
+    CheckFormat(Format, {"table", "json", "yaml"});
 }
 
 int TCommandUdfList::Run(TConfig& config) {
     auto settings = FillSettings(NUdf::TListModulesSettings());
+    if (Type) {
+        settings.TypeFilter(ParseType(Type));
+    }
     if (Kind) {
         settings.KindFilter(ParseKind(Kind));
     }
@@ -268,40 +372,28 @@ int TCommandUdfList::Run(TConfig& config) {
 
     auto driver = CreateDriver(config);
     NUdf::TUdfClient client(driver);
-    auto result = client.ListModules(settings).GetValueSync();
-    NStatusHelpers::ThrowOnErrorOrPrintIssues(result);
-
-    if (OutputFormat == EDataFormat::Json) {
-        NJson::TJsonValue json(NJson::JSON_MAP);
-        NJson::TJsonValue modules(NJson::JSON_ARRAY);
+    NJson::TJsonValue json(NJson::JSON_MAP);
+    NJson::TJsonValue modules(NJson::JSON_ARRAY);
+    TPrettyTable table({"Name", "ModuleType", "ModuleKind", "Uid", "CompileStatus"});
+    do {
+        auto result = client.ListModules(settings).GetValueSync();
+        NStatusHelpers::ThrowOnErrorOrPrintIssues(result);
         for (const auto& module : result.GetModules()) {
             modules.AppendValue(ModuleToJson(module));
-        }
-        json["modules"] = std::move(modules);
-        if (!result.GetNextPageToken().empty()) {
-            json["next_page_token"] = result.GetNextPageToken();
-        }
-        NJson::WriteJson(&Cout, &json, true, true);
-        Cout << Endl;
-    } else {
-        TPrettyTable table({
-            "Name",
-            "Kind",
-            "Uid",
-            "Md5",
-            "Size",
-            "Status",
-        });
-        for (const auto& module : result.GetModules()) {
             auto& row = table.AddRow();
             row.Column(0, module.Name);
-            row.Column(1, KindToString(module.Kind));
-            row.Column(2, module.Uid);
-            row.Column(3, module.Md5);
-            row.Column(4, ToString(module.Size));
-            row.Column(5, StatusToString(module.CompileStatus));
+            row.Column(1, TypeToString(module.Type));
+            row.Column(2, KindToString(module.Kind));
+            row.Column(3, module.Uid);
+            row.Column(4, StatusToString(module.CompileStatus));
         }
+        settings.PageToken(result.GetNextPageToken());
+    } while (!settings.PageToken_.empty());
+    if (Format == "table") {
         table.Print(Cout);
+    } else {
+        json["modules"] = std::move(modules);
+        PrintStructured(json, Format);
     }
     return EXIT_SUCCESS;
 }
@@ -314,14 +406,16 @@ TCommandUdfDescribe::TCommandUdfDescribe()
 void TCommandUdfDescribe::Config(TConfig& config) {
     TYdbOperationCommand::Config(config);
     config.Opts->AddLongOption("name", "Module name")
-        .Required().RequiredArgument("NAME").StoreResult(&Name);
-    AddOutputFormats(config, { EDataFormat::Pretty, EDataFormat::Json });
+        .Required()
+        .RequiredArgument("NAME")
+        .StoreResult(&Name);
+    config.Opts->AddLongOption("format", "Output format: json (default) | yaml").RequiredArgument("FORMAT").StoreResult(&Format);
     config.SetFreeArgsNum(0);
 }
 
 void TCommandUdfDescribe::Parse(TConfig& config) {
     TClientCommand::Parse(config);
-    ParseOutputFormats();
+    CheckFormat(Format, {"json", "yaml"});
 }
 
 int TCommandUdfDescribe::Run(TConfig& config) {
@@ -331,7 +425,6 @@ int TCommandUdfDescribe::Run(TConfig& config) {
     NStatusHelpers::ThrowOnErrorOrPrintIssues(result);
 
     const auto& module = result.GetModule();
-    if (OutputFormat == EDataFormat::Json) {
         NJson::TJsonValue json(NJson::JSON_MAP);
         json["module"] = ModuleToJson(module);
         json["manifest_json"] = result.GetManifestJson();
@@ -346,35 +439,9 @@ int TCommandUdfDescribe::Run(TConfig& config) {
             platforms.AppendValue(std::move(item));
         }
         json["platforms"] = std::move(platforms);
-        NJson::WriteJson(&Cout, &json, true, true);
-        Cout << Endl;
-    } else {
-        Cout << "name: " << module.Name << Endl
-             << "kind: " << KindToString(module.Kind) << Endl
-             << "uid: " << module.Uid << Endl
-             << "md5: " << module.Md5 << Endl
-             << "size: " << module.Size << Endl
-             << "version: " << module.Version << Endl
-             << "compile_status: " << StatusToString(module.CompileStatus) << Endl;
-        if (!module.CompileError.empty()) {
-            Cout << "compile_error: " << module.CompileError << Endl;
-        }
-        if (!result.GetManifestJson().empty()) {
-            Cout << "manifest_json: " << result.GetManifestJson() << Endl;
-        }
-        if (!result.GetPlatforms().empty()) {
-            Cout << "platforms:" << Endl;
-            for (const auto& platform : result.GetPlatforms()) {
-                Cout << "  - cpu_spec: " << platform.CpuSpec
-                     << " status: " << StatusToString(platform.Status);
-                if (!platform.CompileError.empty()) {
-                    Cout << " error: " << platform.CompileError;
-                }
-                Cout << Endl;
-            }
-        }
-    }
-    return EXIT_SUCCESS;
+        PrintStructured(json, Format);
+
+        return EXIT_SUCCESS;
 }
 
 } // namespace NConsoleClient

@@ -107,8 +107,7 @@ private:
 };
 
 class TDeleteModuleRPC
-    : public TUdfRequestActor<TDeleteModuleRPC, TEvDeleteModuleRequest, NUdfApi::TEvDeleteModuleResult>
-{
+    : public TUdfRequestActor<TDeleteModuleRPC, TEvDeleteModuleRequest, NUdfApi::TEvDeleteModuleResult> {
 public:
     using TUdfRequestActor::TUdfRequestActor;
 
@@ -118,8 +117,7 @@ public:
 };
 
 class TListModulesRPC
-    : public TUdfRequestActor<TListModulesRPC, TEvListModulesRequest, NUdfApi::TEvListModulesResult>
-{
+    : public TUdfRequestActor<TListModulesRPC, TEvListModulesRequest, NUdfApi::TEvListModulesResult> {
 public:
     using TUdfRequestActor::TUdfRequestActor;
 
@@ -129,8 +127,7 @@ public:
 };
 
 class TDescribeModuleRPC
-    : public TUdfRequestActor<TDescribeModuleRPC, TEvDescribeModuleRequest, NUdfApi::TEvDescribeModuleResult>
-{
+    : public TUdfRequestActor<TDescribeModuleRPC, TEvDescribeModuleRequest, NUdfApi::TEvDescribeModuleResult> {
 public:
     using TUdfRequestActor::TUdfRequestActor;
 
@@ -156,7 +153,8 @@ public:
     TUploadModuleStreamActor(TIntrusivePtr<IContext> context, const TActorId& grpcRequestProxyId)
         : Context_(std::move(context))
         , GRpcRequestProxyId_(grpcRequestProxyId)
-    {}
+    {
+    }
 
     void Bootstrap() {
         Become(&TUploadModuleStreamActor::StateWork);
@@ -257,6 +255,14 @@ private:
                 HasMetadata_ = true;
                 TotalSize_ = chunk.metadata().total_size();
                 Params_ = chunk.metadata().params();
+                {
+                    TString error;
+                    const auto status = NUdfApi::ValidateUpload(Params_, error);
+                    if (status != Ydb::StatusIds::SUCCESS) {
+                        Reply(status, error);
+                        return;
+                    }
+                }
                 break;
             case Ydb::Udf::UploadModuleChunk::kData:
                 if (!HasMetadata_) {

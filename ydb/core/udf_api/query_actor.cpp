@@ -1,4 +1,11 @@
 #include "query_actor.h"
+#include <ydb/core/base/appdata.h>
+#include <ydb/core/base/path.h>
+#include <ydb/core/base/tablet_pipe.h>
+#include <ydb/services/udf_store/compile_controller/events.h>
+#include <util/generic/algorithm.h>
+#include <util/generic/hash.h>
+#include <util/generic/hash_set.h>
 
 #include "common.h"
 #include "events.h"
@@ -35,10 +42,18 @@ public:
     TListModulesActor(const TActorId& replyTo, const Ydb::Udf::ListModulesRequest& request)
         : ReplyTo_(replyTo)
         , Request_(request)
-    {}
+    {
+    }
 
     void Bootstrap() {
         Become(&TListModulesActor::StateMain);
+
+        TString kindError;
+        const auto kindStatus = ValidateKind(Request_.kind_filter(), kindError);
+        if (kindStatus != Ydb::StatusIds::SUCCESS) {
+            ReplyError(kindStatus, kindError);
+            return;
+        }
 
         if (!IsWasmUdfEnabled()) {
             ReplyError(Ydb::StatusIds::PRECONDITION_FAILED,
@@ -53,10 +68,10 @@ public:
         }
         Limit_ = Request_.page_size() ? Min<ui64>(Request_.page_size(), MaxPageSize) : DefaultPageSize;
 
-        if (Request_.kind_filter() != Ydb::Udf::MODULE_KIND_UNSPECIFIED) {
+        if (Request_.type_filter() != Ydb::Udf::MODULE_TYPE_UNSPECIFIED) {
             EUdfType type = EUdfType::WASM;
-            if (!FromProtoKind(Request_.kind_filter(), type)) {
-                ReplyError(Ydb::StatusIds::BAD_REQUEST, "kind_filter must be UDF or LIBRARY");
+            if (!FromProtoType(Request_.type_filter(), type)) {
+                ReplyError(Ydb::StatusIds::BAD_REQUEST, "type_filter must be module or library");
                 return;
             }
             Filter_.Type = type;
@@ -133,21 +148,25 @@ class TDescribeModuleActor: public TActorBootstrapped<TDescribeModuleActor> {
     enum class EStep {
         SelectModule,
         ListArtifactDir,
+        ResolveController,
+        ReadController,
         SelectArtifact,
     };
 
 public:
     TDescribeModuleActor(
-            const TActorId& replyTo,
-            const Ydb::Udf::DescribeModuleRequest& request,
-            const TString& databaseName)
+        const TActorId& replyTo,
+        const Ydb::Udf::DescribeModuleRequest& request,
+        const TString& databaseName)
         : ReplyTo_(replyTo)
         , Request_(request)
         , DatabaseName_(databaseName)
-    {}
+    {
+    }
 
     void Bootstrap() {
         Become(&TDescribeModuleActor::StateMain);
+        Schedule(TDuration::Seconds(30), new TEvents::TEvWakeup());
 
         if (!IsWasmUdfEnabled()) {
             ReplyError(Ydb::StatusIds::PRECONDITION_FAILED,
@@ -176,6 +195,10 @@ public:
             hFunc(TEvYqlResult, Handle);
             hFunc(NMetadata::NRequest::TEvRequestFailed, Handle);
             hFunc(TEvTxProxySchemeCache::TEvNavigateKeySetResult, Handle);
+            hFunc(NUdfStore::TEvCompileController::TEvDescribeModuleResult, Handle);
+            hFunc(TEvTabletPipe::TEvClientConnected, Handle);
+            hFunc(TEvTabletPipe::TEvClientDestroyed, Handle);
+            cFunc(TEvents::TEvWakeup::EventType, HandleTimeout);
             default:
                 break;
         }
@@ -189,6 +212,10 @@ private:
                 if (!NQuery::ParseModuleRowResponse(ev->Get()->GetResult(), row)) {
                     ReplyError(Ydb::StatusIds::NOT_FOUND,
                         TStringBuilder() << "module '" << Name_ << "' does not exist");
+                    return;
+                }
+                if (row.Type == EUdfType::NATIVE_UNSAFE) {
+                    ReplyError(Ydb::StatusIds::PRECONDITION_FAILED, TString(NativeUnsupported));
                     return;
                 }
                 FillModuleInfo(row, *Result_.mutable_module());
@@ -209,12 +236,14 @@ private:
                 }
                 auto& platform = *Result_.add_platforms();
                 platform.set_cpu_spec(CpuSpecs_[NextCpuSpecIndex_]);
-                platform.set_status(ready ? Ydb::Udf::READY : Ydb::Udf::PENDING);
+                FillPlatform(platform, CpuSpecs_[NextCpuSpecIndex_], ready);
                 ++NextCpuSpecIndex_;
                 SelectNextArtifact();
                 return;
             }
             case EStep::ListArtifactDir:
+            case EStep::ResolveController:
+            case EStep::ReadController:
                 return;
         }
     }
@@ -225,21 +254,114 @@ private:
     }
 
     void Handle(TEvTxProxySchemeCache::TEvNavigateKeySetResult::TPtr& ev) {
-        if (Step_ != EStep::ListArtifactDir) {
+        if (Step_ == EStep::ListArtifactDir) {
+            if (!ParseArtifactDirListing(*ev->Get()->Request, CpuSpecs_)) {
+                ReplyError(Ydb::StatusIds::UNAVAILABLE, "Cannot enumerate UDF artifact platforms");
+                return;
+            }
+            for (const auto& cpuSpec : CpuSpecs_) {
+                ArtifactTables_.insert(cpuSpec);
+            }
+            Step_ = EStep::ResolveController;
+            Send(MakeSchemeCacheID(), MakeDatabaseOwnerRequest(
+                                          DatabaseName_.empty() ? AppData()->TenantName : DatabaseName_));
             return;
         }
-        if (!ParseArtifactDirListing(*ev->Get()->Request, CpuSpecs_)) {
-            ALS_WARN(NKikimrServices::GRPC_SERVER)
-                << "UdfService: artifacts directory not listed while describing '" << Name_ << "'";
-            // Reporting no platform at all is honest: the request cannot tell
-            // whether any exists, and claiming PENDING would be a guess.
-            ReplySuccess();
+        if (Step_ != EStep::ResolveController) {
             return;
         }
+        const auto& response = *ev->Get()->Request;
+        if (response.ResultSet.size() != 1 || response.ErrorCount ||
+            response.ResultSet.front().Status != NSchemeCache::TSchemeCacheNavigate::EStatus::Ok ||
+            !response.ResultSet.front().DomainInfo) {
+            ReplyError(Ydb::StatusIds::UNAVAILABLE, "Cannot resolve UDF compile controller");
+            return;
+        }
+        const auto& domain = response.ResultSet.front().DomainInfo;
+        if (domain->IsServerless() && ev->Cookie != 1) {
+            auto navigate = MakeHolder<NSchemeCache::TSchemeCacheNavigate>();
+            navigate->DatabaseName = AppData()->DomainsInfo->GetDomain()->Name;
+            auto& entry = navigate->ResultSet.emplace_back();
+            entry.TableId = TTableId(domain->ResourcesDomainKey.OwnerId, domain->ResourcesDomainKey.LocalPathId);
+            entry.Operation = NSchemeCache::TSchemeCacheNavigate::OpPath;
+            entry.RequestType = NSchemeCache::TSchemeCacheNavigate::TEntry::ERequestType::ByTableId;
+            entry.RedirectRequired = false;
+            entry.ShowPrivatePath = true;
+            Send(MakeSchemeCacheID(), new TEvTxProxySchemeCache::TEvNavigateKeySet(navigate.Release()), 0, 1);
+            return;
+        }
+        const ui64 tablet = domain->Params.GetWasmCompileController();
+        if (!tablet) {
+            SelectNextArtifact();
+            return;
+        }
+        Step_ = EStep::ReadController;
+        NTabletPipe::TClientConfig config;
+        config.RetryPolicy.RetryLimitCount = 3;
+        ControllerPipe_ = Register(NTabletPipe::CreateClient(SelfId(), tablet, config));
+        auto request = MakeHolder<NUdfStore::TEvCompileController::TEvDescribeModule>();
+        request->Record.SetName(Name_);
+        request->Record.SetUid(Uid_);
+        request->Record.SetKind(ArtifactKind_ == "library"
+                                    ? NKikimrUdfStore::ARTIFACT_KIND_LIBRARY
+                                    : NKikimrUdfStore::ARTIFACT_KIND_MODULE);
+        NTabletPipe::SendData(SelfId(), ControllerPipe_, request.Release());
+    }
+
+    void Handle(NUdfStore::TEvCompileController::TEvDescribeModuleResult::TPtr& ev) {
+        if (Step_ != EStep::ReadController) {
+            return;
+        }
+        for (const auto& platform : ev->Get()->Record.GetPlatforms()) {
+            ControllerPlatforms_[platform.GetCpuSpec()] = platform;
+            CpuSpecs_.push_back(platform.GetCpuSpec());
+        }
+        SortUnique(CpuSpecs_);
         SelectNextArtifact();
     }
 
+    void Handle(TEvTabletPipe::TEvClientConnected::TPtr& ev) {
+        if (Step_ == EStep::ReadController && ev->Get()->Status != NKikimrProto::OK) {
+            ReplyError(Ydb::StatusIds::UNAVAILABLE, "UDF compile controller is unavailable");
+        }
+    }
+
+    void Handle(TEvTabletPipe::TEvClientDestroyed::TPtr&) {
+        if (Step_ == EStep::ReadController) {
+            ReplyError(Ydb::StatusIds::UNAVAILABLE, "UDF compile controller disconnected");
+        }
+    }
+
+    void HandleTimeout() {
+        ReplyError(Ydb::StatusIds::TIMEOUT, "Timed out reading UDF platform status");
+    }
+
+    void PassAway() override {
+        if (ControllerPipe_) {
+            NTabletPipe::CloseClient(SelfId(), ControllerPipe_);
+        }
+        TActorBootstrapped::PassAway();
+    }
+
+    void FillPlatform(Ydb::Udf::PlatformCompileStatus& result, const TString& cpuSpec, bool ready) {
+        result.set_cpu_spec(cpuSpec);
+        result.set_status(ready ? Ydb::Udf::READY : Ydb::Udf::PENDING);
+        if (!ready) {
+            if (const auto it = ControllerPlatforms_.find(cpuSpec); it != ControllerPlatforms_.end()) {
+                if (it->second.GetFailed()) {
+                    result.set_status(Ydb::Udf::FAILED);
+                    result.set_compile_error(it->second.GetError());
+                } else if (it->second.GetCompiling()) {
+                    result.set_status(Ydb::Udf::COMPILING);
+                }
+            }
+        }
+    }
+
     void SelectNextArtifact() {
+        while (NextCpuSpecIndex_ < CpuSpecs_.size() && !ArtifactTables_.contains(CpuSpecs_[NextCpuSpecIndex_])) {
+            FillPlatform(*Result_.add_platforms(), CpuSpecs_[NextCpuSpecIndex_++], false);
+        }
         if (NextCpuSpecIndex_ >= CpuSpecs_.size()) {
             ReplySuccess();
             return;
@@ -274,6 +396,9 @@ private:
     TString Uid_;
     TString ArtifactKind_;
     TVector<TString> CpuSpecs_;
+    THashSet<TString> ArtifactTables_;
+    THashMap<TString, NKikimrUdfStore::TEvDescribeModuleResult::TPlatform> ControllerPlatforms_;
+    TActorId ControllerPipe_;
     size_t NextCpuSpecIndex_ = 0;
     Ydb::Udf::DescribeModuleResult Result_;
 };

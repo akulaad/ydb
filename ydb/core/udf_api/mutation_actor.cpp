@@ -1,4 +1,6 @@
 #include "mutation_actor.h"
+#include <ydb/public/lib/udf/manifest/manifest.h>
+#include <ydb/services/udf_store/wasm/compile.h>
 
 #include "common.h"
 #include "events.h"
@@ -31,28 +33,6 @@ namespace {
 
 using TEvYqlResult = NMetadata::NRequest::TEvRequestResult<NMetadata::NRequest::TDialogYQLRequest>;
 
-//! Extracts the name a WASM UDF is going to be known by. Only `module_name` is
-//! read here: the full manifest is validated by the compile actor, which is
-//! also the only place that can say whether the bytecode matches it.
-bool TryReadModuleNameFromManifest(const TString& manifestJson, TString& name, TString& error) {
-    NJson::TJsonValue parsed;
-    if (!NJson::ReadJsonTree(manifestJson, &parsed)) {
-        error = "manifest_json is not valid JSON";
-        return false;
-    }
-    const NJson::TJsonValue* moduleName = nullptr;
-    if (!parsed.IsMap() || !parsed.GetValuePointer("module_name", &moduleName) || !moduleName->IsString()) {
-        error = "manifest_json must contain a string module_name";
-        return false;
-    }
-    name = Strip(moduleName->GetString());
-    if (name.empty()) {
-        error = "manifest_json module_name is empty";
-        return false;
-    }
-    return true;
-}
-
 class TUploadModuleActor: public TActorBootstrapped<TUploadModuleActor> {
     enum class EStep {
         UpsertChunk,
@@ -65,7 +45,8 @@ public:
         : ReplyTo_(replyTo)
         , Params_(params)
         , Body_(std::move(body))
-    {}
+    {
+    }
 
     void Bootstrap() {
         Become(&TUploadModuleActor::StateMain);
@@ -102,40 +83,19 @@ public:
 private:
     bool ResolveRequest(Ydb::StatusIds::StatusCode& status, TString& error) {
         status = Ydb::StatusIds::BAD_REQUEST;
-        if (!FromProtoKind(Params_.kind(), Type_)) {
-            error = "kind must be UDF or LIBRARY";
+        status = ValidateUpload(Params_, error);
+        if (status != Ydb::StatusIds::SUCCESS) {
             return false;
         }
-        if (Body_.empty()) {
-            error = "module body is empty";
+        const auto manifest = NYdb::NUdfManifest::Parse(Params_.manifest_json());
+        Name_ = manifest.Name;
+        Type_ = manifest.Type == NYdb::NUdfManifest::EModuleType::Module ? EUdfType::WASM : EUdfType::LIBRARY;
+        try {
+            NUdfStore::NWasm::ValidateModuleSource(Body_, NUdfStore::NWasm::DetectBytecodeFormat(manifest.Extension));
+        } catch (const std::exception& ex) {
+            status = Ydb::StatusIds::BAD_REQUEST;
+            error = ex.what();
             return false;
-        }
-
-        const TString givenName = Strip(TString(Params_.library_name()));
-        if (Type_ == EUdfType::LIBRARY) {
-            Name_ = givenName;
-            if (Name_.empty()) {
-                error = "library_name is required for kind=LIBRARY";
-                return false;
-            }
-        } else {
-            if (Params_.manifest_json().empty()) {
-                error = "manifest_json is required for kind=UDF";
-                return false;
-            }
-            if (!TryReadModuleNameFromManifest(TString(Params_.manifest_json()), Name_, error)) {
-                return false;
-            }
-            // A UDF is queried by the name in its manifest, so a name given
-            // here that says otherwise cannot be honoured. Silently uploading
-            // under the manifest name would leave the caller looking for a
-            // module that does not exist under the name it asked for.
-            if (!givenName.empty() && givenName != Name_) {
-                error = TStringBuilder()
-                    << "library_name '" << givenName << "' does not match manifest module_name '" << Name_
-                    << "'; a UDF module is named by its manifest";
-                return false;
-            }
         }
 
         Md5_ = MD5::Calc(Body_);
@@ -179,9 +139,8 @@ private:
         }
         // Everything written so far hangs off a uid the modules row does not
         // point at, so it is unreachable garbage rather than a broken module.
-        FailAndCleanup(Ydb::StatusIds::INTERNAL_ERROR, TStringBuilder()
-            << "UDF store write failed at step " << static_cast<int>(Step_) << ": " << ev->Get()->GetErrorMessage(),
-            Uid_);
+        FailAndCleanup(ev->Get()->GetStatus(), TStringBuilder() << "UDF store write failed at step " << static_cast<int>(Step_) << ": " << ev->Get()->GetErrorMessage(),
+                       Uid_);
     }
 
     void HandleFlipResult(const Ydb::Table::ExecuteDataQueryResponse& response) {
@@ -211,8 +170,7 @@ private:
     void ExplainRejectedWrite(
         const NQuery::TModulePreState& preState,
         Ydb::StatusIds::StatusCode& status,
-        TString& error) const
-    {
+        TString& error) const {
         const auto writeMode = WriteMode();
         if (preState.Existed && writeMode == Ydb::Udf::CREATE_ONLY) {
             status = Ydb::StatusIds::ALREADY_EXISTS;
@@ -278,12 +236,12 @@ private:
         // The modules row is published last: it is what makes the upload
         // visible, and nothing must find it before all of its chunks are in.
         Step_ = EStep::FlipModule;
-        const bool withManifest = Type_ == EUdfType::WASM;
+        const bool withManifest = true;
         ExecuteYqlAsSystem(
             SelfId(),
             NQuery::BuildFlipModuleQuery(NUdfStore::GetModulesTablePath(), withManifest),
             false,
-            [this, withManifest](Ydb::Table::ExecuteDataQueryRequest& request) {
+            [this](Ydb::Table::ExecuteDataQueryRequest& request) {
                 NQuery::TModuleRow row;
                 row.Name = Name_;
                 row.Uid = Uid_;
@@ -396,16 +354,24 @@ class TDeleteModuleActor: public TActorBootstrapped<TDeleteModuleActor> {
 
 public:
     TDeleteModuleActor(
-            const TActorId& replyTo,
-            const Ydb::Udf::DeleteModuleRequest& request,
-            const TString& databaseName)
+        const TActorId& replyTo,
+        const Ydb::Udf::DeleteModuleRequest& request,
+        const TString& databaseName)
         : ReplyTo_(replyTo)
         , Request_(request)
         , DatabaseName_(databaseName)
-    {}
+    {
+    }
 
     void Bootstrap() {
         Become(&TDeleteModuleActor::StateMain);
+
+        TString kindError;
+        const auto kindStatus = ValidateKind(Request_.module_kind(), kindError);
+        if (kindStatus != Ydb::StatusIds::SUCCESS) {
+            ReplyError(kindStatus, kindError);
+            return;
+        }
 
         if (!IsWasmUdfEnabled()) {
             ReplyError(Ydb::StatusIds::PRECONDITION_FAILED,
@@ -418,10 +384,10 @@ public:
             ReplyError(Ydb::StatusIds::BAD_REQUEST, "name is required");
             return;
         }
-        if (Request_.kind() != Ydb::Udf::MODULE_KIND_UNSPECIFIED) {
+        if (Request_.module_type() != Ydb::Udf::MODULE_TYPE_UNSPECIFIED) {
             EUdfType requestedType = EUdfType::WASM;
-            if (!FromProtoKind(Request_.kind(), requestedType)) {
-                ReplyError(Ydb::StatusIds::BAD_REQUEST, "kind must be UDF or LIBRARY");
+            if (!FromProtoType(Request_.module_type(), requestedType)) {
+                ReplyError(Ydb::StatusIds::BAD_REQUEST, "module_type must be module or library");
                 return;
             }
             RequiredType_ = requestedType;
@@ -496,8 +462,7 @@ private:
     void ExplainRejectedDelete(
         const NQuery::TModulePreState& preState,
         Ydb::StatusIds::StatusCode& status,
-        TString& error) const
-    {
+        TString& error) const {
         if (!preState.Existed) {
             status = Ydb::StatusIds::NOT_FOUND;
             error = TStringBuilder() << "module '" << Name_ << "' does not exist";
@@ -537,8 +502,8 @@ private:
             DeleteNextArtifacts();
             return;
         }
-        ReplyError(Ydb::StatusIds::INTERNAL_ERROR, TStringBuilder()
-            << "UDF store delete failed at step " << static_cast<int>(Step_) << ": " << ev->Get()->GetErrorMessage());
+        ReplyError(ev->Get()->GetStatus(), TStringBuilder()
+                                               << "UDF store delete failed at step " << static_cast<int>(Step_) << ": " << ev->Get()->GetErrorMessage());
     }
 
     void Handle(TEvTxProxySchemeCache::TEvNavigateKeySetResult::TPtr& ev) {

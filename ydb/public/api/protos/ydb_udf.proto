@@ -8,10 +8,16 @@ import "google/protobuf/timestamp.proto";
 import "ydb/public/api/protos/annotations/validation.proto";
 import "ydb/public/api/protos/ydb_operation.proto";
 
+enum ModuleType {
+    MODULE_TYPE_UNSPECIFIED = 0;
+    MODULE = 1;
+    LIBRARY = 2;
+}
+
 enum ModuleKind {
     MODULE_KIND_UNSPECIFIED = 0;
-    UDF = 1;      // WASM UDF (type=WASM)
-    LIBRARY = 2;  // type=LIBRARY
+    WASM = 1;
+    NATIVE = 2; // Recognized, but not supported yet.
 }
 
 enum CompileStatus {
@@ -31,7 +37,8 @@ enum WriteMode {
 
 message ModuleInfo {
     string name = 1;
-    ModuleKind kind = 2;
+    ModuleType module_type = 2;
+    ModuleKind module_kind = 11;
     string uid = 3;
     string md5 = 4;
     uint64 size = 5;
@@ -54,13 +61,7 @@ message PlatformCompileStatus {
 message UploadModuleParams {
     Ydb.Operations.OperationParams operation_params = 1;
 
-    // Validated by the service: the validation framework cannot mark an enum
-    // required, and MODULE_KIND_UNSPECIFIED is not a kind anything can store.
-    ModuleKind kind = 2;
-    // Required if kind=LIBRARY; for kind=UDF the name comes from manifest_json.module_name.
-    string library_name = 3;
-
-    string manifest_json = 4;  // required if kind=UDF
+    string manifest_json = 4; // Required; sole source of name, type and kind.
 
     WriteMode write_mode = 5;
     string expected_uid = 6;
@@ -103,7 +104,8 @@ message UploadModuleResult {
 message DeleteModuleRequest {
     Ydb.Operations.OperationParams operation_params = 1;
     string name = 2 [(required) = true];
-    ModuleKind kind = 3;  // optional assert
+    ModuleType module_type = 3; // optional assert
+    ModuleKind module_kind = 5; // optional assert
     string expected_uid = 4;
 }
 
@@ -116,7 +118,8 @@ message DeleteModuleResult {
 
 message ListModulesRequest {
     Ydb.Operations.OperationParams operation_params = 1;
-    ModuleKind kind_filter = 2;
+    ModuleType type_filter = 2;
+    ModuleKind kind_filter = 6;
     CompileStatus status_filter = 3;
     uint32 page_size = 4;
     string page_token = 5;

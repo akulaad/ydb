@@ -10,10 +10,18 @@
 
 #include <util/generic/yexception.h>
 
+#include <ydb/public/sdk/cpp/include/ydb-cpp-sdk/client/types/executor/executor.h>
+
 #include <atomic>
+#include <fstream>
+#include <sstream>
 
 namespace NYdb::inline Dev::NUdf {
 namespace {
+
+Ydb::Udf::ModuleType ToProto(EModuleType type) {
+    return static_cast<Ydb::Udf::ModuleType>(type);
+}
 
 Ydb::Udf::ModuleKind ToProto(EModuleKind kind) {
     return static_cast<Ydb::Udf::ModuleKind>(kind);
@@ -32,12 +40,23 @@ Ydb::Udf::WriteMode ToProto(EWriteMode mode) {
 //! nothing downstream — least of all a switch over it — expects.
 EModuleKind FromProto(Ydb::Udf::ModuleKind kind) {
     switch (kind) {
-        case Ydb::Udf::UDF:
-            return EModuleKind::Udf;
-        case Ydb::Udf::LIBRARY:
-            return EModuleKind::Library;
+        case Ydb::Udf::WASM:
+            return EModuleKind::Wasm;
+        case Ydb::Udf::NATIVE:
+            return EModuleKind::Native;
         default:
             return EModuleKind::Unspecified;
+    }
+}
+
+EModuleType FromProto(Ydb::Udf::ModuleType type) {
+    switch (type) {
+        case Ydb::Udf::MODULE:
+            return EModuleType::Module;
+        case Ydb::Udf::LIBRARY:
+            return EModuleType::Library;
+        default:
+            return EModuleType::Unspecified;
     }
 }
 
@@ -59,7 +78,8 @@ ECompileStatus FromProto(Ydb::Udf::CompileStatus status) {
 TModuleInfo FromProto(const Ydb::Udf::ModuleInfo& proto) {
     TModuleInfo info;
     info.Name = proto.name();
-    info.Kind = FromProto(proto.kind());
+    info.Type = FromProto(proto.module_type());
+    info.Kind = FromProto(proto.module_kind());
     info.Uid = proto.uid();
     info.Md5 = proto.md5();
     info.Size = proto.size();
@@ -78,10 +98,6 @@ TPlatformCompileStatus FromProto(const Ydb::Udf::PlatformCompileStatus& proto) {
 }
 
 void FillUploadParams(Ydb::Udf::UploadModuleParams& params, const TUploadModuleSettings& settings) {
-    params.set_kind(ToProto(settings.Kind_));
-    if (!settings.LibraryName_.empty()) {
-        params.set_library_name(TStringType{settings.LibraryName_});
-    }
     if (!settings.ManifestJson_.empty()) {
         params.set_manifest_json(TStringType{settings.ManifestJson_});
     }
@@ -98,10 +114,18 @@ void FillUploadParams(Ydb::Udf::UploadModuleParams& params, const TUploadModuleS
 }
 
 //! One-shot BIDI UploadModule: connect, post the response read, write metadata
-//! and data, half-close, and answer from the single response. Holds the body by
-//! shared_ptr so chunk callbacks can keep slicing without copying the whole
-//! buffer again.
-class TUploadModuleSession : public std::enable_shared_from_this<TUploadModuleSession> {
+//! and data, half-close, and answer from the single response. Owns its input
+//! stream until all callbacks complete; only one data chunk is in flight.
+IExecutor::TPtr FileReadExecutor() {
+    static const auto executor = [] {
+        auto result = CreateThreadPoolExecutor(2);
+        result->Start();
+        return result;
+    }();
+    return executor;
+}
+
+class TUploadModuleSession: public std::enable_shared_from_this<TUploadModuleSession> {
 public:
     using TService = Ydb::Udf::V1::UdfService;
     using TRequest = Ydb::Udf::UploadModuleChunk;
@@ -111,11 +135,13 @@ public:
     TUploadModuleSession(
         std::shared_ptr<TGRpcConnectionsImpl> connections,
         TDbDriverStatePtr dbState,
-        std::string body,
+        std::shared_ptr<std::istream> input,
+        uint64_t size,
         TUploadModuleSettings settings)
         : Connections_(std::move(connections))
         , DbDriverState_(std::move(dbState))
-        , Body_(std::move(body))
+        , Input_(std::move(input))
+        , Size_(size)
         , Settings_(std::move(settings))
         , Promise_(NThreading::NewPromise<TUploadModuleResult>())
     {
@@ -139,10 +165,9 @@ private:
     //! under the other. Cancelling it is enough — a write on a cancelled stream
     //! comes straight back with CANCELLED.
     void Fail(TPlainStatus status) {
-        if (Done_) {
+        if (Done_.exchange(true)) {
             return;
         }
-        Done_ = true;
         if (Processor_) {
             Processor_->Cancel();
         }
@@ -151,6 +176,9 @@ private:
 
     void OnConnect(TPlainStatus status, IProcessor::TPtr processor) {
         if (!status.Ok() || !processor) {
+            if (status.Ok()) {
+                status = TPlainStatus::Internal("Upload stream returned no processor");
+            }
             Fail(std::move(status));
             return;
         }
@@ -171,40 +199,58 @@ private:
         auto& params = *metadata->mutable_params();
         params = MakeOperationRequest<Ydb::Udf::UploadModuleParams>(Settings_);
         FillUploadParams(params, Settings_);
-        metadata->set_total_size(Body_.size());
+        metadata->set_total_size(Size_);
 
         Processor_->Write(std::move(chunk), [self = shared_from_this()](NYdbGrpc::TGrpcStatus&& grpcStatus) {
             if (!grpcStatus.Ok()) {
                 return;
             }
             self->Offset_ = 0;
-            self->WriteNextDataOrDone();
+            self->ScheduleNextData();
         });
     }
 
     //! A failed write is not reported from here: it means the stream is gone,
     //! and why it is gone is what the pending read is about to say. Writing just
     //! stops.
+    void ScheduleNextData() {
+        FileReadExecutor()->Post([self = shared_from_this()] { self->WriteNextDataOrDone(); });
+    }
+
     void WriteNextDataOrDone() {
         if (Done_) {
             return;
         }
-        if (Offset_ >= Body_.size()) {
-            Processor_->WritesDone([](NYdbGrpc::TGrpcStatus&&) {});
+        TRequest chunk;
+        try {
+            if (Offset_ == Size_) {
+                if (Input_->peek() != std::char_traits<char>::eof() || Input_->bad()) {
+                    ythrow yexception() << "Module file changed or failed while being read";
+                }
+                Processor_->WritesDone([](NYdbGrpc::TGrpcStatus&&) {});
+                return;
+            }
+            const size_t chunkSize = Max<size_t>(1, Settings_.ChunkSize_);
+            const size_t size = Min<uint64_t>(chunkSize, Size_ - Offset_);
+            std::string data(size, '\0');
+            Input_->read(data.data(), size);
+            if (Input_->bad() || static_cast<size_t>(Input_->gcount()) != size) {
+                ythrow yexception() << "Module file ended early or failed while being read";
+            }
+            chunk.set_data(data.data(), data.size());
+            Offset_ += size;
+        } catch (const std::exception& ex) {
+            NYdb::NIssue::TIssues issues;
+            issues.AddIssue(NYdb::NIssue::TIssue(ex.what()));
+            Fail(TPlainStatus(EStatus::CLIENT_INTERNAL_ERROR, std::move(issues)));
             return;
         }
-
-        const size_t chunkSize = Max<size_t>(1, Settings_.ChunkSize_);
-        const size_t size = Min(chunkSize, Body_.size() - Offset_);
-        TRequest chunk;
-        chunk.set_data(Body_.data() + Offset_, size);
-        Offset_ += size;
 
         Processor_->Write(std::move(chunk), [self = shared_from_this()](NYdbGrpc::TGrpcStatus&& grpcStatus) {
             if (!grpcStatus.Ok()) {
                 return;
             }
-            self->WriteNextDataOrDone();
+            self->ScheduleNextData();
         });
     }
 
@@ -219,10 +265,9 @@ private:
     }
 
     void CompleteFromResponse() {
-        if (Done_) {
+        if (Done_.exchange(true)) {
             return;
         }
-        Done_ = true;
 
         NYdb::NIssue::TIssues issues;
         NYdb::NIssue::IssuesFromMessage(Response_.operation().issues(), issues);
@@ -245,12 +290,13 @@ private:
 private:
     std::shared_ptr<TGRpcConnectionsImpl> Connections_;
     TDbDriverStatePtr DbDriverState_;
-    std::string Body_;
+    std::shared_ptr<std::istream> Input_;
+    const uint64_t Size_;
     TUploadModuleSettings Settings_;
     NThreading::TPromise<TUploadModuleResult> Promise_;
     IProcessor::TPtr Processor_;
     TResponse Response_;
-    size_t Offset_ = 0;
+    uint64_t Offset_ = 0;
     //! Read by the write callbacks and written by the read callback, which gRPC
     //! may run on different threads at the same time.
     std::atomic<bool> Done_ = false;
@@ -347,7 +393,7 @@ const std::vector<TPlatformCompileStatus>& TDescribeModuleResult::GetPlatforms()
     return Platforms_;
 }
 
-class TUdfClient::TImpl : public TClientImplCommon<TUdfClient::TImpl> {
+class TUdfClient::TImpl: public TClientImplCommon<TUdfClient::TImpl> {
 public:
     TImpl(std::shared_ptr<TGRpcConnectionsImpl>&& connections, const TCommonClientSettings& settings)
         : TClientImplCommon(std::move(connections), settings)
@@ -355,19 +401,35 @@ public:
     }
 
     TAsyncUploadModuleResult UploadModule(std::string body, const TUploadModuleSettings& settings) {
+        const auto size = body.size();
         auto session = std::make_shared<TUploadModuleSession>(
-            Connections_,
-            DbDriverState_,
-            std::move(body),
-            settings);
+            Connections_, DbDriverState_,
+            std::make_shared<std::istringstream>(std::move(body)), size, settings);
+        return session->Start();
+    }
+
+    TAsyncUploadModuleResult UploadModuleFromFile(const std::string& path, const TUploadModuleSettings& settings) {
+        auto input = std::make_shared<std::ifstream>(path, std::ios::binary | std::ios::ate);
+        const auto length = input->tellg();
+        if (!*input || length < 0 || !input->seekg(0)) {
+            NYdb::NIssue::TIssues issues;
+            issues.AddIssue(NYdb::NIssue::TIssue("Cannot read module file: " + path));
+            auto promise = NThreading::NewPromise<TUploadModuleResult>();
+            promise.SetValue(TUploadModuleResult(
+                TStatus(TPlainStatus(EStatus::CLIENT_INTERNAL_ERROR, std::move(issues))), {}));
+            return promise.GetFuture();
+        }
+        auto session = std::make_shared<TUploadModuleSession>(
+            Connections_, DbDriverState_, std::move(input), static_cast<uint64_t>(length), settings);
         return session->Start();
     }
 
     TAsyncStatus DeleteModule(const std::string& name, const TDeleteModuleSettings& settings) {
         auto request = MakeOperationRequest<Ydb::Udf::DeleteModuleRequest>(settings);
         request.set_name(TStringType{name});
+        request.set_module_type(ToProto(settings.Type_));
         if (settings.Kind_ != EModuleKind::Unspecified) {
-            request.set_kind(ToProto(settings.Kind_));
+            request.set_module_kind(ToProto(settings.Kind_));
         }
         if (!settings.ExpectedUid_.empty()) {
             request.set_expected_uid(TStringType{settings.ExpectedUid_});
@@ -381,6 +443,7 @@ public:
 
     TAsyncListModulesResult ListModules(const TListModulesSettings& settings) {
         auto request = MakeOperationRequest<Ydb::Udf::ListModulesRequest>(settings);
+        request.set_type_filter(ToProto(settings.TypeFilter_));
         if (settings.KindFilter_ != EModuleKind::Unspecified) {
             request.set_kind_filter(ToProto(settings.KindFilter_));
         }
@@ -446,6 +509,10 @@ TUdfClient::TUdfClient(const TDriver& driver, const TCommonClientSettings& setti
 
 TAsyncUploadModuleResult TUdfClient::UploadModule(std::string body, const TUploadModuleSettings& settings) {
     return Impl_->UploadModule(std::move(body), settings);
+}
+
+TAsyncUploadModuleResult TUdfClient::UploadModuleFromFile(const std::string& path, const TUploadModuleSettings& settings) {
+    return Impl_->UploadModuleFromFile(path, settings);
 }
 
 TAsyncStatus TUdfClient::DeleteModule(const std::string& name, const TDeleteModuleSettings& settings) {

@@ -1,4 +1,6 @@
 #include "common.h"
+#include <ydb/public/lib/udf/manifest/manifest.h>
+#include <ydb/services/udf_store/wasm/manifest.h>
 
 #include <ydb/core/base/appdata.h>
 #include <ydb/core/base/auth.h>
@@ -102,13 +104,11 @@ bool IsUdfStoreAdministrator(const NACLib::TUserToken* userToken, const TString&
     if (IsAdministrator(AppData(), userToken)) {
         return true;
     }
-    return AppData()->FeatureFlags.GetEnableDatabaseAdmin()
-        && IsDatabaseAdministrator(userToken, databaseOwner);
+    return AppData()->FeatureFlags.GetEnableDatabaseAdmin() && IsDatabaseAdministrator(userToken, databaseOwner);
 }
 
 bool CanDecideWithoutDatabaseOwner(const NACLib::TUserToken* userToken) {
-    return IsAdministrator(AppData(), userToken)
-        || !AppData()->FeatureFlags.GetEnableDatabaseAdmin();
+    return IsAdministrator(AppData(), userToken) || !AppData()->FeatureFlags.GetEnableDatabaseAdmin();
 }
 
 TEvTxProxySchemeCache::TEvNavigateKeySet* MakeArtifactDirListingRequest(const TString& databaseName) {
@@ -146,23 +146,23 @@ bool ParseArtifactDirListing(
     return true;
 }
 
-Ydb::Udf::ModuleKind ToProtoKind(EUdfType type) {
+Ydb::Udf::ModuleType ToProtoType(EUdfType type) {
     switch (type) {
         case EUdfType::WASM:
-            return Ydb::Udf::UDF;
+            return Ydb::Udf::MODULE;
         case EUdfType::LIBRARY:
             return Ydb::Udf::LIBRARY;
         case EUdfType::NATIVE_UNSAFE:
             // Native modules predate this API and it cannot manage them, but a
             // list must still be able to mention what occupies a name.
-            return Ydb::Udf::MODULE_KIND_UNSPECIFIED;
+            return Ydb::Udf::MODULE_TYPE_UNSPECIFIED;
     }
-    return Ydb::Udf::MODULE_KIND_UNSPECIFIED;
+    return Ydb::Udf::MODULE_TYPE_UNSPECIFIED;
 }
 
-bool FromProtoKind(Ydb::Udf::ModuleKind kind, EUdfType& type) {
+bool FromProtoType(Ydb::Udf::ModuleType kind, EUdfType& type) {
     switch (kind) {
-        case Ydb::Udf::UDF:
+        case Ydb::Udf::MODULE:
             type = EUdfType::WASM;
             return true;
         case Ydb::Udf::LIBRARY:
@@ -206,9 +206,43 @@ bool FromProtoCompileStatus(Ydb::Udf::CompileStatus status, ECompileStatus& resu
     }
 }
 
+Ydb::StatusIds::StatusCode ValidateKind(Ydb::Udf::ModuleKind kind, TString& error) {
+    if (kind == Ydb::Udf::NATIVE) {
+        error = NativeUnsupported;
+        return Ydb::StatusIds::PRECONDITION_FAILED;
+    }
+    if (kind != Ydb::Udf::WASM && kind != Ydb::Udf::MODULE_KIND_UNSPECIFIED) {
+        error = "module_kind must be wasm or native";
+        return Ydb::StatusIds::BAD_REQUEST;
+    }
+    return Ydb::StatusIds::SUCCESS;
+}
+
+Ydb::StatusIds::StatusCode ValidateUpload(const Ydb::Udf::UploadModuleParams& params, TString& error) {
+    try {
+        const auto manifest = NYdb::NUdfManifest::Parse(params.manifest_json());
+        if (manifest.Kind == NYdb::NUdfManifest::EModuleKind::Native) {
+            error = NativeUnsupported;
+            return Ydb::StatusIds::PRECONDITION_FAILED;
+        }
+        if (manifest.Type == NYdb::NUdfManifest::EModuleType::Module) {
+            NUdfStore::NWasm::ParseManifest(params.manifest_json());
+        }
+        if (!Ydb::Udf::WriteMode_IsValid(params.write_mode())) {
+            error = "Unknown write_mode";
+            return Ydb::StatusIds::BAD_REQUEST;
+        }
+    } catch (const std::exception& ex) {
+        error = ex.what();
+        return Ydb::StatusIds::BAD_REQUEST;
+    }
+    return Ydb::StatusIds::SUCCESS;
+}
+
 void FillModuleInfo(const NQuery::TModuleRow& row, Ydb::Udf::ModuleInfo& info) {
     info.set_name(row.Name);
-    info.set_kind(ToProtoKind(row.Type));
+    info.set_module_type(ToProtoType(row.Type));
+    info.set_module_kind(row.Type == EUdfType::NATIVE_UNSAFE ? Ydb::Udf::NATIVE : Ydb::Udf::WASM);
     info.set_uid(row.Uid);
     info.set_md5(row.Md5);
     info.set_size(row.Size);

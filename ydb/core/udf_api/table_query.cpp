@@ -175,7 +175,7 @@ TString BuildListModulesQuery(const TString& modulesTablePath, const TListFilter
         query << "DECLARE $compile_status AS Utf8; ";
     }
     query << "SELECT " << ModuleColumnList() << " FROM `" << EscapeTablePath(modulesTablePath) << "`";
-    TVector<TString> predicates;
+    TVector<TString> predicates = {"type IN (\"WASM\", \"LIBRARY\")"};
     if (filter.Type) {
         predicates.push_back("type = $type");
     }
