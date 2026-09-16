@@ -45,6 +45,7 @@ TString ReadStructString(uint64_t structH, TStringBuf name) {
     if (!value) {
         return {};
     }
+    // Traversal exposes Optional<Data> as its payload kind in the bridge ABI.
     const uint64_t offset = BridgeEnsureString(value.Get());
     const int64_t length = BridgeGetStringLen(value.Get());
     return TString(
@@ -56,7 +57,7 @@ bool NullOnException(uint64_t optsH) {
     if (BridgeIsNull(optsH)) {
         return false;
     }
-    TBridgeDict dict(optsH, /*owned*/ false);
+    TBridgeDict dict(BridgeGetOptional(optsH), /*owned*/ true);
     TBridgeValue key = MakeString("null_on_exception", 17);
     TBridgeValue payload = dict.Lookup(key);
     if (payload.Get() == 0) {
@@ -137,8 +138,9 @@ __attribute__((visibility("default"))) void parse_reef_request_profile_proto(
     const bool nullOnException = NullOnException(optsH);
     TString wire;
     if (!BridgeIsNull(wireH)) {
-        const uint64_t offset = BridgeEnsureString(wireH);
-        const int64_t length = BridgeGetStringLen(wireH);
+        TBridgeValue inner(BridgeGetOptional(wireH), /*owned*/ true);
+        const uint64_t offset = BridgeEnsureString(inner.Get());
+        const int64_t length = BridgeGetStringLen(inner.Get());
         wire.assign(
             reinterpret_cast<const char*>(static_cast<uintptr_t>(offset)),
             static_cast<size_t>(length));

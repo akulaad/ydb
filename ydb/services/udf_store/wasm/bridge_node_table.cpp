@@ -281,8 +281,15 @@ ui64 TWasmBridgeNodeTable::RegisterOrReuse(
     const TType* auxType)
 {
     if (const ui64 existing = TryReuse(value); existing != NullBridgeHandle) {
-        Ref(existing);
-        return TrackInRunScope(existing);
+        const auto& node = Resolve(existing);
+        // Optional<Boxed> shares the payload's identity, but its handle has
+        // a different declared type and cannot serve as the unwrapped value.
+        if (node.Kind == kind && node.ValueKind == valueKind
+            && node.Type == type && node.AuxType == auxType)
+        {
+            Ref(existing);
+            return TrackInRunScope(existing);
+        }
     }
     return TrackInRunScope(
         RegisterUntracked(kind, valueKind, type, TUnboxedValue(value), auxType));

@@ -54,6 +54,7 @@ constexpr TStringBuf BridgeDictLookupWast = R"(
         (import "env" "BridgeGetInt64" (func $get_i64 (param i64) (result i64)))
         (import "env" "BridgeMakeInt64" (func $make_i64 (param i64) (result i64)))
         (import "env" "BridgeMakeOptional" (func $make_opt (param i64) (result i64)))
+        (import "env" "BridgeGetOptional" (func $get_opt (param i64) (result i64)))
         (import "env" "BridgeUnref" (func $unref (param i64)))
         (func $dict_lookup (param $ctx i64) (param $result i64) (param $dict i64) (param $key i64)
             (local $payload i64)
@@ -69,6 +70,11 @@ constexpr TStringBuf BridgeDictLookupWast = R"(
                     (i64.store (local.get $result) (call $make_null))))
         )
         (export "dict_lookup" (func $dict_lookup))
+        (func (export "optional_dict_lookup") (param $ctx i64) (param $result i64) (param $dict i64) (param $key i64)
+            (local $inner i64)
+            (local.set $inner (call $get_opt (local.get $dict)))
+            (call $dict_lookup (local.get $ctx) (local.get $result) (local.get $inner) (local.get $key))
+            (call $unref (local.get $inner)))
         (func $lookup_raw (param $ctx i64) (param $result i64) (param $dict i64) (param $key i64)
             (i64.store (local.get $result) (call $lookup (local.get $dict) (local.get $key)))
         )
@@ -198,7 +204,7 @@ Y_UNIT_TEST(RunScopeDropsOnlyTheRefItTookOnReuse) {
     UNIT_ASSERT_VALUES_EQUAL(table.DebugSize(), 0u);
 }
 
-Y_UNIT_TEST(DictLookupViaIntrinsics) {
+void CheckDictLookupViaIntrinsics(bool optional) {
     EnsureUdfHostIntrinsicsRegistered();
     TMiniKqlEnv mkql;
 
@@ -227,10 +233,20 @@ Y_UNIT_TEST(DictLookupViaIntrinsics) {
         "DictUdf");
 
     auto& table = *handle->BridgeNodes;
+    const NYql::NUdf::TType* declaredType = nullptr;
+    if (optional) {
+        table.SetTypeInfoHelper(new NKikimr::NMiniKQL::TTypeInfoHelper());
+        auto* stringType = NKikimr::NMiniKQL::TDataType::Create(
+            NYql::NUdf::TDataType<char*>::Id, mkql.Env);
+        auto* intType = NKikimr::NMiniKQL::TDataType::Create(
+            NYql::NUdf::TDataType<i64>::Id, mkql.Env);
+        auto* dictType = NKikimr::NMiniKQL::TDictType::Create(stringType, intType, mkql.Env);
+        declaredType = NKikimr::NMiniKQL::TOptionalType::Create(dictType, mkql.Env);
+    }
     const ui64 dictHandle = table.Register(
-        EBridgeNodeKind::Dict,
-        EBridgeValueKind::Dict,
-        nullptr,
+        optional ? EBridgeNodeKind::Optional : EBridgeNodeKind::Dict,
+        optional ? EBridgeValueKind::Optional : EBridgeValueKind::Dict,
+        declaredType,
         TUnboxedValue(dict));
     UNIT_ASSERT_VALUES_EQUAL(table.TryReuse(dict), dictHandle);
 
@@ -246,7 +262,7 @@ Y_UNIT_TEST(DictLookupViaIntrinsics) {
 
     InvokeUdfExport(
         handle->Compartment.get(),
-        "dict_lookup",
+        optional ? "optional_dict_lookup" : "dict_lookup",
         std::bit_cast<uintptr_t>(&context),
         resultOffset,
         {dictHandle, keyHandle});
@@ -267,6 +283,16 @@ Y_UNIT_TEST(DictLookupViaIntrinsics) {
     table.Unref(resultHandle);
     table.Unref(dictHandle);
     UNIT_ASSERT_VALUES_EQUAL(table.DebugSize(), 0u);
+}
+
+Y_UNIT_TEST(DictLookupViaIntrinsics) {
+    CheckDictLookupViaIntrinsics(false);
+}
+
+Y_UNIT_TEST(OptionalDictLookupViaIntrinsics) {
+    // MiniKQL uses the same boxed pointer for Dict and Optional<Dict>.
+    // Unwrapping must return a Dict view, not reuse the Optional argument.
+    CheckDictLookupViaIntrinsics(true);
 }
 
 Y_UNIT_TEST(DictLookupSeparatesAMissingKeyFromANullPayload) {

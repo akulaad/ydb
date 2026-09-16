@@ -1085,29 +1085,20 @@ ui64 BridgeMakeOptionalHost(ui64 innerHandle) {
     const TType* innerType = inner.Type;
     const EBridgeValueKind innerKind = inner.ValueKind;
     const TUnboxedValuePod optional = inner.Value.MakeOptional();
-    // Asked before the node exists: RegisterOrReuse answers with the existing
-    // handle for this identity and says nothing about which of the two it did.
-    const bool reused = table.TryReuse(optional) != NullBridgeHandle;
     // MiniKQL represents Optional over a boxed value or a refcounted string as
-    // the payload itself, so MakeOptional gives back the identity it was
-    // handed. RegisterOrReuse then returns innerHandle with an extra ref
-    // instead of a second node, keeping one node per identity and the resident
-    // cache keyed once. The reused node keeps its original kind: the guest may
-    // still be reading it as the list or dict it was registered as.
-    const ui64 handle = table.RegisterOrReuse(
+    // the payload itself. Preserve the existing view explicitly for this
+    // operation; ordinary traversal must reuse only a matching typed view.
+    if (const ui64 existing = table.TryReuse(optional); existing != NullBridgeHandle) {
+        const auto& node = table.Resolve(existing);
+        return table.RegisterOrReuse(node.Kind, node.ValueKind, node.Type, optional, node.AuxType);
+    }
+    const ui64 handle = table.Register(
         EBridgeNodeKind::Optional,
         EBridgeValueKind::Optional,
         /*type*/ nullptr,
-        optional,
+        TUnboxedValue(optional),
         innerType);
-    if (!reused) {
-        // A node that really is an Optional has to remember what the guest
-        // wrapped, since the pod alone cannot tell a Just(list) from a
-        // Just(scalar). A reused node is left alone: it keeps the kind it was
-        // registered with, and writing an inner kind onto it would rename the
-        // value the rest of the query reads through that same handle.
-        table.Resolve(handle).InnerValueKind = innerKind;
-    }
+    table.Resolve(handle).InnerValueKind = innerKind;
     return handle;
 }
 

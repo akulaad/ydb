@@ -92,9 +92,8 @@ public:
         NYql::NUdf::TUnboxedValue&& value,
         const NYql::NUdf::TType* auxType = nullptr);
 
-    //! Reuse the node already registered for this value's identity (bumping
-    //! its ref count) or register a fresh one. Preferred entry point: two
-    //! nodes for one identity mean the resident cache is keyed twice.
+    //! Reuse the node registered for this value's identity when its kinds and
+    //! type metadata match (bumping its ref count), or register a fresh view.
     ui64 RegisterOrReuse(
         EBridgeNodeKind kind,
         EBridgeValueKind valueKind,

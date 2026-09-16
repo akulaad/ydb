@@ -1027,6 +1027,29 @@ Y_UNIT_TEST(AliasingNodeKeepsIdentityOwner) {
     UNIT_ASSERT_VALUES_EQUAL(table.DebugSize(), 0u);
 }
 
+Y_UNIT_TEST(OptionalStringPayloadDoesNotReuseWrapper) {
+    TMiniKqlEnv mkql;
+    TWasmBridgeNodeTable table(22);
+    auto value = mkql.ValueBuilder.NewString(
+        TStringRef("a string long enough to use a reference counted buffer", 53));
+    const ui64 optional = table.Register(
+        EBridgeNodeKind::Optional, EBridgeValueKind::Optional, nullptr,
+        TUnboxedValue(value.MakeOptional()));
+    const ui64 payload = table.RegisterOrReuse(
+        EBridgeNodeKind::String, EBridgeValueKind::String, nullptr,
+        value.GetOptionalValue());
+    UNIT_ASSERT(payload != optional);
+    UNIT_ASSERT(table.Resolve(payload).ValueKind == EBridgeValueKind::String);
+    const auto actual = table.Resolve(payload).Value.AsStringRef();
+    const auto expected = value.AsStringRef();
+    UNIT_ASSERT_VALUES_EQUAL(TStringBuf(actual.Data(), actual.Size()),
+        TStringBuf(expected.Data(), expected.Size()));
+    table.Unref(payload);
+    UNIT_ASSERT_VALUES_EQUAL(table.TryReuse(value), optional);
+    table.Unref(optional);
+    UNIT_ASSERT_VALUES_EQUAL(table.DebugSize(), 0u);
+}
+
 Y_UNIT_TEST(RegisterOrReuseNeverDuplicatesIdentity) {
     TMiniKqlEnv mkql;
 
