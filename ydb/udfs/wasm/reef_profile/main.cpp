@@ -6,7 +6,6 @@
 
 #include <util/generic/strbuf.h>
 #include <util/generic/string.h>
-#include <util/generic/yexception.h>
 
 using namespace NYdb::NUdfStore::NAbi;
 
@@ -69,6 +68,22 @@ bool NullOnException(uint64_t optsH) {
     return BridgeGetInt64(payload.Get()) != 0;
 }
 
+void ReturnProfile(uint64_t* result,
+    const NUserSessions::NRT::TReefRequestProfileProto& profile,
+    const TString& error, bool nullOnException)
+{
+    if (!error.empty()) {
+        if (nullOnException) {
+            *result = MakeNull().Release();
+        } else {
+            ThrowException(error.c_str());
+        }
+        return;
+    }
+    const TString json = NWasmReefProfile::ProfileToJson(profile);
+    *result = MakeOptional(MakeString(json.data(), static_cast<int64_t>(json.size()))).Release();
+}
+
 } // namespace
 
 extern "C" {
@@ -82,39 +97,33 @@ __attribute__((visibility("default"))) void parse_reef_request_profile(
     uint64_t optsH)
 {
     const bool nullOnException = NullOnException(optsH);
-    try {
-        if (BridgeIsNull(rowH)) {
-            ythrow yexception() << "ParseReefRequestProfile: expected struct row";
-        }
-        const TString json = NWasmReefProfile::ProfileToJson(
-            NWasmReefProfile::ParseReefRequestProfile(
-                ReadStructString(rowH, OptionalMembers[0]),
-                ReadStructString(rowH, OptionalMembers[1]),
-                ReadStructString(rowH, OptionalMembers[2]),
-                ReadStructString(rowH, OptionalMembers[3]),
-                ReadStructString(rowH, OptionalMembers[4]),
-                ReadStructString(rowH, OptionalMembers[5]),
-                ReadStructString(rowH, OptionalMembers[6]),
-                ReadStructString(rowH, OptionalMembers[7]),
-                ReadStructString(rowH, OptionalMembers[8]),
-                ReadStructString(rowH, OptionalMembers[9]),
-                ReadStructString(rowH, OptionalMembers[10]),
-                ReadStructString(rowH, OptionalMembers[11]),
-                ReadStructString(rowH, OptionalMembers[12]),
-                ReadStructString(rowH, OptionalMembers[13]),
-                ReadStructString(rowH, OptionalMembers[14]),
-                ReadStructString(rowH, OptionalMembers[15]),
-                ReadStructString(rowH, OptionalMembers[16]),
-                ReadStructString(rowH, OptionalMembers[17]),
-                ReadStructString(rowH, OptionalMembers[18])));
-        *result = MakeOptional(MakeString(json.data(), static_cast<int64_t>(json.size()))).Release();
-    } catch (const std::exception& ex) {
-        if (nullOnException) {
-            *result = MakeNull().Release();
-            return;
-        }
-        ThrowException(ex.what());
+    TString error;
+    if (BridgeIsNull(rowH)) {
+        ReturnProfile(result, {}, "ParseReefRequestProfile: expected struct row", nullOnException);
+        return;
     }
+    const auto profile = NWasmReefProfile::ParseReefRequestProfile(
+        error,
+        ReadStructString(rowH, OptionalMembers[0]),
+        ReadStructString(rowH, OptionalMembers[1]),
+        ReadStructString(rowH, OptionalMembers[2]),
+        ReadStructString(rowH, OptionalMembers[3]),
+        ReadStructString(rowH, OptionalMembers[4]),
+        ReadStructString(rowH, OptionalMembers[5]),
+        ReadStructString(rowH, OptionalMembers[6]),
+        ReadStructString(rowH, OptionalMembers[7]),
+        ReadStructString(rowH, OptionalMembers[8]),
+        ReadStructString(rowH, OptionalMembers[9]),
+        ReadStructString(rowH, OptionalMembers[10]),
+        ReadStructString(rowH, OptionalMembers[11]),
+        ReadStructString(rowH, OptionalMembers[12]),
+        ReadStructString(rowH, OptionalMembers[13]),
+        ReadStructString(rowH, OptionalMembers[14]),
+        ReadStructString(rowH, OptionalMembers[15]),
+        ReadStructString(rowH, OptionalMembers[16]),
+        ReadStructString(rowH, OptionalMembers[17]),
+        ReadStructString(rowH, OptionalMembers[18]));
+    ReturnProfile(result, profile, error, nullOnException);
 }
 
 //! ReefProfile::ParseReefRequestProfileProto(wire?, opts?) -> String?
@@ -126,25 +135,17 @@ __attribute__((visibility("default"))) void parse_reef_request_profile_proto(
     uint64_t optsH)
 {
     const bool nullOnException = NullOnException(optsH);
-    try {
-        TString wire;
-        if (!BridgeIsNull(wireH)) {
-            const uint64_t offset = BridgeEnsureString(wireH);
-            const int64_t length = BridgeGetStringLen(wireH);
-            wire.assign(
-                reinterpret_cast<const char*>(static_cast<uintptr_t>(offset)),
-                static_cast<size_t>(length));
-        }
-        const TString json = NWasmReefProfile::ProfileToJson(
-            NWasmReefProfile::ParseReefRequestProfileProto(wire));
-        *result = MakeOptional(MakeString(json.data(), static_cast<int64_t>(json.size()))).Release();
-    } catch (const std::exception& ex) {
-        if (nullOnException) {
-            *result = MakeNull().Release();
-            return;
-        }
-        ThrowException(ex.what());
+    TString wire;
+    if (!BridgeIsNull(wireH)) {
+        const uint64_t offset = BridgeEnsureString(wireH);
+        const int64_t length = BridgeGetStringLen(wireH);
+        wire.assign(
+            reinterpret_cast<const char*>(static_cast<uintptr_t>(offset)),
+            static_cast<size_t>(length));
     }
+    TString error;
+    const auto profile = NWasmReefProfile::ParseReefRequestProfileProto(wire, error);
+    ReturnProfile(result, profile, error, nullOnException);
 }
 
 } // extern "C"

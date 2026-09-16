@@ -13,12 +13,10 @@ struct TCodecId {
     TString DeltaAlgorithm = "vcdiff";
 };
 
-TCodecId ParseCodecId(TStringBuf codecId);
-
-// Decode one PFT_PACKABLE column (base + optional patch) to protobuf wire.
-TString UnpackPackedColumn(TStringBuf base, TStringBuf patch, const TCodecId& codec);
+TCodecId ParseCodecId(TStringBuf codecId, TString& error);
 
 NUserSessions::NRT::TReefRequestProfileProto ParseReefRequestProfile(
+    TString& error,
     TStringBuf userId,
     TStringBuf requestId,
     TStringBuf codecId,
@@ -40,7 +38,7 @@ NUserSessions::NRT::TReefRequestProfileProto ParseReefRequestProfile(
     TStringBuf packedTamusPatch);
 
 // Empty wire or literal "null" → empty message; otherwise ParseFromString.
-NUserSessions::NRT::TReefRequestProfileProto ParseReefRequestProfileProto(TStringBuf wire);
+NUserSessions::NRT::TReefRequestProfileProto ParseReefRequestProfileProto(TStringBuf wire, TString& error);
 
 TString ProfileToJson(const NUserSessions::NRT::TReefRequestProfileProto& proto);
 

@@ -55,11 +55,11 @@ $bad = AsStruct(
 $wire_keys = String::HexDecode("0a02753112027231");
 
 SELECT
-    ReefProfile::ParseReefRequestProfile($row) AS ok,
+    ReefProfile::ParseReefRequestProfile($row, NULL) AS ok,
     ReefProfile::ParseReefRequestProfile($bad, AsDict(AsTuple("null_on_exception", 1l))) AS null_on_error,
-    ReefProfile::ParseReefRequestProfileProto(NULL) AS proto_null,
-    ReefProfile::ParseReefRequestProfileProto("null") AS proto_null_str,
-    ReefProfile::ParseReefRequestProfileProto($wire_keys) AS proto_keys,
+    ReefProfile::ParseReefRequestProfileProto(NULL, NULL) AS proto_null,
+    ReefProfile::ParseReefRequestProfileProto("null", NULL) AS proto_null_str,
+    ReefProfile::ParseReefRequestProfileProto($wire_keys, NULL) AS proto_keys,
     ReefProfile::ParseReefRequestProfileProto(
         "not-protobuf",
         AsDict(AsTuple("null_on_exception", 1l))) AS proto_null_on_error;
