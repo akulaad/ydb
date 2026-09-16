@@ -74,6 +74,55 @@ TEST_F(TWebAssemblyTest, LinkAndStrip)
     compartment->Strip();
 }
 
+static const TStringBuf LargeImportedTable = R"(
+    (module
+        (type $callback (func (result i64)))
+        (import "env" "__indirect_function_table" (table i64 4096 funcref))
+        (func $answer (result i64) i64.const 42)
+        (elem (i64.const 4095) func $answer)
+        (func (export "indirect") (result i64)
+            i64.const 4095
+            call_indirect (type $callback))
+    ))";
+
+TEST_F(TWebAssemblyTest, GrowImportedTableBeforeLinking)
+{
+    auto compartment = CreateMinimalRuntimeImage();
+    compartment->AddModule(LargeImportedTable);
+    auto indirect = TCompartmentFunction<i64()>(compartment.get(), "indirect");
+    ASSERT_EQ(indirect(), 42);
+}
+
+TEST_F(TWebAssemblyTest, GrowPrecompiledImportedTableBeforeLinking)
+{
+    WAVM::IR::Module module;
+    module.featureSpec.table64 = true;
+    std::vector<WAVM::WAST::Error> errors;
+    ASSERT_TRUE(WAVM::WAST::parseModule(
+        LargeImportedTable.data(), LargeImportedTable.size() + 1, module, errors));
+    auto compiled = WAVM::Runtime::compileModule(module);
+    const auto objectCode = WAVM::Runtime::getObjectCode(compiled);
+    TModuleBytecode bytecode{
+        .Format = EBytecodeFormat::HumanReadable,
+        .Data = TSharedRef::FromString(TString(LargeImportedTable)),
+        .ObjectCode = TSharedRef::FromString(TString(
+            reinterpret_cast<const char*>(objectCode.data()), objectCode.size())),
+    };
+    auto compartment = CreateMinimalRuntimeImage();
+    compartment->AddPrecompiledModule(bytecode);
+    auto indirect = TCompartmentFunction<i64()>(compartment.get(), "indirect");
+    ASSERT_EQ(indirect(), 42);
+}
+
+TEST_F(TWebAssemblyTest, RejectImportedTableAboveCompartmentLimit)
+{
+    auto compartment = CreateMinimalRuntimeImage();
+    ASSERT_ANY_THROW(compartment->AddModule(TStringBuf(R"(
+        (module
+            (import "env" "__indirect_function_table" (table i64 1048577 funcref))
+        ))")));
+}
+
 TEST_F(TWebAssemblyTest, RunSimple)
 {
     auto compartment = CreateMinimalRuntimeImage();

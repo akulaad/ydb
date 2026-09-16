@@ -1144,6 +1144,15 @@ void EnsureFunctionDebugNamesFromExports(IR::Module& irModule)
 
 Runtime::LinkResult TWebAssemblyCompartment::LinkModule(const IR::Module& irModule)
 {
+    // WAVM checks the current table size against the import's minimum while
+    // linking. Growing only in InstantiateModule is too late for large guests
+    // such as ReefProfile, whose table import exceeds the initial GOT size.
+    for (const auto& tableImport : irModule.tables.imports) {
+        if (tableImport.exportName == "__indirect_function_table") {
+            EnsureGlobalOffsetTableCapacity(GetGlobalOffsetTable(), tableImport.type.size.min);
+        }
+    }
+
     auto linker = TLinker(this, &irModule);
     auto linkResult = Runtime::linkModule(irModule, linker);
 
