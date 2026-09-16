@@ -6,7 +6,6 @@
 #include <util/generic/buffer.h>
 #include <util/generic/vector.h>
 #include <util/generic/yexception.h>
-#include <util/string/split.h>
 
 namespace NWasmReefProfile {
 namespace {
@@ -63,7 +62,16 @@ TCodecId ParseCodecId(TStringBuf codecId) {
     }
 
     TVector<TStringBuf> tokens;
-    StringSplitter(codecId).Split(',').Collect(&tokens);
+    // Keep empty fields, including a trailing one. StringSplitter's external
+    // sentinel cannot be linked as a relative data import by wasm-ld.
+    while (true) {
+        const size_t comma = codecId.find(',');
+        tokens.push_back(codecId.SubStr(0, comma));
+        if (comma == TStringBuf::npos) {
+            break;
+        }
+        codecId.Skip(comma + 1);
+    }
     Y_ENSURE(tokens.size() >= 1 && tokens.size() <= 3, "invalid codec id");
 
     switch (tokens.size()) {
