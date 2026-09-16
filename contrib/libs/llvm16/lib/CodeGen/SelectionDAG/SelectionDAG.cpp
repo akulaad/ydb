@@ -1288,6 +1288,13 @@ void SelectionDAG::init(MachineFunction &NewMF,
                         LegacyDivergenceAnalysis *Divergence,
                         ProfileSummaryInfo *PSIin, BlockFrequencyInfo *BFIin,
                         FunctionVarLocs const *VarLocs) {
+  // A large function can grow the CSE table to millions of buckets. Keeping
+  // that allocation for subsequent functions makes clear() zero megabytes
+  // after every basic block, even when their DAGs contain only a few nodes.
+  // Reuse normal-sized tables, but release oversized empty ones here.
+  if (CSEMap.empty() && CSEMap.capacity() > 64 * 1024)
+    CSEMap = FoldingSet<SDNode>();
+
   MF = &NewMF;
   SDAGISelPass = PassPtr;
   ORE = &NewORE;
