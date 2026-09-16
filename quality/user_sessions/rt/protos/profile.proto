@@ -9,7 +9,7 @@ import "scarab/api/proto/report/relev/relev.proto";
 import "scarab/api/proto/report/search_props/UPPER.proto";
 import "scarab/api/proto/report/search_props/WEB.proto";
 
-import "yt/yt_proto/yt/core/yson/proto/protobuf_interop.proto";
+import "yt_proto/yt/core/yson/proto/protobuf_interop.proto";
 
 option go_package = "a.yandex-team.ru/quality/user_sessions/rt/protos;user_sessions";
 
