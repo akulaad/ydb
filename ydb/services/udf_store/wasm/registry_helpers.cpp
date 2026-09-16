@@ -424,17 +424,19 @@ THashMap<TString, TWasmExportSignature> CollectWasmExports(
     featureSpec.table64 = true;
     featureSpec.exceptionHandling = true;
     auto loadError = WASM::LoadError();
-    Runtime::ModuleRef wasmModule;
-    if (!Runtime::loadBinaryModule(
+    // Export validation only needs IR. Runtime::loadBinaryModule also runs
+    // LLVM code generation, duplicating the AOT compilation performed next
+    // by TWasmCompileActor (particularly expensive for large proto modules).
+    Module wasmModule(featureSpec);
+    if (!WASM::loadBinaryModule(
             std::bit_cast<const U8*>(bytes.data()),
             bytes.size(),
             wasmModule,
-            featureSpec,
             &loadError))
     {
         ythrow yexception() << "Failed to load wasm binary module: " << loadError.message;
     }
-    CollectFunctionExports(Runtime::getModuleIR(wasmModule), exports);
+    CollectFunctionExports(wasmModule, exports);
     return exports;
 }
 
