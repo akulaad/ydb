@@ -1,7 +1,5 @@
 #include "parse_tskv.h"
 
-#include <util/string/split.h>
-
 namespace NLogParsing {
 
 TTskvParseResult ParseTskv(TStringBuf raw) {
@@ -11,9 +9,13 @@ TTskvParseResult ParseTskv(TStringBuf raw) {
         body.Skip(5);
     }
 
-    TVector<TStringBuf> tokens;
-    StringSplitter(body).Split('\t').SkipEmpty().Collect(&tokens);
-    for (TStringBuf token : tokens) {
+    // Same as StringSplitter(...).Split('\t').SkipEmpty(): avoid util/string
+    // split sentinel (see line_break.cpp).
+    TStringBuf token;
+    while (body.NextTok('\t', token)) {
+        if (token.empty()) {
+            continue;
+        }
         const size_t eq = token.find('=');
         if (eq == TStringBuf::npos) {
             continue;

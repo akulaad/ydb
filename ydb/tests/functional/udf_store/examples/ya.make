@@ -8,4 +8,5 @@ RECURSE(
     sdk
     throw
     with_helpers
+    yexception
 )

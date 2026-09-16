@@ -8,11 +8,7 @@
       "name": "LineBreak",
       "export": "line_break",
       "argument_types": [
-        {
-          "value": "optional",
-          "tag": "concrete_type",
-          "item": {"value": "string", "tag": "concrete_type"}
-        }
+        {"value": "string", "tag": "concrete_type"}
       ],
       "result_type": {
         "value": "struct",
@@ -67,11 +63,7 @@
       "name": "Protoseq",
       "export": "protoseq",
       "argument_types": [
-        {
-          "value": "optional",
-          "tag": "concrete_type",
-          "item": {"value": "string", "tag": "concrete_type"}
-        }
+        {"value": "string", "tag": "concrete_type"}
       ],
       "result_type": {
         "value": "struct",

@@ -32,26 +32,7 @@ TBridgeValue MakeStringBuf(TStringBuf s) {
     return MakeString(s.data(), static_cast<int64_t>(s.size()));
 }
 
-//! Optional<String> arg: null → absent; MiniKQL may omit the Optional wrapper.
-bool TryReadOptionalString(uint64_t arg, TStringBuf* out) {
-    if (BridgeIsNull(arg)) {
-        return false;
-    }
-    uint64_t payload = arg;
-    if (BridgeGetKind(arg) == BRIDGE_KIND_OPTIONAL) {
-        payload = BridgeGetOptional(arg);
-        if (BridgeIsNull(payload)) {
-            return false;
-        }
-    }
-    const uint64_t offset = BridgeEnsureString(payload);
-    const int64_t length = BridgeGetStringLen(payload);
-    *out = TStringBuf(
-        reinterpret_cast<const char*>(static_cast<uintptr_t>(offset)),
-        static_cast<size_t>(length));
-    return true;
-}
-
+//! Top-level leaf String in the manifest is Optional<String> in YQL; empty → null.
 bool TryReadString(uint64_t arg, TStringBuf* out) {
     if (BridgeIsNull(arg)) {
         return false;
@@ -98,12 +79,13 @@ uint64_t MakeStringDict(const THashMap<TString, TString>& fields, uint64_t dictT
     return dict;
 }
 
+// MiniKQL TStructTypeBuilder sorts members by name; indices must match that order.
 enum ESplitField : int32_t {
-    SplitSuccessed = 0,
-    SplitRecords = 1,
-    SplitContext = 2,
-    SplitError = 3,
-    SplitRawChunk = 4,
+    SplitContext = 0,
+    SplitError = 1,
+    SplitRawChunk = 2,
+    SplitRecords = 3,
+    SplitSuccessed = 4,
     SplitFieldCount = 5,
 };
 
@@ -139,11 +121,12 @@ uint64_t MakeSplitError(TStringBuf message, bool hasRaw, TStringBuf rawChunk) {
     return result;
 }
 
+// MiniKQL TStructTypeBuilder sorts members by name; indices must match that order.
 enum ETskvField : int32_t {
-    TskvSuccessed = 0,
+    TskvError = 0,
     TskvFields = 1,
-    TskvError = 2,
-    TskvRawRecord = 3,
+    TskvRawRecord = 2,
+    TskvSuccessed = 3,
     TskvFieldCount = 4,
 };
 
@@ -179,7 +162,7 @@ __attribute__((visibility("default"))) void line_break(
     uint64_t arg0)
 {
     TStringBuf chunk;
-    if (!TryReadOptionalString(arg0, &chunk)) {
+    if (!TryReadString(arg0, &chunk)) {
         *result = MakeSplitError("no raw chunk", /*hasRaw*/ false, {});
         return;
     }
@@ -198,7 +181,7 @@ __attribute__((visibility("default"))) void protoseq(
     uint64_t arg0)
 {
     TStringBuf chunk;
-    if (!TryReadOptionalString(arg0, &chunk)) {
+    if (!TryReadString(arg0, &chunk)) {
         *result = MakeSplitError("no raw chunk", /*hasRaw*/ false, {});
         return;
     }
