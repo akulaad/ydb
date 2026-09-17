@@ -759,6 +759,14 @@ def test_ydb_udf_rpc_validation_and_pagination():
                 {}, [], manifest(module_name=""), manifest(module_type="udf"),
                 manifest(module_kind="WASM"), manifest(functions=[]), manifest(required_libraries=[]),
                 manifest(module_type="module", functions="invalid"),
+                manifest(calling_convention="bridge"),
+                *[manifest(module_type="module", functions=[dict(name="f", result_type=t)]) for t in (
+                    {"tag": "concrete_type", "value": "int64"}, "int64", "Stream<Int64>",
+                    "Decimal(10,11)", "Dict<Resource<'x'>,Int64>", "Int64" + "?" * 33,
+                )],
+                manifest(module_type="module", objects=[dict(name="Obj", create_export="create", methods=[
+                    dict(name="f", export="call", result_type="Int64", argument_types=["Flow<Int64>"]),
+                ])]),
             ]:
                 upload([header(value)], StatusIds.BAD_REQUEST)
             for module_type in ("module", "library"):
