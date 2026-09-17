@@ -11,6 +11,10 @@ separate commits or merges so failures can be traced to their source.
 
 ## Imported changes
 
+- `fork/main` at `877cd5f61fb`: merged on 2026-09-17 after the manifest
+  and chunked-read fixes landed upstream. Existing CLI snapshots and local
+  integration fixes are preserved. Build/test results below predate this merge.
+
 - `YQ-5689_wasm_compile_controller` at `ef26011dc8a`: base.
 - `YQ-5689_udf_manifest` at `286e790e3f4`: merged unified module/library
   manifests and standalone fixture tests.
