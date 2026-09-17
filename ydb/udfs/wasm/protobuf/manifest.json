@@ -2,9 +2,10 @@
   "module_type": "module",
   "module_kind": "wasm",
   "module_name": "Protobuf",
-  "calling_convention": "unversioned_value",
   "module_extension": "wasm",
-  "required_libraries": ["sdk"],
+  "required_libraries": [
+    "sdk"
+  ],
   "objects": [
     {
       "name": "Protobuf",
@@ -16,27 +17,27 @@
           "export": "protobuf_parse",
           "yql_binding": "type_config_callable",
           "argument_types": [
-            {"value": "string", "tag": "concrete_type"}
+            "Optional<String>"
           ],
-          "result_type": {"value": "string", "tag": "concrete_type"}
+          "result_type": "Optional<String>"
         },
         {
           "name": "TryParse",
           "export": "protobuf_try_parse",
           "yql_binding": "type_config_callable",
           "argument_types": [
-            {"value": "string", "tag": "concrete_type"}
+            "Optional<String>"
           ],
-          "result_type": {"value": "string", "tag": "concrete_type"}
+          "result_type": "Optional<String>"
         },
         {
           "name": "Serialize",
           "export": "protobuf_serialize",
           "yql_binding": "type_config_callable",
           "argument_types": [
-            {"value": "string", "tag": "concrete_type"}
+            "Optional<String>"
           ],
-          "result_type": {"value": "string", "tag": "concrete_type"}
+          "result_type": "Optional<String>"
         }
       ]
     }

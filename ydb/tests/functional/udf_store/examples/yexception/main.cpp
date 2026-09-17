@@ -2,7 +2,6 @@
 
 #include <util/generic/yexception.h>
 
-using namespace NYdb::NUdfStore::NAbi;
 
 //! Guest C++ exception (yexception), not the host ThrowException import.
 //! Nested helpers keep stable wasm names for readable call stacks.
@@ -18,7 +17,7 @@ __attribute__((visibility("default"))) void boom_middle() {
 
 __attribute__((visibility("default"))) void fail(
     TExpressionContext* /*context*/,
-    TUnversionedValue* /*result*/)
+    uint64_t* /*result*/)
 {
     boom_middle();
 }

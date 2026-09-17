@@ -41,7 +41,7 @@ TBridgeKinds BridgeKindsFromValue(const NYql::NUdf::TUnboxedValuePod& value);
 //! Optional layers stripped when naming the family of a declared type. A
 //! well-formed type never nests that deep; the bound only keeps a broken one
 //! from looping.
-constexpr ui32 MaxBridgeOptionalDepth = 8;
+constexpr ui32 MaxBridgeOptionalDepth = 32;
 
 //! The type whose family a value of `type` presents to MiniKQL. An Optional
 //! over a container or a string is represented as the payload itself, so the
@@ -69,6 +69,9 @@ public:
         //! be able to tell an Optional over a list from one over a scalar.
         //! Empty when the node was not built from a known inner node.
         std::optional<EBridgeValueKind> InnerValueKind;
+        //! Layers built by BridgeMakeOptional without a declared type. Needed
+        //! to traverse Just(Just(Nothing)) without guessing from its pod.
+        ui32 GuestOptionalDepth = 0;
         //! This node owns the Identity_ entry for its value and must erase it
         //! when destroyed. Aliasing nodes (e.g. Optional over the same pod)
         //! leave the entry to its owner.

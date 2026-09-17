@@ -115,6 +115,9 @@ TBridgeKinds BridgeKindsFromType(const TType* type, const ITypeInfoHelper* helpe
             // payload kind so scalar getters keep working through a level of
             // optionality, as the historical leaf arguments did.
             const TOptionalTypeInspector optional(*helper, type);
+            if (helper->GetTypeKind(optional.GetItemType()) != ETypeKind::Data) {
+                return {EBridgeNodeKind::Optional, EBridgeValueKind::Optional};
+            }
             const auto inner = BridgeKindsFromType(optional.GetItemType(), helper);
             if (inner.Node == EBridgeNodeKind::Scalar || inner.Node == EBridgeNodeKind::String) {
                 return inner;

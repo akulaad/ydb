@@ -32,7 +32,7 @@ TBridgeValue MakeStringBuf(TStringBuf s) {
     return MakeString(s.data(), static_cast<int64_t>(s.size()));
 }
 
-//! Top-level leaf String in the manifest is Optional<String> in YQL; empty → null.
+//! The manifest explicitly declares a nullable String argument.
 bool TryReadString(uint64_t arg, TStringBuf* out) {
     if (BridgeIsNull(arg)) {
         return false;
