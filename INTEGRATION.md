@@ -12,10 +12,13 @@ separate commits or merges so failures can be traced to their source.
 ## Imported changes
 
 - `YQ-5689_wasm_compile_controller` at `ef26011dc8a`: base.
-- `YQ-5689_udf_rpc_cli` at `b00a1f9773a`: merged CLI, SDK, gRPC service and tests.
+- `YQ-5689_udf_manifest` at `286e790e3f4`: merged unified module/library
+  manifests and standalone fixture tests.
+- `YQ-5689_udf_rpc_cli` at `0e6cfa138d5`: merged CLI, SDK, gRPC service and
+  tests; its latest worktree changes are stored in `fe604f1f114`.
+- `fix/wasm-udf-chunked-reads` at `9ae7c670cc5`: merged paginated source and
+  artifact reads, persistent compilation errors and regression tests.
 - `wt/reef-profile-wasm` at `55b26f25312`: merged Protobuf and LogParsing examples.
-- Uncommitted snapshot from `ydb-wasm-udf-chunked-reads`: paginated source and
-  artifact reads; persist query failures as `failed`; regression tests.
 - Uncommitted snapshot from `ydb-reef-profile-wasm`: ReefProfile guest, complete
   proto import dependencies and wasm64 build compatibility changes.
 - Uncommitted example changes from `ydb-log-parsing`: LogParsing fixes and
@@ -103,9 +106,10 @@ Use this worktree's CLI explicitly:
 ```sh
 export YDB_BIN=/home/kulaad/ydbwork/ydb-wasm-integration/ydb/apps/ydb/ydb
 upload_script=/home/kulaad/.agents/skills/infra/ydb-udf-cli/scripts/upload_and_wait.sh
-"$upload_script" --kind library --name sdk \
-  --file ydb/udfs/wasm/sdk/libwasm-sdk.so --timeout 900
-"$upload_script" --kind udf \
+"$upload_script" \
+  --file ydb/udfs/wasm/sdk/libwasm-sdk.so \
+  --manifest ydb/udfs/wasm/sdk/manifest.json --timeout 900
+"$upload_script" \
   --file ydb/udfs/wasm/reef_profile/libwasm-reef_profile.so \
   --manifest ydb/udfs/wasm/reef_profile/manifest.json --timeout 1800
 "$YDB_BIN" -e grpc://localhost:31011 -d /Root/test \
@@ -152,3 +156,25 @@ Local evidence logs (temporary files):
 - `/tmp/wasm-integration-reef-final-upload.log`
 - `/tmp/wasm-integration-restart-final.log`
 - `/tmp/wasm-integration-smoke-success.json`
+
+## Verified after manifest/CLI refresh on 2026-09-17
+
+- `sdk` and `types` built with Clang 18 wasm64 and passed `wasm-tools validate`.
+- Host `ydbd` and `ydb` built successfully in `relwithdebinfo`.
+- 195 selected manifest, CLI, WASM and chunked-read tests passed.
+- Both local cluster nodes were restarted on the refreshed server build.
+- SDK UID: `6e5e1502-bbd60029-69622b14-21ae5861`, MD5
+  `a90e3f26becc43c545ddb27832fea924`, module and platform status `ready`.
+- BridgeTypes UID: `63f4bab3-6aea04bd-29fe5b08-e5cf6a02`, MD5
+  `f24c1188bb5d6800917a3ee422745c24`, module and platform status `ready`.
+- The full `ydb/udfs/wasm/types/query.sql` sample completed successfully,
+  including nested containers, Optional, Variant and Callable checks.
+
+Refresh evidence logs:
+
+- `/tmp/wasm-integration-refresh-guests.log`
+- `/tmp/wasm-integration-refresh-host.log`
+- `/tmp/wasm-integration-refresh-tests.log`
+- `/tmp/wasm-integration-refresh-sdk-upload.log`
+- `/tmp/wasm-integration-refresh-types-upload.log`
+- `/tmp/wasm-integration-refresh-types-query.json`
