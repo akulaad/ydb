@@ -133,6 +133,13 @@ namespace {
         });
     }
 
+    std::shared_ptr<NYdb::TDriver> MakeNativeYdbDriver() {
+        NYdb::TDriverConfig config;
+        config.SetDiscoveryMode(NYdb::EDiscoveryMode::Async);
+        config.SetMaxInboundMessageSize(8ULL << 20);
+        return MakeSharedYdbDriverWithStop(std::make_unique<NYdb::TDriver>(config));
+    }
+
     std::unique_ptr<NYdb::TDriver> MakeYdbDriver(NKikimr::TDeferredActorLogBackend::TSharedAtomicActorSystemPtr actorSystemPtr, const NKikimrConfig::TStreamingQueriesConfig::TExternalTopicsSettings& config) {
         NYdb::TDriverConfig cfg;
         cfg.SetLog(std::make_unique<NKikimr::TDeferredActorLogBackend>(actorSystemPtr, NKikimrServices::EServiceKikimr::YDB_SDK));
@@ -247,6 +254,7 @@ namespace {
 
         ActorSystemPtr = std::make_shared<NKikimr::TDeferredActorLogBackend::TAtomicActorSystemPtr>(nullptr);
         Driver = MakeYdbDriver(ActorSystemPtr, queryServiceConfig.GetStreamingQueries().GetTopicSdkSettings());
+        NativeYdbDriver = MakeNativeYdbDriver();
 
         if (appConfig.GetFeatureFlags().GetEnableTopicsSqlIoOperations()) {
             LocalTopicClientSettings.emplace();
@@ -308,6 +316,7 @@ namespace {
 
         auto result = TKqpFederatedQuerySetup{
             Driver,
+            NativeYdbDriver,
             HttpGateway,
             ConnectorClient,
             CredentialsFactory,

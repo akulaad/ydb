@@ -94,6 +94,7 @@ std::shared_ptr<TKikimrRunner> MakeKikimrRunner(
 
     if (appConfig && appConfig->HasFeatureFlags()) {
         const auto& appFlags = appConfig->GetFeatureFlags();
+        featureFlags.SetEnableNativeYdbProvider(appFlags.GetEnableNativeYdbProvider());
         if (appFlags.GetEnableColumnshardBool()) {
             featureFlags.SetEnableColumnshardBool(true);
         }

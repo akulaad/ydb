@@ -128,7 +128,15 @@ public:
     class TReaderImpl;
 
     //! Asynchronously reads the next response part. Read until the returned part reports EOS().
+    //! Only one ReadNext() may be outstanding, including across copies of this iterator.
     TAsyncExecuteQueryPart ReadNext();
+
+    //! Asynchronously requests cancellation of the stream shared by all copies of this iterator.
+    //! May be called concurrently with ReadNext() or other Cancel() calls. A pending read completes
+    //! through the transport; a response already received or stream completion may win the race.
+    //! Repeated calls and calls on a finished, failed, or moved-from iterator are harmless.
+    //! Does not wait for server-side execution to stop and does not roll back committed effects.
+    void Cancel();
 
 private:
     TExecuteQueryIterator(
