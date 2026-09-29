@@ -17,6 +17,7 @@ PEERDIR(
     ydb/library/yql/providers/common/token_accessor/client
     ydb/library/yql/providers/dq/expr_nodes
     ydb/library/yql/providers/dq/mkql
+    ydb/library/yql/providers/native
     ydb/library/yql/providers/ydb_remote/expr_nodes
     ydb/library/yql/providers/ydb_remote/proto
     ydb/public/sdk/cpp/src/client/driver

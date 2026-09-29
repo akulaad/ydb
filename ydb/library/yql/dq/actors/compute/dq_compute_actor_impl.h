@@ -2096,6 +2096,7 @@ protected:
                         .TraceId = ComputeActorSpan.GetTraceId(),
                         .DatumValidationMode = CoreRuntimeSettings->DatumValidation.Get(),
                         .SchedulableWorkFactory = GetSchedulableWorkFactory(),
+                        .Deadline = RuntimeSettings.Deadline,
                     });
             } catch (const std::exception& ex) {
                 throw yexception() << "Failed to create source " << inputDesc.GetSource().GetType() << ": " << ex.what();

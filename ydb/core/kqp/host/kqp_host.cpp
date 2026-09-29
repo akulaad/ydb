@@ -21,6 +21,9 @@
 #include <ydb/library/yql/providers/generic/provider/yql_generic_provider.h>
 #include <ydb/library/yql/providers/generic/provider/yql_generic_state.h>
 #include <ydb/library/yql/providers/ydb_remote/provider/yql_ydb_remote_provider.h>
+#include <ydb/library/yql/providers/native/operation_context.h>
+#include <ydb/core/kqp/rm_service/kqp_rm_memory_quota.h>
+#include <ydb/core/kqp/rm_service/kqp_rm_service.h>
 
 #include <yql/essentials/core/yql_opt_proposed_by_data.h>
 #include <yql/essentials/core/services/yql_plan.h>
@@ -1575,7 +1578,7 @@ private:
     IAsyncQueryResultPtr PrepareDataQueryInternal(const TKqpQueryRef& query, const TPrepareSettings& settings,
         TExprContext& ctx)
     {
-        SetupYqlTransformer(EKikimrQueryType::Dml);
+        SetupYqlTransformer(EKikimrQueryType::Dml, settings.Deadline);
 
         SessionCtx->Query().PrepareOnly = true;
         SessionCtx->Query().PreparingQuery = std::make_unique<NKikimrKqp::TPreparedQuery>();
@@ -1612,7 +1615,7 @@ private:
         TExprContext& ctx)
     {
         IKikimrQueryExecutor::TExecuteSettings execSettings;
-        SetupDataQueryAstTransformer(execSettings, EKikimrQueryType::Dml);
+        SetupDataQueryAstTransformer(execSettings, EKikimrQueryType::Dml, settings.Deadline);
 
         SessionCtx->Query().PrepareOnly = true;
         SessionCtx->Query().PreparingQuery = std::make_unique<NKikimrKqp::TPreparedQuery>();
@@ -1678,7 +1681,7 @@ private:
     IAsyncQueryResultPtr PrepareQueryInternal(const TKqpQueryRef& query, NYql::TExprNode::TPtr expr, EKikimrQueryType queryType,
         const TPrepareSettings& settings, TExprContext& ctx)
     {
-        SetupYqlTransformer(queryType);
+        SetupYqlTransformer(queryType, settings.Deadline);
         auto sqlVersion = SetupQueryParameters(settings, queryType);
 
         if (!expr) {
@@ -1706,7 +1709,7 @@ private:
     }
 
     IAsyncSplitcResultPtr SplitQueryInternal(const TKqpQueryRef& query, const TPrepareSettings& settings, TExprContext& ctx) {
-        SetupYqlTransformer(EKikimrQueryType::Query);
+        SetupYqlTransformer(EKikimrQueryType::Query, settings.Deadline);
         auto sqlVersion = SetupQueryParameters(settings, EKikimrQueryType::Query);
 
         TKqpTranslationSettingsBuilder settingsBuilder(SessionCtx->Query().Type, Cluster, query.Text, SessionCtx->Config().GetYqlBindingsMode(), GUCSettings);
@@ -1755,7 +1758,7 @@ private:
     IAsyncQueryResultPtr PrepareScanQueryInternal(const TKqpQueryRef& query, TExprContext& ctx, const TPrepareSettings& prepareSettings,
         EKikimrStatsMode statsMode = EKikimrStatsMode::None)
     {
-        SetupYqlTransformer(EKikimrQueryType::Scan);
+        SetupYqlTransformer(EKikimrQueryType::Scan, prepareSettings.Deadline);
 
         SessionCtx->Query().PrepareOnly = true;
         SessionCtx->Query().StatsMode = statsMode;
@@ -1778,7 +1781,7 @@ private:
 
     IAsyncQueryResultPtr PrepareScanQueryAstInternal(const TKqpQueryRef& queryAst, TExprContext& ctx, const TPrepareSettings& prepareSettings) {
         IKikimrQueryExecutor::TExecuteSettings settings;
-        SetupDataQueryAstTransformer(settings, EKikimrQueryType::Scan);
+        SetupDataQueryAstTransformer(settings, EKikimrQueryType::Scan, prepareSettings.Deadline);
 
         SessionCtx->Query().PrepareOnly = true;
         SessionCtx->Query().PreparingQuery = std::make_unique<NKikimrKqp::TPreparedQuery>();
@@ -1803,7 +1806,9 @@ private:
     IAsyncQueryResultPtr ExecuteYqlScriptInternal(const TKqpQueryRef& script, const ::google::protobuf::Map<TProtoStringType, ::Ydb::TypedValue>& parameters,
         const TExecScriptSettings& settings, TExprContext& ctx)
     {
-        SetupYqlTransformer(EKikimrQueryType::YqlScript);
+        SetupYqlTransformer(EKikimrQueryType::YqlScript,
+            Min(settings.Deadlines.TimeoutAt ? settings.Deadlines.TimeoutAt : TInstant::Max(),
+                settings.Deadlines.CancelAt ? settings.Deadlines.CancelAt : TInstant::Max()));
 
         SessionCtx->Query().Deadlines = settings.Deadlines;
         SessionCtx->Query().StatsMode = settings.StatsMode;
@@ -1830,7 +1835,9 @@ private:
     IAsyncQueryResultPtr StreamExecuteYqlScriptInternal(const TKqpQueryRef& script, const ::google::protobuf::Map<TProtoStringType, ::Ydb::TypedValue>& parameters,
         const NActors::TActorId& target,const TExecScriptSettings& settings, TExprContext& ctx)
     {
-        SetupYqlTransformer(EKikimrQueryType::YqlScriptStreaming);
+        SetupYqlTransformer(EKikimrQueryType::YqlScriptStreaming,
+            Min(settings.Deadlines.TimeoutAt ? settings.Deadlines.TimeoutAt : TInstant::Max(),
+                settings.Deadlines.CancelAt ? settings.Deadlines.CancelAt : TInstant::Max()));
 
         SessionCtx->Query().Deadlines = settings.Deadlines;
         SessionCtx->Query().RpcCtx = settings.RpcCtx;
@@ -1954,8 +1961,13 @@ private:
         }
 
         YQL_ENSURE(FederatedQuerySetup->NativeYdbDriver, "Missing native YDB driver");
+        auto resourceManager = TryGetKqpResourceManager(ActorSystem->NodeId);
+        YQL_ENSURE(resourceManager, "Missing native YDB metadata resource manager");
+        auto metadataQuota = NYql::NNative::CreateAsyncMemoryQuota(ActorSystem,
+            NRm::CreateMemoryQuotaManager(std::move(resourceManager)), 128ULL << 20);
         auto provider = NYql::CreateYdbRemoteDataProviders(
-            TypesCtx.Get(), *FederatedQuerySetup->NativeYdbDriver, FederatedQuerySetup->CredentialsFactory);
+            TypesCtx.Get(), *FederatedQuerySetup->NativeYdbDriver, FederatedQuerySetup->CredentialsFactory,
+            NativeYdbDeadline, std::move(metadataQuota));
         TypesCtx->AddDataSource(NYql::YdbRemoteProviderName, std::move(provider.Source));
         TypesCtx->AddDataSink(NYql::YdbRemoteProviderName, std::move(provider.Sink));
     }
@@ -2300,7 +2312,8 @@ private:
             .Build();
     }
 
-    void SetupSession(EKikimrQueryType queryType) {
+    void SetupSession(EKikimrQueryType queryType, TInstant deadline = TInstant::Max()) {
+        NativeYdbDeadline = deadline;
         SessionCtx->Reset(KeepConfigChanges);
         SessionCtx->Query().Type = queryType;
 
@@ -2320,8 +2333,8 @@ private:
         std::get<2>(TypesCtx->CachedRandom).reset();
     }
 
-    void SetupYqlTransformer(EKikimrQueryType queryType) {
-        SetupSession(queryType);
+    void SetupYqlTransformer(EKikimrQueryType queryType, TInstant deadline = TInstant::Max()) {
+        SetupSession(queryType, deadline);
 
         YqlTransformer->Rewind();
         YqlTransformerNewRBO->Rewind();
@@ -2330,8 +2343,9 @@ private:
         ResultProviderConfig->CommittedResults.clear();
     }
 
-    void SetupDataQueryAstTransformer(const IKikimrQueryExecutor::TExecuteSettings& settings, EKikimrQueryType queryType) {
-        SetupSession(queryType);
+    void SetupDataQueryAstTransformer(const IKikimrQueryExecutor::TExecuteSettings& settings, EKikimrQueryType queryType,
+                                      TInstant deadline = TInstant::Max()) {
+        SetupSession(queryType, deadline);
 
         DataQueryAstTransformer->Rewind();
 
@@ -2375,6 +2389,7 @@ private:
     NActors::TActorSystem* ActorSystem = nullptr;
     NKikimrConfig::TQueryServiceConfig QueryServiceConfig;
     bool UsePessimisticLocks = false;
+    TInstant NativeYdbDeadline = TInstant::Max();
 };
 
 } // anonymous namespace

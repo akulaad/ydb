@@ -66,8 +66,8 @@ namespace {
             Driver_->Stop(true);
         }
 
-        TExecuteQueryIterator Start() {
-            auto stream = Client_->StreamExecuteQuery("SELECT 1", TTxControl::NoTx());
+        TExecuteQueryIterator Start(const TExecuteQuerySettings& settings = {}) {
+            auto stream = Client_->StreamExecuteQuery("SELECT 1", TTxControl::NoTx(), settings);
             WaitFor(Accepted_);
             UNIT_ASSERT(Accepted_.Ok);
             Writer_.SendInitialMetadata(&Metadata_);
@@ -143,6 +143,24 @@ namespace {
 } // namespace
 
 Y_UNIT_TEST_SUITE(QueryStreamCancellation) {
+    Y_UNIT_TEST(RequestControlCancelsAfterInitialMetadataAndFirstPart) {
+        TQueryStreamServer server;
+        auto control = std::make_shared<TRequestControl>();
+        auto iterator = server.Start(TExecuteQuerySettings().RequestControl(control));
+        auto first = iterator.ReadNext();
+        server.WriteSuccess();
+        UNIT_ASSERT(first.Wait(WaitTimeout));
+        UNIT_ASSERT(first.ExtractValueSync().IsSuccess());
+
+        auto read = iterator.ReadNext();
+        UNIT_ASSERT(!read.HasValue());
+        control->Cancel();
+        control->Cancel();
+        AssertCancelled(read);
+        server.WaitForCancellation();
+        server.Finish();
+    }
+
     Y_UNIT_TEST(CancelBeforeFirstRead) {
         TQueryStreamServer server;
         auto iterator = server.Start();

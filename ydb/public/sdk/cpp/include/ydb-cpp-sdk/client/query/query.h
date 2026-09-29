@@ -158,6 +158,9 @@ using TAsyncExecuteQueryIterator = NThreading::TFuture<TExecuteQueryIterator>;
 
 //! Settings for executing or streaming a query.
 struct TExecuteQuerySettings : public TRequestSettings<TExecuteQuerySettings> {
+    //! Limits each response to 8 MiB, 4096 protobuf fields and nesting depth 32.
+    //! Unknown fields and noncanonical duplicate message fields are rejected before parsing.
+    FLUENT_SETTING_DEFAULT(bool, BoundedResponse, false);
     //! Limits one streamed result part to the specified number of bytes.
     FLUENT_SETTING_OPTIONAL(uint32_t, OutputChunkMaxSize);
     //! Selects the query syntax; defaults to YQL version 1.

@@ -1,8 +1,14 @@
 UNITTEST_FOR(ydb/library/yql/providers/ydb_remote/provider)
 
-SRCS(provider_ut.cpp)
+SRCS(
+    provider_ut.cpp
+    metadata_rpc_ut.cpp
+)
 
 PEERDIR(
+    contrib/libs/grpc
+    library/cpp/testing/common
+    ydb/public/api/grpc
     ydb/library/yql/dq/expr_nodes
     ydb/library/yql/providers/dq/expr_nodes
     ydb/library/yql/providers/ydb_remote/expr_nodes

@@ -2,10 +2,12 @@ LIBRARY()
 
 SRCS(
     actors/read_actor.cpp
+    actors/memory_quota.cpp
 )
 
 PEERDIR(
     ydb/library/yql/dq/actors/compute
+    library/cpp/threading/cancellation
     yql/essentials/minikql/computation
     yql/essentials/public/udf/arrow
 )

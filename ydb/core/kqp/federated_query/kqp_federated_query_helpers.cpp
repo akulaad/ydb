@@ -135,8 +135,13 @@ namespace {
 
     std::shared_ptr<NYdb::TDriver> MakeNativeYdbDriver() {
         NYdb::TDriverConfig config;
-        config.SetDiscoveryMode(NYdb::EDiscoveryMode::Async);
+        config.SetDiscoveryMode(NYdb::EDiscoveryMode::Off);
         config.SetMaxInboundMessageSize(8ULL << 20);
+        config.SetGrpcMemoryQuota(16ULL << 20);
+        config.SetBoundedResponseTransport(true);
+        // Keep response callback stacks serialized: a new read can be requested
+        // as soon as its predecessor's future is ready, before that callback exits.
+        config.SetNetworkThreadsNum(1);
         return MakeSharedYdbDriverWithStop(std::make_unique<NYdb::TDriver>(config));
     }
 

@@ -120,7 +120,16 @@ NNative::TReadResult Error(const NYdb::TStatus& status) {
 class TYdbReadStream final : public NNative::IReadStream, public std::enable_shared_from_this<TYdbReadStream> {
 public:
     TYdbReadStream(std::shared_ptr<NYdb::NQuery::TQueryClient> client, TSource source, NNative::TReadContext context)
-        : Client_(std::move(client)), Source_(std::move(source)), Context_(context) {}
+        : Client_(std::move(client)), Source_(std::move(source)), Context_(context)
+        , Control_(std::make_shared<NYdb::TRequestControl>()) {
+        if (Context_.Cancellation.Future().StateId() != NThreading::TCancellationToken::Default().Future().StateId()) {
+            Context_.Cancellation.Future().Subscribe([weak = std::weak_ptr<NYdb::TRequestControl>(Control_)](const auto&) {
+                if (auto control = weak.lock()) {
+                    control->Cancel();
+                }
+            });
+        }
+    }
 
     ~TYdbReadStream() override {
         Cancel();
@@ -131,7 +140,7 @@ public:
         std::shared_ptr<NYdb::NQuery::TExecuteQueryIterator> iterator;
         {
             std::lock_guard lock(Mutex_);
-            if (Cancelled_) {
+            if (Cancelled_ || Context_.Cancellation.IsCancellationRequested()) {
                 promise.SetValue({.Error = "YdbRemote read cancelled"});
                 return promise.GetFuture();
             }
@@ -147,6 +156,10 @@ public:
             }
             NYdb::NQuery::TExecuteQuerySettings settings;
             settings.ClientTimeout(Context_.Deadline - now);
+            settings.Deadline(NYdb::TDeadline::AfterDuration(Context_.Deadline - now));
+            settings.RequestControl(Control_);
+            settings.RequestLifetime(Context_.MemoryLease);
+            settings.BoundedResponse(true);
             settings.OutputChunkMaxSize(Context_.MaxBatchBytes);
             settings.Format(NYdb::TResultSet::EFormat::Arrow);
             settings.SchemaInclusionMode(NYdb::NQuery::ESchemaInclusionMode::Always);
@@ -182,6 +195,7 @@ public:
     }
 
     void Cancel() override {
+        Control_->Cancel();
         std::shared_ptr<NYdb::NQuery::TExecuteQueryIterator> iterator;
         {
             std::lock_guard lock(Mutex_);
@@ -207,7 +221,7 @@ private:
                     YQL_ENSURE(part.GetResultSetIndex() == 0, "YdbRemote unexpected result set");
                     auto batch = DecodeArrowResult(part.GetResultSet(), self->Source_, self->Context_.MaxBatchBytes);
                     const ui64 bytes = NUdf::GetSizeOfArrowBatchInBytes(*batch);
-                    promise.SetValue({.Batch = std::move(batch), .Bytes = bytes});
+                    promise.SetValue({.MemoryLease = self->Context_.MemoryLease, .Batch = std::move(batch), .Bytes = bytes});
                 } else {
                     promise.SetValue({});
                 }
@@ -220,6 +234,7 @@ private:
     const std::shared_ptr<NYdb::NQuery::TQueryClient> Client_;
     const TSource Source_;
     const NNative::TReadContext Context_;
+    const std::shared_ptr<NYdb::TRequestControl> Control_;
     std::mutex Mutex_;
     bool Cancelled_ = false;
     std::shared_ptr<NYdb::NQuery::TExecuteQueryIterator> Iterator_;

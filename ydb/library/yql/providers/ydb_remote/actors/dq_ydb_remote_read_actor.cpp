@@ -15,7 +15,7 @@ void RegisterYdbRemoteReadActorFactory(TDqAsyncIoFactory& factory,
             NYdb::NQuery::TClientSettings clientSettings;
             clientSettings.DiscoveryEndpoint(source.GetEndpoint());
             clientSettings.Database(source.GetDatabase());
-            clientSettings.DiscoveryMode(NYdb::EDiscoveryMode::Async);
+            clientSettings.DiscoveryMode(NYdb::EDiscoveryMode::Off);
             clientSettings.SslCredentials(NYdb::TSslCredentials(source.GetUseTls()));
             if (source.GetToken().empty()) {
                 clientSettings.CredentialsProviderFactory(NYdb::CreateInsecureCredentialsProviderFactory());
