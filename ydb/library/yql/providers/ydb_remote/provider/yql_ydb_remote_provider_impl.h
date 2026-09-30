@@ -27,8 +27,7 @@ inline constexpr ui64 MaxMetadataTables = 64;
 inline constexpr ui64 MaxMetadataColumns = 1024;
 inline constexpr ui64 MaxMetadataSchemaBytes = 64 * 1024;
 // Covers the compact primitive schema, its map/order copies and type annotations.
-// A separate admission reservation covers provider callbacks; it is not a hard
-// bound on SDK protobuf decoding, temporary objects or transport memory.
+// The bounded SDK decoder and its temporary objects use a separate reservation.
 inline constexpr ui64 MetadataSchemaReservation = 1024 * 1024;
 inline constexpr ui64 MetadataResponseReservation = 64 * 1024 * 1024;
 
@@ -44,13 +43,12 @@ struct TState : public TThrRefBase {
     using TPtr = TIntrusivePtr<TState>;
     using TTableKey = std::pair<TString, TString>;
 
-    TState(TTypeAnnotationContext* types, const NYdb::TDriver& driver, const NYdb::TDriver& tlsDriver,
+    TState(TTypeAnnotationContext* types, const NYdb::TDriver& driver,
            IStructuredTokenCredentialsFactory::TPtr credentialsFactory,
            TInstant metadataDeadline = TInstant::Max(),
            std::shared_ptr<NNative::IAsyncMemoryQuota> metadataQuota = {})
         : Types(types)
         , Driver(driver)
-        , TlsDriver(tlsDriver)
         , CredentialsFactory(std::move(credentialsFactory))
         , MetadataDeadline(metadataDeadline == TInstant::Max() ? TInstant::Now() + TDuration::Seconds(60) : metadataDeadline)
         , MetadataQuota(std::move(metadataQuota))
@@ -59,7 +57,6 @@ struct TState : public TThrRefBase {
 
     TTypeAnnotationContext* const Types;
     const NYdb::TDriver Driver;
-    const NYdb::TDriver TlsDriver;
     const IStructuredTokenCredentialsFactory::TPtr CredentialsFactory;
     const TInstant MetadataDeadline;
     const std::shared_ptr<NNative::IAsyncMemoryQuota> MetadataQuota;

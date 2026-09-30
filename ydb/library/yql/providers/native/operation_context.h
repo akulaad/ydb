@@ -17,9 +17,8 @@ namespace NYql::NNative {
 struct TOperationContext {
     TInstant Deadline = TInstant::Max();
     NThreading::TCancellationToken Cancellation = NThreading::TCancellationToken::Default();
-    // Stream implementations, their provider callbacks and pending results retain
-    // this lease. This does not account for SDK-internal or transport buffers
-    // whose ownership is not exposed by the client API. Release is asynchronous.
+    // Every SDK request/callback and pending result must retain this lease until
+    // its buffers have been destroyed. Destruction releases quota asynchronously.
     std::shared_ptr<void> MemoryLease;
 };
 

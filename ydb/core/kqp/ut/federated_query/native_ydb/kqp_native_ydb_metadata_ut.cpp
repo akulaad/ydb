@@ -4,6 +4,7 @@
 #include <ydb/library/yql/providers/s3/actors/yql_s3_actors_factory_impl.h>
 #include <ydb/public/api/grpc/ydb_query_v1.grpc.pb.h>
 #include <ydb/public/api/grpc/ydb_table_v1.grpc.pb.h>
+#include <ydb/public/sdk/cpp/include/ydb-cpp-sdk/client/types/request_control.h>
 
 #include <library/cpp/testing/common/network.h>
 #include <library/cpp/testing/unittest/registar.h>
@@ -49,8 +50,8 @@ struct TReadCall {
     TMetadataTag Done;
 };
 
-// Public RPCs are deliberately left pending. The original query deadline must
-// reach this server through KQP compilation/execution and the existing SDK.
+// Public RPCs are deliberately left pending. Cancellation must reach this
+// server through KQP compilation or execution and the native provider's SDK.
 class TDelayedMetadataServer {
 public:
     TDelayedMetadataServer() {
@@ -227,24 +228,24 @@ Y_UNIT_TEST_SUITE(KqpNativeYdbMetadata) {
             result.GetIssues().ToString());
     }
 
-    Y_UNIT_TEST(QueryDeadlineCancelsCreateSessionTransport) {
+    Y_UNIT_TEST(QueryCancellationCancelsCreateSessionTransport) {
         TMetadataQueryFixture fixture;
         auto client = fixture.Consumer->GetQueryClient();
+        auto control = std::make_shared<TRequestControl>();
         auto future = client.ExecuteQuery("SELECT * FROM remote_db.`items`;", TTxControl::BeginTx().CommitTx(),
-            TExecuteQuerySettings().ClientTimeout(TDuration::Seconds(5))
+            TExecuteQuerySettings().ClientTimeout(TDuration::Seconds(30)).RequestControl(control)
                 .RetrySettings(NRetry::TRetryOperationSettings().MaxRetries(0)));
         fixture.Remote.WaitFor(fixture.Remote.Create.Accepted);
         UNIT_ASSERT(fixture.Remote.Create.Accepted.Ok);
         UNIT_ASSERT(!future.HasValue());
-        // With the existing SDK, an in-flight RPC is stopped by its original
-        // deadline even if compilation has already been cancelled locally.
+        control->Cancel();
+        // WaitFor is bounded by 10 seconds, well before the request's 30-second
+        // deadline. A discarded local future alone cannot satisfy this check.
         fixture.Remote.WaitFor(fixture.Remote.Create.Done);
         UNIT_ASSERT(fixture.Remote.Create.Context.IsCancelled());
         UNIT_ASSERT(future.Wait(WaitTimeout));
         const auto result = future.ExtractValueSync();
-        UNIT_ASSERT_C(result.GetStatus() == EStatus::TIMEOUT || result.GetStatus() == EStatus::CLIENT_DEADLINE_EXCEEDED ||
-            result.GetStatus() == EStatus::CANCELLED || result.GetStatus() == EStatus::CLIENT_CANCELLED,
-            result.GetIssues().ToString());
+        UNIT_ASSERT_VALUES_EQUAL(result.GetStatus(), EStatus::CLIENT_CANCELLED);
     }
 
     Y_UNIT_TEST(QueryDeadlineReachesRemoteReadAfterMetadata) {
@@ -268,20 +269,22 @@ Y_UNIT_TEST_SUITE(KqpNativeYdbMetadata) {
         UNIT_ASSERT(!result.IsSuccess());
     }
 
-    Y_UNIT_TEST(SessionQueryDeadlineStopsMetadataAndAllowsNextQuery) {
+    Y_UNIT_TEST(SessionQueryCancellationStopsMetadataAndAllowsNextQuery) {
         TMetadataQueryFixture fixture;
         auto client = fixture.Consumer->GetQueryClient();
         auto sessionResult = client.GetSession().ExtractValueSync();
         UNIT_ASSERT_C(sessionResult.IsSuccess(), sessionResult.GetIssues().ToString());
         auto session = sessionResult.GetSession();
+        auto control = std::make_shared<TRequestControl>();
         auto future = session.ExecuteQuery("SELECT * FROM remote_db.`items`;", TTxControl::BeginTx().CommitTx(),
-            TExecuteQuerySettings().ClientTimeout(TDuration::Seconds(5)));
+            TExecuteQuerySettings().ClientTimeout(TDuration::Seconds(30)).RequestControl(control));
         fixture.Remote.WaitFor(fixture.Remote.Create.Accepted);
         UNIT_ASSERT(fixture.Remote.Create.Accepted.Ok);
+        control->Cancel();
         fixture.Remote.WaitFor(fixture.Remote.Create.Done);
         UNIT_ASSERT(fixture.Remote.Create.Context.IsCancelled());
         UNIT_ASSERT(future.Wait(WaitTimeout));
-        UNIT_ASSERT(!future.ExtractValueSync().IsSuccess());
+        UNIT_ASSERT_VALUES_EQUAL(future.ExtractValueSync().GetStatus(), EStatus::CLIENT_CANCELLED);
 
         const auto next = session.ExecuteQuery("SELECT 1 AS Value;", TTxControl::NoTx(),
             TExecuteQuerySettings().ClientTimeout(TDuration::Seconds(5))).ExtractValueSync();
